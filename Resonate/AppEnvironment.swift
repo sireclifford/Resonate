@@ -11,5 +11,7 @@ final class AppEnvironment: ObservableObject {
     {
         self.hymnService = HymnService()
         self.persistenceService = persistenceService
+        
     }
+    
 }

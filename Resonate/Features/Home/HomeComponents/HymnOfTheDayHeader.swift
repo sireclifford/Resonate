@@ -9,17 +9,14 @@ struct HymnOfTheDayHeader: View {
         VStack(alignment: .leading, spacing: 8) {
 
             Text("Hymns of the Day")
-                .font(.headline)
+                .font(.josefin(size: 18, weight: .semibold))
 
             Text("Hymns \(hymn.id) • \(hymn.title)")
-                .font(.subheadline)
+                .font(.josefin(size: 15))
                 .foregroundColor(.secondary)
 
-            Button(action: onOpen) {
-                Text("Open Now")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-            }
+            Button("Open Now", action: onOpen)
+                .font(.josefin(size: 15, weight: .medium))
         }
     }
 }

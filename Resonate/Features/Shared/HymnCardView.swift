@@ -22,17 +22,14 @@ struct HymnCardView: View {
             }
 
             Text("Hymns \(hymn.id) • \(hymn.verses.count) Verses")
-                .font(.caption)
-                .foregroundColor(.secondary)
+                .font(.josefin(size: 13))
 
             Text(hymn.title)
-                .font(.subheadline)
-                .fontWeight(.medium)
+                .font(.josefin(size: 15, weight: .medium))
                 .lineLimit(2)
 
             Text(hymn.category.title)
-                .font(.caption2)
-                .foregroundColor(.secondary)
+                .font(.josefin(size: 11))
         }
     }
 }
