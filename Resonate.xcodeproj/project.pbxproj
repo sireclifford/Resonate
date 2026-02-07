@@ -29,9 +29,22 @@
 		E6138A432F3735540069DC98 /* ResonateUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ResonateUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E6138A772F3742D20069DC98 /* Exceptions for "Resonate" folder in "Resonate" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Core/Constants/UIConstants.swift,
+			);
+			target = E6138A2B2F3735520069DC98 /* Resonate */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		E6138A2E2F3735520069DC98 /* Resonate */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E6138A772F3742D20069DC98 /* Exceptions for "Resonate" folder in "Resonate" target */,
+			);
 			path = Resonate;
 			sourceTree = "<group>";
 		};
