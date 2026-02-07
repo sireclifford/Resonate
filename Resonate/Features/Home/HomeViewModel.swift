@@ -1,7 +1,10 @@
-//
-//  HomeViewModel.swift
-//  Resonate
-//
-//  Created by Clifford Owusu on 2026-02-07.
-//
+import Foundation
+import Combine
 
+final class HomeViewModel: ObservableObject {
+    let hymns: [Hymn]
+    
+    init(hymnService: HymnService) {
+        self.hymns = hymnService.hymns
+    }
+}
