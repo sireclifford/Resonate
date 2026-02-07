@@ -34,6 +34,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Core/Constants/UIConstants.swift,
+				Features/HymnDetail/Components/ReaderToolbar.swift,
 			);
 			target = E6138A2B2F3735520069DC98 /* Resonate */;
 		};
