@@ -1,13 +1,10 @@
-import Foundation
+import Combine
 
 final class AppEnvironment: ObservableObject {
     let hymnService: HymnService
-    let persistenceService: PersistenceService
     
-    init(hymnService: HymnService = HymnService(),
-         persistenceService: PersistenceService = PersistenceService())
+    init()
     {
-        self.hymnService = hymnService
-        self.persistenceService = persistenceService
+        self.hymnService = HymnService()
     }
 }

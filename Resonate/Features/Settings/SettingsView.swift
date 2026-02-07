@@ -1,7 +1,9 @@
-//
-//  SettingsView.swift
-//  Resonate
-//
-//  Created by Clifford Owusu on 2026-02-07.
-//
+import SwiftUI
+
+struct SettingsView: View {
+    var body: some View {
+        Text("Settings")
+            .navigationTitle("Settings")
+    }
+}
 

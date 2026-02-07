@@ -1,7 +1,8 @@
-//
-//  Hymn.swift
-//  Resonate
-//
-//  Created by Clifford Owusu on 2026-02-07.
-//
-
+struct Hymn: Identifiable, Codable {
+    let id: Int
+    let title: String
+    let verses: [[String]] //each verse = array of lines
+    let chorus: [String]?
+    let category: HymnCategory
+    let language: Language
+}

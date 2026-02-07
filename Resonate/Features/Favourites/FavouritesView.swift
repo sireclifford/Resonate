@@ -1,7 +1,9 @@
-//
-//  FavouritesView.swift
-//  Resonate
-//
-//  Created by Clifford Owusu on 2026-02-07.
-//
+import SwiftUI
+
+struct FavouritesView: View {
+    var body: some View {
+        Text("Favourites")
+            .navigationTitle("Favourites")
+    }
+}
 

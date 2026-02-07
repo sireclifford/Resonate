@@ -1,7 +1,16 @@
-//
-//  HymnCategory.swift
-//  Resonate
-//
-//  Created by Clifford Owusu on 2026-02-07.
-//
+import Foundation
 
+enum HymnCategory: String, Codable, CaseIterable, Identifiable {
+    case praise
+    case worship
+    case faith
+    case prayer
+    case sabbath
+    case secondComing
+    
+    var id: String { rawValue }
+    
+    var title: String {
+        rawValue.capitalized
+    }
+}
