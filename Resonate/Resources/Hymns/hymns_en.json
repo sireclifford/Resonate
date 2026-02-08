@@ -9,5 +9,16 @@
     "chorus": null,
     "category": "praise",
     "language": "en"
+  },
+  {
+      "id": 2,
+      "title": "Great is thy faithfulness",
+      "verses": [
+          ["Great is the faithfulness, oh God my father"],
+          ["There is no shadow of turning within"]
+      ],
+      "chorus": null,
+      "category": "praise",
+      "language": "en"
   }
 ]

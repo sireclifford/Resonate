@@ -9,7 +9,7 @@ struct HymnOfTheDayHeader: View {
         VStack(alignment: .leading, spacing: 8) {
 
             Text("Hymns of the Day")
-                .font(.josefin(size: 18, weight: .semibold))
+                .font(.josefin(size: 22, weight: .semibold))
 
             Text("Hymns \(hymn.id) • \(hymn.title)")
                 .font(.josefin(size: 15))

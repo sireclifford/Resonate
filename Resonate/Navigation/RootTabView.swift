@@ -1,10 +1,12 @@
 import SwiftUI
 
 struct RootTabView: View {
+    @EnvironmentObject private var environment: AppEnvironment
+    
     var body: some View {
         TabView {
             NavigationStack {
-                HomeView()
+                HomeView(environment: environment)
             }
             .tabItem {
                 Label("Home", systemImage: "house")
