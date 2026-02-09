@@ -7,9 +7,9 @@ final class FavouritesViewModel: ObservableObject {
     private let favouriteService: FavouritesService
     private var cancellables = Set<AnyCancellable>()
     
-    init(hymnService: HymnService, favouriteService: FavouritesService){
+    init(hymnService: HymnService, favouritesService: FavouritesService){
         self.hymnService = hymnService
-        self.favouriteService = favouriteService
+        self.favouriteService = favouritesService
         
         favouriteService.$favouriteIDs.map { ids in
             hymnService.hymns.filter { ids.contains($0.id)

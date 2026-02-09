@@ -13,7 +13,7 @@ struct RootTabView: View {
             }
 
             NavigationStack {
-                FavouritesView()
+                FavouritesView(environment: environment)
             }
             .tabItem {
                 Label("Favourites", systemImage: "heart")
