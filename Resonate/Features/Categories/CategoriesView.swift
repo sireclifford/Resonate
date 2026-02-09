@@ -36,6 +36,7 @@ struct CategoriesView: View {
                 }
                 .padding()
             }
+            .scrollIndicators(.hidden)
             .navigationTitle("Categories")
             .navigationDestination(for: HymnCategory.self) { category in
                 CategoryDetailView(
