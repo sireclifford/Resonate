@@ -32,7 +32,10 @@ struct FavouritesView: View {
             }
             .navigationTitle("Favourite Hymns")
             .navigationDestination(for: Hymn.self) { hymn in
-                HymnDetailView(hymn: hymn, environment: environment)
+                HymnDetailView(
+                    hymn: hymn,
+                    environment: environment
+                )
             }
         }
     }
@@ -41,16 +44,16 @@ struct FavouritesView: View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(viewModel.hymns) { hymn in
-                    NavigationLink(value: hymn) {
-                        HymnCardView(
-                            hymn: hymn,
-                            isFavourite: true,
-                            onFavouriteToggle: {
-                                environment.favouritesService.toggle(hymn)
-                            }
-                        )
+                    HymnCardView(
+                        hymn: hymn,
+                        isFavourite: true,
+                        onFavouriteToggle: {
+                            environment.favouritesService.toggle(hymn)
+                        }
+                    )
+                    .onTapGesture {
+                        path.append(hymn)
                     }
-                    .buttonStyle(.plain)
                 }
             }
             .padding()

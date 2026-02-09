@@ -1,11 +1,11 @@
 import SwiftUI
 
 struct CategoriesView: View {
-
+    
     let environment: AppEnvironment
     @StateObject private var viewModel: CategoryViewModel
     @State private var path = NavigationPath()
-
+    
     init(environment: AppEnvironment) {
         self.environment = environment
         _viewModel = StateObject(
@@ -14,12 +14,12 @@ struct CategoriesView: View {
             )
         )
     }
-
+    
     private let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
-
+    
     var body: some View {
         NavigationStack(path: $path) {
             ScrollView {
@@ -43,8 +43,14 @@ struct CategoriesView: View {
                     category: category,
                     hymns: viewModel.hymns(for: category),
                     environment: environment,
-                    favouritesService: environment.favouritesService
+                    favouritesService: environment.favouritesService,
+                    onSelectHymn: { hymn in
+                        path.append(hymn)
+                    }
                 )
+            }
+            .navigationDestination(for: Hymn.self) { hymn in
+                HymnDetailView(hymn: hymn, environment: environment)
             }
         }
     }

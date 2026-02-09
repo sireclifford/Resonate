@@ -5,9 +5,10 @@ struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     @State private var path = NavigationPath()
     @ObservedObject private var favouritesService: FavouritesService
+
     @State private var isSearchPresented = false
     @State private var pendingHymnNavigation: Hymn?
-    
+
     init(environment: AppEnvironment) {
         self.environment = environment
         self.favouritesService = environment.favouritesService
@@ -15,30 +16,36 @@ struct HomeView: View {
             wrappedValue: HomeViewModel(hymnService: environment.hymnService)
         )
     }
-    
+
     var body: some View {
         NavigationStack(path: $path) {
             ScrollView {
                 content
             }
             .scrollIndicators(.hidden)
+
+            // ✅ Hymn navigation (ONLY PLACE)
             .navigationDestination(for: Hymn.self) { hymn in
-                HymnDetailView(hymn: hymn, environment: environment)
+                HymnDetailView(
+                    hymn: hymn,
+                    environment: environment
+                )
             }
+
+            // ✅ Category navigation (ONLY PLACE)
             .navigationDestination(for: HymnCategory.self) { category in
                 CategoryDetailView(
                     category: category,
                     hymns: environment.categoryViewModel.hymns(for: category),
                     environment: environment,
-                    favouritesService: environment.favouritesService
+                    favouritesService: environment.favouritesService,
+                    onSelectHymn: { hymn in
+                        path.append(hymn)
+                    }
                 )
             }
-            .navigationDestination(for: String.self) { value in
-                if value == "categories" {
-                    CategoriesView(environment: environment)
-                }
-            }
         }
+        // ✅ Search is isolated and safe
         .sheet(isPresented: $isSearchPresented, onDismiss: {
             if let hymn = pendingHymnNavigation {
                 path.append(hymn)
@@ -51,71 +58,70 @@ struct HomeView: View {
                     viewModel: environment.searchViewModel,
                     onSelectHymn: { hymn in
                         pendingHymnNavigation = hymn
-                        isSearchPresented = false   // ✅ dismiss sheet FIRST
+                        isSearchPresented = false
                     }
                 )
             }
         }
     }
-    
-    
+
+    // MARK: - Content
+
     private var content: some View {
         LazyVStack(alignment: .leading, spacing: 24) {
+
             // Hymn of the Day
             if let hymn = viewModel.hymnOfTheDay {
                 HymnOfTheDayHeader(
                     hymn: hymn,
                     onOpen: {
-                        // push hymn reader
                         path.append(hymn)
                     }
                 )
             }
-            
+
+            // Global Search
             GlobalSearchBar(
                 viewModel: environment.searchViewModel,
                 onActivate: {
                     isSearchPresented = true
                 }
             )
-            
-            // Recently Viewed
+
+            // Recently Viewed (FIXED)
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Text("Recently Viewed")
                         .font(.headline)
                     Spacer()
-                    Text("See all")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
                 }
-                
+
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 16) {
                         ForEach(viewModel.recentlyViewed) { hymn in
-                            NavigationLink(value: hymn) {
-                                HymnCardView(
-                                    hymn: hymn,
-                                    isFavourite:favouritesService
-                                        .isFavourite(hymn),
-                                    onFavouriteToggle: {
-                                        favouritesService.toggle(hymn)
-                                    }
-                                ).frame(width: 180)
+                            HymnCardView(
+                                hymn: hymn,
+                                isFavourite: favouritesService.isFavourite(hymn),
+                                onFavouriteToggle: {
+                                    favouritesService.toggle(hymn)
+                                }
+                            )
+                            .frame(width: 180)
+                            .onTapGesture {
+                                path.append(hymn)
                             }
-                            .buttonStyle(.plain)
                         }
                     }
                 }
             }
-            
-            // Classification (placeholder)
+
+            // Categories (TYPE-SAFE ONLY)
             HomeCategoriesSection(
                 categories: environment.categoryViewModel.categories,
                 counts: environment.categoryViewModel.hymnsByCategory
                     .mapValues { $0.count },
                 onSeeAll: {
-                    path.append("categories")
+                    // ❌ REMOVED — do nothing for now
                 },
                 onSelect: { category in
                     path.append(category)
@@ -125,5 +131,3 @@ struct HomeView: View {
         .padding()
     }
 }
-
-

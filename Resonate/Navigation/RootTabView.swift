@@ -5,33 +5,30 @@ struct RootTabView: View {
 
     var body: some View {
         TabView {
-            NavigationStack {
-                HomeView(environment: environment)
-            }
-            .tabItem {
-                Label("Home", systemImage: "house")
-            }
 
-            NavigationStack {
-                FavouritesView(environment: environment)
-            }
-            .tabItem {
-                Label("Favourites", systemImage: "heart")
-            }
-            NavigationStack {
-                CategoriesView(environment: environment)
-            }
-            .tabItem {
-                Label("Categories", systemImage: "square.grid.2x2")
-            }
+            // ✅ Home owns its own NavigationStack
+            HomeView(environment: environment)
+                .tabItem {
+                    Label("Home", systemImage: "house")
+                }
 
-            NavigationStack {
-                SettingsView()
-            }
-            .tabItem {
-                Label("Settings", systemImage: "gear")
-            }
+            // ✅ Favourites owns its own NavigationStack
+            FavouritesView(environment: environment)
+                .tabItem {
+                    Label("Favourites", systemImage: "heart")
+                }
+
+            // ✅ Categories owns its own NavigationStack
+            CategoriesView(environment: environment)
+                .tabItem {
+                    Label("Categories", systemImage: "square.grid.2x2")
+                }
+
+            // ✅ Settings (optional NavigationStack inside SettingsView if needed)
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gear")
+                }
         }
     }
 }
-
