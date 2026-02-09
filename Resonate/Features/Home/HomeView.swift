@@ -4,9 +4,11 @@ struct HomeView: View {
     let environment: AppEnvironment
     @StateObject private var viewModel: HomeViewModel
     @State private var path = NavigationPath()
+    @ObservedObject private var favouritesService: FavouritesService
     
     init(environment: AppEnvironment) {
         self.environment = environment
+        self.favouritesService = environment.favouritesService
         _viewModel = StateObject(
             wrappedValue: HomeViewModel(hymnService: environment.hymnService)
         )
@@ -56,7 +58,7 @@ struct HomeView: View {
                                     hymn: hymn,
                                     isFavourite:environment.favouritesService.isFavourite(hymn),
                                     onFavouriteToggle: {
-                                        environment.favouritesService.toggle(hymn)
+                                        favouritesService.toggle(hymn)
                                     }
                                 ).frame(width: 180)
                             }
