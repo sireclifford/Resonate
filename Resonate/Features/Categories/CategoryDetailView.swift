@@ -38,6 +38,7 @@ struct CategoryDetailView: View {
         }
         .scrollIndicators(.hidden)
         .navigationTitle("Categories")
+        .toolbar(.hidden, for: .tabBar)
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: Hymn.self) { hymn in
             HymnDetailView(
