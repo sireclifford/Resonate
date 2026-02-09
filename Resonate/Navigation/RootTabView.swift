@@ -2,7 +2,7 @@ import SwiftUI
 
 struct RootTabView: View {
     @EnvironmentObject private var environment: AppEnvironment
-    
+
     var body: some View {
         TabView {
             NavigationStack {

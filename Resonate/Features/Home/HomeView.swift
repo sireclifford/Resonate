@@ -1,28 +1,26 @@
 import SwiftUI
 
 struct HomeView: View {
-
-    @EnvironmentObject private var environment: AppEnvironment
+    let environment: AppEnvironment
     @StateObject private var viewModel: HomeViewModel
     @State private var path = NavigationPath()
-
+    
     init(environment: AppEnvironment) {
+        self.environment = environment
         _viewModel = StateObject(
             wrappedValue: HomeViewModel(hymnService: environment.hymnService)
         )
     }
-
+    
     var body: some View {
         NavigationStack(path: $path) {
             ScrollView {
                 content
             }
-//            .navigationTitle("Hymns")
             .navigationDestination(for: Hymn.self) { hymn in
                 HymnDetailView(hymn: hymn)
             }
         }
-        
     }
     
     
@@ -56,8 +54,10 @@ struct HomeView: View {
                             NavigationLink(value: hymn) {
                                 HymnCardView(
                                     hymn: hymn,
-                                    isFavourite: true,
-                                    onFavouriteToggle: {}
+                                    isFavourite:environment.favouritesService.isFavourite(hymn),
+                                    onFavouriteToggle: {
+                                        environment.favouritesService.toggle(hymn)
+                                    }
                                 ).frame(width: 180)
                             }
                             .buttonStyle(.plain)
