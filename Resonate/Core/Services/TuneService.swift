@@ -1,14 +1,13 @@
 import Foundation
 
 final class TuneService {
-    func tuneExists(for hymn: Hymn) -> Bool {
-        Bundle.main.url(forResource: hymn.tuneFileName, withExtension: nil,
-                        subdirectory: "Tunes") != nil
-    }
-    
+
     func tuneURL(for hymn: Hymn) -> URL? {
-        Bundle.main.url(
-            forResource: hymn.tuneFileName, withExtension: nil, subdirectory: "Tunes"
-        )
+        let filename = String(format: "%03d.mid", hymn.id)
+        return Bundle.main.url(forResource: filename, withExtension: nil)
+    }
+
+    func tuneExists(for hymn: Hymn) -> Bool {
+        tuneURL(for: hymn) != nil
     }
 }
