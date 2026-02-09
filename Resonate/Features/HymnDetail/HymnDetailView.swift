@@ -36,9 +36,6 @@ struct HymnDetailView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 32) {
 
-                    Text(viewModel.hymn.title)
-                        .font(.josefin(size: 26, weight: .semibold))
-
                     ForEach(viewModel.versesForSelectedLanguage.indices, id: \.self) { index in
                         VerseView(
                             title: "\(index + 1).",
@@ -51,12 +48,9 @@ struct HymnDetailView: View {
                 .padding()
             }
 
-            Divider()
-
             // Bottom bar
             ReaderBottomBar(
-//                canPlay: environment.tuneService.tuneExists(for: viewModel.hymn),
-                canPlay: true,
+                canPlay: environment.tuneService.tuneExists(for: viewModel.hymn),
                 isPlaying: viewModel.isPlaying,
                 onPrevious: { /* next phase */ },
                 onPlayToggle: {
@@ -74,6 +68,8 @@ struct HymnDetailView: View {
                 onNext: { /* next phase */ }
             )
         }
+        .navigationTitle(viewModel.hymn.title)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
         .onDisappear {
             environment.midiPlaybackService.stop()

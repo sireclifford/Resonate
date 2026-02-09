@@ -10,9 +10,9 @@ struct ReaderBottomBar: View {
 
     var body: some View {
         HStack {
-
             Button(action: onPrevious) {
                 Image(systemName: "chevron.left")
+                    .font(.system(size: 18, weight: .medium))
             }
 
             Spacer()
@@ -20,7 +20,7 @@ struct ReaderBottomBar: View {
             if canPlay {
                 Button(action: onPlayToggle) {
                     Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                        .font(.system(size: 22, weight: .medium))
+                        .font(.system(size: 28, weight: .semibold))
                 }
             }
 
@@ -28,10 +28,12 @@ struct ReaderBottomBar: View {
 
             Button(action: onNext) {
                 Image(systemName: "chevron.right")
+                    .font(.system(size: 18, weight: .medium))
             }
         }
-        .padding(.horizontal, 32)
-        .padding(.vertical, 16)
+        .padding(.horizontal, 36)
+        .padding(.vertical, 20)
         .background(Color(.systemBackground))
+
     }
 }

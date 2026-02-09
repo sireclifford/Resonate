@@ -10,7 +10,7 @@ struct VerseView: View {
         VStack(alignment: .leading, spacing: 12) {
 
             Text(title)
-                .font(.josefin(size: 15, weight: .semibold))
+                .font(.josefin(size: 14, weight: .medium))
                 .foregroundColor(.secondary)
 
             ForEach(lines, id: \.self) { line in
