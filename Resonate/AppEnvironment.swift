@@ -6,7 +6,7 @@ final class AppEnvironment: ObservableObject {
     let persistenceService: PersistenceService
     let favouritesService: FavouritesService
     let tuneService: TuneService
-    let midiPlaybackService: MidiPlaybackService
+    let audioPlaybackService: AudioPlaybackService
     let categoryViewModel: CategoryViewModel
     
     init(
@@ -18,7 +18,7 @@ final class AppEnvironment: ObservableObject {
         self.persistenceService = persistenceService
         self.favouritesService = FavouritesService(persistence: persistenceService)
         self.tuneService = TuneService()
-        self.midiPlaybackService = MidiPlaybackService()
+        self.audioPlaybackService = AudioPlaybackService()
         self.categoryViewModel = CategoryViewModel(hymnService: hymnService)
     }
     

@@ -25,14 +25,14 @@ final class HymnDetailViewModel: ObservableObject {
     }
     
     func play(
-            playbackService: MidiPlaybackService,
+            playbackService: AudioPlaybackService,
             tuneService: TuneService
         ) {
             playbackService.play(hymn: hymn, tuneService: tuneService)
             isPlaying = true
         }
     
-    func stop(playbackService: MidiPlaybackService) {
+    func stop(playbackService: AudioPlaybackService) {
             playbackService.stop()
             isPlaying = false
         }

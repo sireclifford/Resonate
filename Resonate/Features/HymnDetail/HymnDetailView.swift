@@ -57,10 +57,10 @@ struct HymnDetailView: View {
                 },
                 onPlayToggle: {
                     if viewModel.isPlaying {
-                        environment.midiPlaybackService.stop()
+                        environment.audioPlaybackService.stop()
                         viewModel.isPlaying = false
                     } else {
-                        environment.midiPlaybackService.play(
+                        environment.audioPlaybackService.play(
                             hymn: viewModel.hymn,
                             tuneService: environment.tuneService
                         )
@@ -76,9 +76,9 @@ struct HymnDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
         .onDisappear {
-            environment.midiPlaybackService.stop()
+            environment.audioPlaybackService.stop()
             viewModel.isPlaying = false
-            viewModel.stop(playbackService: environment.midiPlaybackService)
+            viewModel.stop(playbackService: environment.audioPlaybackService)
         }
     }
 }
