@@ -52,7 +52,9 @@ struct HymnDetailView: View {
             ReaderBottomBar(
                 canPlay: environment.tuneService.tuneExists(for: viewModel.hymn),
                 isPlaying: viewModel.isPlaying,
-                onPrevious: { /* next phase */ },
+                onPrevious: { /* next phase */
+                    Haptics.light()
+                },
                 onPlayToggle: {
                     if viewModel.isPlaying {
                         environment.midiPlaybackService.stop()
@@ -65,7 +67,9 @@ struct HymnDetailView: View {
                         viewModel.isPlaying = true
                     }
                 },
-                onNext: { /* next phase */ }
+                onNext: { /* next phase */
+                    Haptics.light()
+                }
             )
         }
         .navigationTitle(viewModel.hymn.title)
@@ -74,6 +78,7 @@ struct HymnDetailView: View {
         .onDisappear {
             environment.midiPlaybackService.stop()
             viewModel.isPlaying = false
+            viewModel.stop(playbackService: environment.midiPlaybackService)
         }
     }
 }

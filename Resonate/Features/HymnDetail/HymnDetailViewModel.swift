@@ -24,4 +24,17 @@ final class HymnDetailViewModel: ObservableObject {
         hymn.verses
     }
     
+    func play(
+            playbackService: MidiPlaybackService,
+            tuneService: TuneService
+        ) {
+            playbackService.play(hymn: hymn, tuneService: tuneService)
+            isPlaying = true
+        }
+    
+    func stop(playbackService: MidiPlaybackService) {
+            playbackService.stop()
+            isPlaying = false
+        }
+    
 }
