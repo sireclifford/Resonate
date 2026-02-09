@@ -5,6 +5,8 @@ struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     @State private var path = NavigationPath()
     @ObservedObject private var favouritesService: FavouritesService
+    @State private var isSearchPresented = false
+    @State private var pendingHymnNavigation: Hymn?
     
     init(environment: AppEnvironment) {
         self.environment = environment
@@ -37,6 +39,23 @@ struct HomeView: View {
                 }
             }
         }
+        .sheet(isPresented: $isSearchPresented, onDismiss: {
+            if let hymn = pendingHymnNavigation {
+                path.append(hymn)
+                pendingHymnNavigation = nil
+            }
+        }) {
+            NavigationStack {
+                SearchResultsView(
+                    environment: environment,
+                    viewModel: environment.searchViewModel,
+                    onSelectHymn: { hymn in
+                        pendingHymnNavigation = hymn
+                        isSearchPresented = false   // ✅ dismiss sheet FIRST
+                    }
+                )
+            }
+        }
     }
     
     
@@ -52,6 +71,13 @@ struct HomeView: View {
                     }
                 )
             }
+            
+            GlobalSearchBar(
+                viewModel: environment.searchViewModel,
+                onActivate: {
+                    isSearchPresented = true
+                }
+            )
             
             // Recently Viewed
             VStack(alignment: .leading, spacing: 12) {
@@ -70,7 +96,8 @@ struct HomeView: View {
                             NavigationLink(value: hymn) {
                                 HymnCardView(
                                     hymn: hymn,
-                                    isFavourite:favouritesService.isFavourite(hymn),
+                                    isFavourite:favouritesService
+                                        .isFavourite(hymn),
                                     onFavouriteToggle: {
                                         favouritesService.toggle(hymn)
                                     }
