@@ -18,6 +18,12 @@ struct RootTabView: View {
             .tabItem {
                 Label("Favourites", systemImage: "heart")
             }
+            NavigationStack {
+                CategoriesView(environment: environment)
+            }
+            .tabItem {
+                Label("Categories", systemImage: "square.grid.2x2")
+            }
 
             NavigationStack {
                 SettingsView()

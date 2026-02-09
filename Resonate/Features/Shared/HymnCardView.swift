@@ -42,7 +42,7 @@ struct HymnCardView: View {
             title: "To God Be the Glory",
             verses: Array(repeating: ["Line 1", "Line 2"], count: 6),
             chorus: nil,
-            category: .praise,
+            category: .adoration_and_praise,
             language: .english
         ),
         isFavourite: true,
