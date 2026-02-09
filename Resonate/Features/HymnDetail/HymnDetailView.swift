@@ -2,49 +2,82 @@ import SwiftUI
 
 struct HymnDetailView: View {
 
+    let environment: AppEnvironment
     @StateObject private var viewModel: HymnDetailViewModel
 
-    init(hymn: Hymn) {
-        _viewModel = StateObject(wrappedValue: HymnDetailViewModel(hymn: hymn))
+    init(hymn: Hymn, environment: AppEnvironment) {
+        self.environment = environment
+        _viewModel = StateObject(
+            wrappedValue: HymnDetailViewModel(hymn: hymn)
+        )
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 32) {
+        VStack(spacing: 0) {
 
-                // Title
-                Text(viewModel.hymn.title)
-                    .font(.josefin(size: 26, weight: .semibold))
-
-                // Verses
-                ForEach(viewModel.hymn.verses.indices, id: \.self) { index in
-                    VerseView(
-                        title: "Verse \(index + 1)",
-                        lines: viewModel.hymn.verses[index],
-                        fontSize: viewModel.fontSize
-                    )
+            // Top bar
+            ReaderTopBar(
+                hymn: viewModel.hymn,
+                availableLanguages: viewModel.availableLanguages,
+                selectedLanguage: viewModel.selectedLanguage,
+                onLanguageSelect: { viewModel.selectedLanguage = $0 },
+                fontSize: viewModel.fontSize,
+                onFontSelect: { viewModel.fontSize = $0 },
+                isFavourite: environment.favouritesService.isFavourite(viewModel.hymn),
+                onFavouriteToggle: {
+                    environment.favouritesService.toggle(viewModel.hymn)
                 }
+            )
 
-                // Chorus
-                if let chorus = viewModel.hymn.chorus {
-                    VerseView(
-                        title: "Chorus",
-                        lines: chorus,
-                        fontSize: viewModel.fontSize
-                    )
+
+            Divider()
+
+            // Lyrics only scroll
+            ScrollView {
+                VStack(alignment: .leading, spacing: 32) {
+
+                    Text(viewModel.hymn.title)
+                        .font(.josefin(size: 26, weight: .semibold))
+
+                    ForEach(viewModel.versesForSelectedLanguage.indices, id: \.self) { index in
+                        VerseView(
+                            title: "\(index + 1).",
+                            lines: viewModel.versesForSelectedLanguage[index],
+                            fontSize: viewModel.fontSize
+                        )
+                    }
+
                 }
+                .padding()
             }
-            .padding()
+
+            Divider()
+
+            // Bottom bar
+            ReaderBottomBar(
+//                canPlay: environment.tuneService.tuneExists(for: viewModel.hymn),
+                canPlay: true,
+                isPlaying: viewModel.isPlaying,
+                onPrevious: { /* next phase */ },
+                onPlayToggle: {
+                    if viewModel.isPlaying {
+                        environment.midiPlaybackService.stop()
+                        viewModel.isPlaying = false
+                    } else {
+                        environment.midiPlaybackService.play(
+                            hymn: viewModel.hymn,
+                            tuneService: environment.tuneService
+                        )
+                        viewModel.isPlaying = true
+                    }
+                },
+                onNext: { /* next phase */ }
+            )
         }
-        .navigationTitle("Hymn \(viewModel.hymn.id)")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                ReaderToolbar(
-                    onDecreaseFont: viewModel.decreaseFont,
-                    onIncreaseFont: viewModel.increaseFont
-                )
-            }
+        .toolbar(.hidden, for: .tabBar)
+        .onDisappear {
+            environment.midiPlaybackService.stop()
+            viewModel.isPlaying = false
         }
     }
 }

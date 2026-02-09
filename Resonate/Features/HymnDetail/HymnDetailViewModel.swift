@@ -3,19 +3,25 @@ import SwiftUI
 import Combine
 
 final class HymnDetailViewModel: ObservableObject {
+    
     let hymn: Hymn
+    @Published var selectedLanguage: Language
+    @Published var fontSize: ReaderFontSize = .medium
+    @Published var isPlaying: Bool = false
     
-    @Published var fontSize: CGFloat = 18
-    
-    init(hymn: Hymn){
+    init(hymn: Hymn) {
         self.hymn = hymn
+        self.selectedLanguage = hymn.language
     }
     
-    func increaseFont(){
-        fontSize = min(fontSize + 2, 28)
+    var availableLanguages: [Language] {
+        [.english, .french, .twi] // later: derive from data
     }
     
-    func decreaseFont(){
-        fontSize = max(fontSize - 2, 14)
+    var versesForSelectedLanguage: [[String]] {
+        // for now hymn.language == selectedLanguage
+        // later: fetch translated verses
+        hymn.verses
     }
+    
 }

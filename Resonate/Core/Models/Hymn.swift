@@ -1,3 +1,4 @@
+import Foundation
 struct Hymn: Identifiable, Codable, Hashable {
     let id: Int
     let title: String
@@ -5,4 +6,8 @@ struct Hymn: Identifiable, Codable, Hashable {
     let chorus: [String]?
     let category: HymnCategory
     let language: Language
+    
+    var tuneFileName: String {
+        String(format: "%03d.mid", id)
+    }
 }

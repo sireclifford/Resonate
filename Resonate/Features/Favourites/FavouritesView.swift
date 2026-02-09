@@ -32,7 +32,7 @@ struct FavouritesView: View {
             }
             .navigationTitle("Favourite Hymns")
             .navigationDestination(for: Hymn.self) { hymn in
-                HymnDetailView(hymn: hymn)
+                HymnDetailView(hymn: hymn, environment: environment)
             }
         }
     }
