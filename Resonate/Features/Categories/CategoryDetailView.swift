@@ -5,6 +5,7 @@ struct CategoryDetailView: View {
     let category: HymnCategory
     let hymns: [Hymn]
     let environment: AppEnvironment
+    @ObservedObject var favouritesService: FavouritesService
 
     private let columns = [
         GridItem(.flexible()),
@@ -12,15 +13,21 @@ struct CategoryDetailView: View {
     ]
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Hymns in \(category.title)")
+                .font(.josefin(size: 18, weight: .semibold))
+        }
+        .padding(.horizontal)
+        
         ScrollView {
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(hymns) { hymn in
                     NavigationLink(value: hymn) {
                         HymnCardView(
                             hymn: hymn,
-                            isFavourite: environment.favouritesService.isFavourite(hymn),
+                            isFavourite: favouritesService.isFavourite(hymn),
                             onFavouriteToggle: {
-                                environment.favouritesService.toggle(hymn)
+                                favouritesService.toggle(hymn)
                             }
                         )
                     }
@@ -30,7 +37,7 @@ struct CategoryDetailView: View {
             .padding()
         }
         .scrollIndicators(.hidden)
-        .navigationTitle(category.title)
+        .navigationTitle("Categories")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: Hymn.self) { hymn in
             HymnDetailView(
@@ -40,3 +47,4 @@ struct CategoryDetailView: View {
         }
     }
 }
+

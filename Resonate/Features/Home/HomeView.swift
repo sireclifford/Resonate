@@ -27,7 +27,8 @@ struct HomeView: View {
                 CategoryDetailView(
                     category: category,
                     hymns: environment.categoryViewModel.hymns(for: category),
-                    environment: environment
+                    environment: environment,
+                    favouritesService: environment.favouritesService
                 )
             }
             .navigationDestination(for: String.self) { value in
@@ -69,7 +70,7 @@ struct HomeView: View {
                             NavigationLink(value: hymn) {
                                 HymnCardView(
                                     hymn: hymn,
-                                    isFavourite:environment.favouritesService.isFavourite(hymn),
+                                    isFavourite:favouritesService.isFavourite(hymn),
                                     onFavouriteToggle: {
                                         favouritesService.toggle(hymn)
                                     }
