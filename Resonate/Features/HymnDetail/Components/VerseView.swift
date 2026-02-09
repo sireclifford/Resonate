@@ -17,7 +17,9 @@ struct VerseView: View {
                 Text(line)
                     .font(.josefin(size: fontSize.value))
                     .lineSpacing(6)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

@@ -37,7 +37,7 @@ struct CategoryDetailView: View {
             .padding()
         }
         .scrollIndicators(.hidden)
-        .navigationTitle("Categories")
+        .navigationTitle("Topics")
         .toolbar(.hidden, for: .tabBar)
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: Hymn.self) { hymn in

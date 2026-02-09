@@ -22,6 +22,7 @@ final class FavouritesService: ObservableObject {
         }
         
         save()
+        Haptics.light()
     }
     
     private func load() {

@@ -11,7 +11,7 @@ struct HomeCategoriesSection: View {
         VStack(alignment: .leading, spacing: 12) {
 
             HStack {
-                Text("Categories")
+                Text("Topics")
                     .font(.josefin(size: 18, weight: .semibold))
 
                 Spacer()

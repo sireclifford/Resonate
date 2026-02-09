@@ -36,6 +36,6 @@ struct CategoriesView: View {
                 .padding()
             }
             .scrollIndicators(.hidden)
-            .navigationTitle("Categories")
+            .navigationTitle("Topics")
     }
 }
