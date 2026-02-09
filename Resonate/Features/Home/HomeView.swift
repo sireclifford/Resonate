@@ -19,8 +19,21 @@ struct HomeView: View {
             ScrollView {
                 content
             }
+            .scrollIndicators(.hidden)
             .navigationDestination(for: Hymn.self) { hymn in
                 HymnDetailView(hymn: hymn, environment: environment)
+            }
+            .navigationDestination(for: HymnCategory.self) { category in
+                CategoryDetailView(
+                    category: category,
+                    hymns: environment.categoryViewModel.hymns(for: category),
+                    environment: environment
+                )
+            }
+            .navigationDestination(for: String.self) { value in
+                if value == "categories" {
+                    CategoriesView(environment: environment)
+                }
             }
         }
     }
@@ -69,20 +82,17 @@ struct HomeView: View {
             }
             
             // Classification (placeholder)
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Text("Classification")
-                        .font(.headline)
-                    Spacer()
-                    Text("See all")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+            HomeCategoriesSection(
+                categories: environment.categoryViewModel.categories,
+                counts: environment.categoryViewModel.hymnsByCategory
+                    .mapValues { $0.count },
+                onSeeAll: {
+                    path.append("categories")
+                },
+                onSelect: { category in
+                    path.append(category)
                 }
-                
-                Text("Categories coming next")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
+            )
         }
         .padding()
     }
