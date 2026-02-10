@@ -13,7 +13,10 @@ struct HomeView: View {
         self.environment = environment
         self.favouritesService = environment.favouritesService
         _viewModel = StateObject(
-            wrappedValue: HomeViewModel(hymnService: environment.hymnService)
+            wrappedValue: HomeViewModel(
+                    hymnService: environment.hymnService,
+                    recentlyViewedService: environment.recentlyViewedService
+                )
         )
     }
 
@@ -95,20 +98,23 @@ struct HomeView: View {
                         .font(.headline)
                     Spacer()
                 }
-
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 16) {
-                        ForEach(viewModel.recentlyViewed) { hymn in
-                            HymnCardView(
-                                hymn: hymn,
-                                isFavourite: favouritesService.isFavourite(hymn),
-                                onFavouriteToggle: {
-                                    favouritesService.toggle(hymn)
+                if viewModel.recentlyViewed.isEmpty {
+                       RecentlyViewedPlaceholder()
+                } else {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 16) {
+                            ForEach(viewModel.recentlyViewed) { hymn in
+                                HymnCardView(
+                                    hymn: hymn,
+                                    isFavourite: favouritesService.isFavourite(hymn),
+                                    onFavouriteToggle: {
+                                        favouritesService.toggle(hymn)
+                                    }
+                                )
+                                .frame(width: 180)
+                                .onTapGesture {
+                                    path.append(hymn)
                                 }
-                            )
-                            .frame(width: 180)
-                            .onTapGesture {
-                                path.append(hymn)
                             }
                         }
                     }

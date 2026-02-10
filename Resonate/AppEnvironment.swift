@@ -9,6 +9,7 @@ final class AppEnvironment: ObservableObject {
     let audioPlaybackService: AudioPlaybackService
     let categoryViewModel: CategoryViewModel
     let searchViewModel: SearchViewModel
+    let recentlyViewedService: RecentlyViewedService
     
     init(
         hymnService: HymnService = HymnService(),
@@ -24,6 +25,7 @@ final class AppEnvironment: ObservableObject {
         self.searchViewModel = SearchViewModel(
             hymnService: hymnService
         )
+        self.recentlyViewedService = RecentlyViewedService()
     }
     
 }

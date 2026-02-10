@@ -3,9 +3,11 @@ import SwiftUI
 struct HymnDetailView: View {
 
     let environment: AppEnvironment
+    let hymn: Hymn
     @StateObject private var viewModel: HymnDetailViewModel
 
     init(hymn: Hymn, environment: AppEnvironment) {
+        self.hymn = hymn
         self.environment = environment
         _viewModel = StateObject(
             wrappedValue: HymnDetailViewModel(hymn: hymn)
@@ -75,6 +77,9 @@ struct HymnDetailView: View {
         .navigationTitle(viewModel.hymn.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
+        .onAppear {
+            environment.recentlyViewedService.record(hymn)
+        }
         .onDisappear {
             environment.audioPlaybackService.stop()
             viewModel.isPlaying = false
