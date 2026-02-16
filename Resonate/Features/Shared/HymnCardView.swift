@@ -10,9 +10,8 @@ struct HymnCardView: View {
         VStack(alignment: .leading, spacing: 8) {
 
             ZStack(alignment: .topTrailing) {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.secondary.opacity(0.1))
-                    .aspectRatio(1, contentMode: .fit)
+                HymnCardBackground(seed: hymn.id)
+                                   .aspectRatio(1, contentMode: .fit)
 
                 Button(action: onFavouriteToggle) {
                     Image(systemName: isFavourite ? "heart.fill" : "heart")
