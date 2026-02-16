@@ -44,6 +44,10 @@ struct HymnDetailView: View {
                             lines: viewModel.versesForSelectedLanguage[index],
                             fontSize: viewModel.fontSize
                         )
+                        
+                        if let chorus = hymn.chorus {
+                                ChorusView(lines: chorus)
+                            }
                     }
 
                 }
