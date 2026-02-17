@@ -1,5 +1,5 @@
 import CoreFoundation
-enum ReaderFontSize: CaseIterable, Identifiable {
+enum ReaderFontSize: String, CaseIterable, Identifiable {
     case small
     case medium
     case large

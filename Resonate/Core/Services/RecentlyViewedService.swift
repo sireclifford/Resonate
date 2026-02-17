@@ -3,31 +3,37 @@ import Combine
 
 final class RecentlyViewedService: ObservableObject {
 
+   
+    private let defaults = UserDefaults.standard
+    private let key = "recentlyViewed.hymnIDs"
+
     @Published private(set) var hymnIds: [Int] = []
 
-    private let key = "recentlyViewedHymns"
-    private let maxCount = 12
-
     init() {
-        load()
+        hymnIds = defaults.array(forKey: key) as? [Int] ?? []
     }
 
     func record(_ hymn: Hymn) {
-        hymnIds.removeAll { $0 == hymn.id }
-        hymnIds.insert(hymn.id, at: 0)
+        var ids = hymnIds
 
-        if hymnIds.count > maxCount {
-            hymnIds = Array(hymnIds.prefix(maxCount))
-        }
+        ids.removeAll { $0 == hymn.id }
+        ids.insert(hymn.id, at: 0)
 
-        save()
+        hymnIds = ids
+        defaults.set(ids, forKey: key)
     }
 
-    private func save() {
-        UserDefaults.standard.set(hymnIds, forKey: key)
+    func clear() {
+        hymnIds = []
+        defaults.removeObject(forKey: key)
     }
 
-    private func load() {
-        hymnIds = UserDefaults.standard.array(forKey: key) as? [Int] ?? []
-    }
+//    private func save() {
+//        UserDefaults.standard.set(hymnIds, forKey: key)
+//    }
+//
+//    private func load() {
+//        hymnIds = UserDefaults.standard.array(forKey: key) as? [Int] ?? []
+//    }
+    
 }

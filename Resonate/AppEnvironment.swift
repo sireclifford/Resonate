@@ -10,6 +10,7 @@ final class AppEnvironment: ObservableObject {
     let categoryViewModel: CategoryViewModel
     let searchViewModel: SearchViewModel
     let recentlyViewedService: RecentlyViewedService
+    var settingsService = AppSettingsService()
     
     init(
         hymnService: HymnService = HymnService(),
