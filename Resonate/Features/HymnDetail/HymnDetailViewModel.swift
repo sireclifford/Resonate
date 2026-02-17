@@ -4,14 +4,16 @@ import Combine
 
 final class HymnDetailViewModel: ObservableObject {
     
-    let hymn: Hymn
+    @Published var hymn: Hymn
     @Published var selectedLanguage: Language
     @Published var fontSize: ReaderFontSize = .medium
-    @Published var isPlaying: Bool = false
     
-    init(hymn: Hymn) {
+    private let hymnService: HymnService
+    
+    init(hymn: Hymn, hymnService: HymnService) {
         self.hymn = hymn
         self.selectedLanguage = hymn.language
+        self.hymnService = hymnService
     }
     
     var availableLanguages: [Language] {
@@ -24,17 +26,22 @@ final class HymnDetailViewModel: ObservableObject {
         hymn.verses
     }
     
-    func play(
-            playbackService: AudioPlaybackService,
-            tuneService: TuneService
-        ) {
-            playbackService.play(hymn: hymn, tuneService: tuneService)
-            isPlaying = true
-        }
+    var hasNext: Bool {
+        hymnService.hymn(after: hymn) != nil
+    }
     
-    func stop(playbackService: AudioPlaybackService) {
-            playbackService.stop()
-            isPlaying = false
-        }
+    var hasPrevious: Bool {
+        hymnService.hymn(before: hymn) != nil
+    }
+    
+    func nextHymn() {
+        guard let next = hymnService.hymn(after: hymn) else { return }
+        hymn = next
+    }
+    
+    func previousHymn() {
+        guard let previous = hymnService.hymn(before: hymn) else { return }
+        hymn = previous
+    }
     
 }

@@ -10,7 +10,10 @@ struct HymnDetailView: View {
         self.hymn = hymn
         self.environment = environment
         _viewModel = StateObject(
-            wrappedValue: HymnDetailViewModel(hymn: hymn)
+            wrappedValue: HymnDetailViewModel(
+                hymn: hymn,
+                hymnService: environment.hymnService
+            )
         )
     }
     
@@ -58,18 +61,21 @@ struct HymnDetailView: View {
             ReaderBottomBar(
                 audioPlaybackService: environment.audioPlaybackService,
                 canPlay: environment.tuneService.tuneExists(for: viewModel.hymn),
-                isPlaying: viewModel.isPlaying,
+                hasNext: viewModel.hasNext,
+                hasPrevious: viewModel.hasPrevious,
                 onPrevious: { /* next phase */
-                    Haptics.light()
+                    environment.audioPlaybackService.stop()
+                    viewModel.previousHymn()
                 },
                 onPlayToggle: {
                     environment.audioPlaybackService.play(
-                        hymn: hymn,
+                        hymn: viewModel.hymn,
                         tuneService: environment.tuneService
                     )
                 },
                 onNext: { /* next phase */
-                    Haptics.light()
+                    environment.audioPlaybackService.stop()
+                    viewModel.nextHymn()
                 }
             )
         }
@@ -81,8 +87,6 @@ struct HymnDetailView: View {
         }
         .onDisappear {
             environment.audioPlaybackService.stop()
-            viewModel.isPlaying = false
-            viewModel.stop(playbackService: environment.audioPlaybackService)
         }
     }
 }

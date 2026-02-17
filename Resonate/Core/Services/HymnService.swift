@@ -18,6 +18,18 @@ final class HymnService {
     }
     
     func hymns(in category: HymnCategory) -> [Hymn] {
-            hymns.filter { $0.category == category }
-        }
+        hymns.filter { $0.category == category }
+    }
+    
+    func hymn(after hymn: Hymn) -> Hymn? {
+        guard let index = hymns.firstIndex(where: { $0.id == hymn.id }) else { return nil }
+        let nextIndex = index + 1
+        return hymns.indices.contains(nextIndex) ? hymns[nextIndex] : nil
+    }
+    
+    func hymn(before hymn: Hymn) -> Hymn? {
+        guard let index = hymns.firstIndex(where: { $0.id == hymn.id }) else { return nil }
+        let previousIndex = index - 1
+        return hymns.indices.contains(previousIndex) ? hymns[previousIndex] : nil
+    }
 }
