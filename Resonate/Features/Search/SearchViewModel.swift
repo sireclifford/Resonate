@@ -27,7 +27,8 @@ final class SearchViewModel: ObservableObject {
     private func search(query: String) {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        guard trimmed.count >= 2 else {
+        // Allow single-character searches; only guard against empty input
+        guard !trimmed.isEmpty else {
             results = []
             return
         }
@@ -102,3 +103,4 @@ final class SearchViewModel: ObservableObject {
         results = []
     }
 }
+
