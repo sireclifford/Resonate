@@ -15,6 +15,8 @@ struct SearchResultsView: View {
             List(viewModel.results) { result in
                 Button {
                     onSelectHymn(result.hymn)
+                    viewModel.reset()
+                    
                 } label: {
                     SearchResultRow(result: result)
                 }

@@ -96,4 +96,9 @@ final class SearchViewModel: ObservableObject {
 
         results = matches
     }
+    
+    func reset(){
+        query = ""
+        results = []
+    }
 }
