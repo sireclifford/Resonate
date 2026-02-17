@@ -13,8 +13,8 @@ struct VerseView: View {
                 .font(.josefin(size: 14, weight: .medium))
                 .foregroundColor(.secondary)
 
-            ForEach(lines, id: \.self) { line in
-                Text(line)
+            ForEach(lines.indices, id: \.self) { index in
+                Text(lines[index])
                     .font(.josefin(size: fontSize.value))
                     .lineSpacing(6)
                     .frame(maxWidth: .infinity, alignment: .leading)
