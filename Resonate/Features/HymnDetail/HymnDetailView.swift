@@ -68,9 +68,8 @@ struct HymnDetailView: View {
                     viewModel.previousHymn()
                 },
                 onPlayToggle: {
-                    environment.audioPlaybackService.play(
-                        hymn: viewModel.hymn,
-                        tuneService: environment.tuneService
+                    environment.audioPlaybackService.togglePlayback(for: viewModel.hymn,
+                                                                    tuneService: environment.tuneService
                     )
                 },
                 onNext: { /* next phase */
