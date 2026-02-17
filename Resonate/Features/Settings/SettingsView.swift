@@ -2,10 +2,18 @@ import SwiftUI
 
 struct SettingsView: View {
 
-    @EnvironmentObject var environment: AppEnvironment
+    let environment: AppEnvironment
+    @ObservedObject private var settings: AppSettingsService
+
+    init(environment: AppEnvironment) {
+        self.environment = environment
+        _settings = ObservedObject(
+            wrappedValue: environment.settingsService
+        )
+    }
 
     var body: some View {
-        
+
         ScrollView {
             VStack(spacing: 24) {
 
@@ -14,14 +22,35 @@ struct SettingsView: View {
 
                     VStack(spacing: 12) {
 
-                        Picker("Font Size", selection: $environment.settingsService.fontSize) {
-                            ForEach(ReaderFontSize.allCases, id: \.self) {
-                                Text($0.rawValue.capitalized)
+                        // Font Size
+                        Menu {
+                            ForEach(ReaderFontSize.allCases) { size in
+                                Button {
+                                    settings.fontSize = size
+                                } label: {
+                                    HStack {
+                                        Text(size.label)
+
+                                        if size == settings.fontSize {
+                                            Spacer()
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
+                            }
+                        } label: {
+                            HStack {
+                                Text("Font Size")
+                                Spacer()
+                                Text(settings.fontSize.label)
+                                    .foregroundColor(.secondary)
                             }
                         }
 
-                        Toggle("Show Verse Numbers",
-                               isOn: $environment.settingsService.showVerseNumbers)
+                        Toggle(
+                            "Show Verse Numbers",
+                            isOn: $settings.showVerseNumbers
+                        )
                     }
                 }
 
@@ -30,11 +59,15 @@ struct SettingsView: View {
 
                     VStack(spacing: 12) {
 
-                        Toggle("Auto Download Audio",
-                               isOn: $environment.settingsService.autoDownloadAudio)
+                        Toggle(
+                            "Auto Download Audio",
+                            isOn: $settings.autoDownloadAudio
+                        )
 
-                        Toggle("Allow Cellular Downloads",
-                               isOn: $environment.settingsService.allowCellularDownload)
+                        Toggle(
+                            "Allow Cellular Downloads",
+                            isOn: $settings.allowCellularDownload
+                        )
                     }
                 }
 

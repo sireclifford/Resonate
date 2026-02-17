@@ -3,18 +3,22 @@ import SwiftUI
 struct HymnDetailView: View {
     
     let environment: AppEnvironment
-    let hymn: Hymn
-    @StateObject private var viewModel: HymnDetailViewModel
+        @ObservedObject private var settings: AppSettingsService
+        @StateObject private var viewModel: HymnDetailViewModel
+
+        let hymn: Hymn
     
     init(hymn: Hymn, environment: AppEnvironment) {
-        self.hymn = hymn
+           self.hymn = hymn
         self.environment = environment
-        _viewModel = StateObject(
-            wrappedValue: HymnDetailViewModel(
-                hymn: hymn,
-                hymnService: environment.hymnService
-            )
-        )
+                _settings = ObservedObject(wrappedValue: environment.settingsService)
+                _viewModel = StateObject(
+                    wrappedValue: HymnDetailViewModel(
+                        hymn: hymn,
+                        hymnService: environment.hymnService
+                    )
+                )
+        
     }
     
     var body: some View {
@@ -26,8 +30,8 @@ struct HymnDetailView: View {
                 availableLanguages: viewModel.availableLanguages,
                 selectedLanguage: viewModel.selectedLanguage,
                 onLanguageSelect: { viewModel.selectedLanguage = $0 },
-                fontSize: environment.settingsService.fontSize,
-                onFontSelect: { environment.settingsService.fontSize = $0 },
+                fontSize: settings.fontSize,
+                onFontSelect: { settings.fontSize = $0 },
                 isFavourite: environment.favouritesService.isFavourite(viewModel.hymn),
                 onFavouriteToggle: {
                     environment.favouritesService.toggle(viewModel.hymn)
@@ -45,7 +49,7 @@ struct HymnDetailView: View {
                         VerseView(
                             title: "\(index + 1).",
                             lines: viewModel.versesForSelectedLanguage[index],
-                            fontSize: environment.settingsService.fontSize
+                            fontSize: settings.fontSize
                         )
                         
                         if let chorus = hymn.chorus {

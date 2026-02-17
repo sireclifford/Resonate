@@ -6,7 +6,6 @@ final class HymnDetailViewModel: ObservableObject {
     
     @Published var hymn: Hymn
     @Published var selectedLanguage: Language
-    @Published var fontSize: ReaderFontSize = .medium
     
     private let hymnService: HymnService
     

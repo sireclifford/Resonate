@@ -5,7 +5,6 @@ struct RootTabView: View {
 
     var body: some View {
         TabView {
-
             // ✅ Home owns its own NavigationStack
             HomeView(environment: environment)
                 .tabItem {
@@ -25,7 +24,7 @@ struct RootTabView: View {
                 }
 
             // ✅ Settings (optional NavigationStack inside SettingsView if needed)
-            SettingsView()
+            SettingsView(environment: environment)
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }
