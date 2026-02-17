@@ -26,8 +26,8 @@ struct HymnDetailView: View {
                 availableLanguages: viewModel.availableLanguages,
                 selectedLanguage: viewModel.selectedLanguage,
                 onLanguageSelect: { viewModel.selectedLanguage = $0 },
-                fontSize: viewModel.fontSize,
-                onFontSelect: { viewModel.fontSize = $0 },
+                fontSize: environment.settingsService.fontSize,
+                onFontSelect: { environment.settingsService.fontSize = $0 },
                 isFavourite: environment.favouritesService.isFavourite(viewModel.hymn),
                 onFavouriteToggle: {
                     environment.favouritesService.toggle(viewModel.hymn)
@@ -45,7 +45,7 @@ struct HymnDetailView: View {
                         VerseView(
                             title: "\(index + 1).",
                             lines: viewModel.versesForSelectedLanguage[index],
-                            fontSize: viewModel.fontSize
+                            fontSize: environment.settingsService.fontSize
                         )
                         
                         if let chorus = hymn.chorus {
