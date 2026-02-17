@@ -9,8 +9,8 @@ struct ChorusView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
 
-            ForEach(lines, id: \.self) { line in
-                Text(line)
+            ForEach(lines.indices, id: \.self) { index in
+                Text(lines[index])
             }
         }
         .padding(.vertical, 8)
