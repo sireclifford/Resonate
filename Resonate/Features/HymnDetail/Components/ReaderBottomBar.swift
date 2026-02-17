@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct ReaderBottomBar: View {
-
+    
+    @ObservedObject var audioPlaybackService: AudioPlaybackService
+    
     let canPlay: Bool
     let isPlaying: Bool
     let onPrevious: () -> Void
@@ -19,7 +21,7 @@ struct ReaderBottomBar: View {
 
             if canPlay {
                 Button(action: onPlayToggle) {
-                    Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                    Image(systemName: audioPlaybackService.isPlaying ? "pause.fill" : "play.fill")
                         .font(.system(size: 28, weight: .semibold))
                 }
             }

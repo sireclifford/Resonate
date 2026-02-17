@@ -1,11 +1,11 @@
 import SwiftUI
 
 struct HymnDetailView: View {
-
+    
     let environment: AppEnvironment
     let hymn: Hymn
     @StateObject private var viewModel: HymnDetailViewModel
-
+    
     init(hymn: Hymn, environment: AppEnvironment) {
         self.hymn = hymn
         self.environment = environment
@@ -13,10 +13,10 @@ struct HymnDetailView: View {
             wrappedValue: HymnDetailViewModel(hymn: hymn)
         )
     }
-
+    
     var body: some View {
         VStack(spacing: 0) {
-
+            
             // Top bar
             ReaderTopBar(
                 hymn: viewModel.hymn,
@@ -30,14 +30,14 @@ struct HymnDetailView: View {
                     environment.favouritesService.toggle(viewModel.hymn)
                 }
             )
-
-
+            
+            
             Divider()
-
+            
             // Lyrics only scroll
             ScrollView {
                 VStack(alignment: .leading, spacing: 32) {
-
+                    
                     ForEach(viewModel.versesForSelectedLanguage.indices, id: \.self) { index in
                         VerseView(
                             title: "\(index + 1).",
@@ -46,32 +46,27 @@ struct HymnDetailView: View {
                         )
                         
                         if let chorus = hymn.chorus {
-                                ChorusView(lines: chorus)
-                            }
+                            ChorusView(lines: chorus)
+                        }
                     }
-
+                    
                 }
                 .padding()
             }
-
+            
             // Bottom bar
             ReaderBottomBar(
+                audioPlaybackService: environment.audioPlaybackService,
                 canPlay: environment.tuneService.tuneExists(for: viewModel.hymn),
                 isPlaying: viewModel.isPlaying,
                 onPrevious: { /* next phase */
                     Haptics.light()
                 },
                 onPlayToggle: {
-                    if viewModel.isPlaying {
-                        environment.audioPlaybackService.stop()
-                        viewModel.isPlaying = false
-                    } else {
-                        environment.audioPlaybackService.play(
-                            hymn: viewModel.hymn,
-                            tuneService: environment.tuneService
-                        )
-                        viewModel.isPlaying = true
-                    }
+                    environment.audioPlaybackService.play(
+                        hymn: hymn,
+                        tuneService: environment.tuneService
+                    )
                 },
                 onNext: { /* next phase */
                     Haptics.light()
