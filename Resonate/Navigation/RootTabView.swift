@@ -2,7 +2,14 @@ import SwiftUI
 
 struct RootTabView: View {
     @EnvironmentObject private var environment: AppEnvironment
+    @ObservedObject private var settings: AppSettingsService
 
+    init(environment: AppEnvironment) {
+        _settings = ObservedObject(
+            wrappedValue: environment.settingsService
+        )
+    }
+    
     var body: some View {
         TabView {
             // ✅ Home owns its own NavigationStack
@@ -29,5 +36,6 @@ struct RootTabView: View {
                     Label("Settings", systemImage: "gear")
                 }
         }
+        .preferredColorScheme(settings.theme.colorScheme)
     }
 }

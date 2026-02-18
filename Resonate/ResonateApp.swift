@@ -6,7 +6,7 @@ struct ResonateApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RootTabView()
+            RootTabView(environment: environment)
                 .environmentObject(environment)
         }
     }

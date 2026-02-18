@@ -23,6 +23,37 @@ struct SettingsView: View {
         ScrollView {
             VStack(spacing: 24) {
                 
+                //MARK: Appearance
+                SettingsSectionCard(title: "Appearance", icon: "circle.lefthalf.filled") {
+
+                    VStack(spacing: 12) {
+
+                        Menu {
+                            ForEach(AppTheme.allCases) { theme in
+                                Button {
+                                    settings.theme = theme
+                                } label: {
+                                    HStack {
+                                        Text(theme.label)
+
+                                        if theme == settings.theme {
+                                            Spacer()
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
+                            }
+                        } label: {
+                            HStack {
+                                Text("Theme")
+                                Spacer()
+                                Text(settings.theme.label)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                }
+                
                 // MARK: Reader
                 SettingsSectionCard(title: "Reader", icon: "textformat") {
                     

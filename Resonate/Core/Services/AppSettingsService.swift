@@ -62,6 +62,12 @@ final class AppSettingsService: ObservableObject {
             defaults.set(enableHaptics, forKey: Keys.enableHaptics)
         }
     }
+    
+    @Published var theme: AppTheme {
+        didSet {
+            defaults.set(theme.rawValue, forKey: Keys.theme)
+        }
+    }
 
     // MARK: - Init
 
@@ -90,6 +96,10 @@ final class AppSettingsService: ObservableObject {
         stopPlaybackOnExit = defaults.object(forKey: Keys.stopPlaybackOnExit) as? Bool ?? true
         
         enableHaptics = defaults.object(forKey: Keys.enableHaptics) as? Bool ?? true
+        
+        theme = AppTheme(
+            rawValue: defaults.string(forKey: Keys.theme) ?? "system"
+        ) ?? .system
     }
 
     private struct Keys {
@@ -104,5 +114,6 @@ final class AppSettingsService: ObservableObject {
         static let allowCellularDownload = "settings.allowCellularDownload"
         static let stopPlaybackOnExit = "settings.stopPlaybackOnExit"
         static let enableHaptics = "settings.enableHaptics"
+        static let theme = "settings.theme"
     }
 }
