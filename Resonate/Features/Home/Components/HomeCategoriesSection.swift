@@ -4,8 +4,9 @@ struct HomeCategoriesSection: View {
 
     let categories: [HymnCategory]
     let counts: [HymnCategory: Int]
-    let onSeeAll: () -> Void
+//    let onSeeAll: () -> Void
     let onSelect: (HymnCategory) -> Void
+    let environment: AppEnvironment
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -16,9 +17,13 @@ struct HomeCategoriesSection: View {
 
                 Spacer()
 
-                Button("See all", action: onSeeAll)
-                    .font(.josefin(size: 14))
-                    .foregroundColor(.secondary)
+                NavigationLink {
+                            CategoriesView(environment: environment)
+                        } label: {
+                            Text("See All")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
             }
 
             VStack(spacing: 8) {

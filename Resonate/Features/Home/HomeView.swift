@@ -48,6 +48,12 @@ struct HomeView: View {
                     }
                 )
             }
+            
+//            .navigationDestination(for: String.self) { value in
+//                if value == "categories" {
+//                    CategoriesView(environment: environment)
+//                }
+//            }
         }
         // ✅ Search is isolated and safe
         .sheet(isPresented: $isSearchPresented, onDismiss: {
@@ -124,15 +130,18 @@ struct HomeView: View {
 
             // Categories (TYPE-SAFE ONLY)
             HomeCategoriesSection(
+                
                 categories: environment.categoryViewModel.categories,
                 counts: environment.categoryViewModel.hymnsByCategory
                     .mapValues { $0.count },
-                onSeeAll: {
-                    // ❌ REMOVED — do nothing for now
-                },
+//                onSeeAll: {
+//                    path.append("categories")
+//                },
                 onSelect: { category in
+                    print("Selected category: \(category)")
                     path.append(category)
-                }
+                },
+                environment: environment
             )
         }
         .padding()
