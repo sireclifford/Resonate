@@ -52,7 +52,7 @@ struct HymnDetailView: View {
                             fontSize: settings.fontSize
                         )
                         
-                        if let chorus = hymn.chorus {
+                        if let chorus = viewModel.hymn.chorus {
                             ChorusView(lines: chorus)
                         }
                     }
