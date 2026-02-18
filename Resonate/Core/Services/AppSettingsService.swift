@@ -12,6 +12,18 @@ final class AppSettingsService: ObservableObject {
             defaults.set(fontSize.rawValue, forKey: Keys.fontSize)
         }
     }
+    
+    @Published var fontFamily: ReaderFontFamily {
+        didSet {
+            defaults.set(fontFamily.rawValue, forKey: Keys.fontFamily)
+        }
+    }
+    
+    @Published var lineSpacing: ReaderLineSpacing {
+        didSet {
+            defaults.set(lineSpacing.rawValue, forKey: Keys.lineSpacing)
+        }
+    }
 
     @Published var showVerseNumbers: Bool {
         didSet {
@@ -39,6 +51,13 @@ final class AppSettingsService: ObservableObject {
         fontSize = ReaderFontSize(
             rawValue: defaults.string(forKey: Keys.fontSize) ?? "medium"
         ) ?? .medium
+        
+        fontFamily = ReaderFontFamily(
+            rawValue: defaults.string(forKey: Keys.fontFamily) ?? "system") ?? .system
+        
+        lineSpacing = ReaderLineSpacing(
+            rawValue: defaults.string(forKey: Keys.lineSpacing) ?? "comfortable"
+        ) ?? .comfortable
 
         showVerseNumbers = defaults.object(forKey: Keys.showVerseNumbers) as? Bool ?? true
 
@@ -52,5 +71,7 @@ final class AppSettingsService: ObservableObject {
         static let showVerseNumbers = "settings.showVerseNumbers"
         static let autoDownloadAudio = "settings.autoDownloadAudio"
         static let allowCellularDownload = "settings.allowCellularDownload"
+        static let fontFamily = "settings.fontFamily"
+        static let lineSpacing = "settings.lineSpacing"
     }
 }

@@ -27,17 +27,16 @@ struct SettingsView: View {
                 SettingsSectionCard(title: "Reader", icon: "textformat") {
 
                     VStack(spacing: 12) {
-
-                        // Font Size
+                        //Font Style
                         Menu {
-                            ForEach(ReaderFontSize.allCases) { size in
+                            ForEach(ReaderFontFamily.allCases) { family in
                                 Button {
-                                    settings.fontSize = size
+                                    settings.fontFamily = family
                                 } label: {
                                     HStack {
-                                        Text(size.label)
+                                        Text(family.label)
 
-                                        if size == settings.fontSize {
+                                        if family == settings.fontFamily {
                                             Spacer()
                                             Image(systemName: "checkmark")
                                         }
@@ -46,13 +45,39 @@ struct SettingsView: View {
                             }
                         } label: {
                             HStack {
-                                Text("Font Size")
+                                Text("Font Style")
                                 Spacer()
-                                Text(settings.fontSize.label)
+                                Text(settings.fontFamily.label)
                                     .foregroundColor(.secondary)
                             }
                         }
+                        
+                        //Line Spacing
+                        Menu {
+                            ForEach(ReaderLineSpacing.allCases) { spacing in
+                                Button {
+                                    settings.lineSpacing = spacing
+                                } label: {
+                                    HStack {
+                                        Text(spacing.label)
 
+                                        if spacing == settings.lineSpacing {
+                                            Spacer()
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
+                            }
+                        } label: {
+                            HStack {
+                                Text("Line Spacing")
+                                Spacer()
+                                Text(settings.lineSpacing.label)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        
+                        //Show verse numbers
                         Toggle(
                             "Show Verse Numbers",
                             isOn: $settings.showVerseNumbers

@@ -3,21 +3,21 @@ import SwiftUI
 struct HymnDetailView: View {
     
     let environment: AppEnvironment
-        @ObservedObject private var settings: AppSettingsService
-        @StateObject private var viewModel: HymnDetailViewModel
-
-        let hymn: Hymn
+    @ObservedObject private var settings: AppSettingsService
+    @StateObject private var viewModel: HymnDetailViewModel
+    
+    let hymn: Hymn
     
     init(hymn: Hymn, environment: AppEnvironment) {
-           self.hymn = hymn
+        self.hymn = hymn
         self.environment = environment
-                _settings = ObservedObject(wrappedValue: environment.settingsService)
-                _viewModel = StateObject(
-                    wrappedValue: HymnDetailViewModel(
-                        hymn: hymn,
-                        hymnService: environment.hymnService
-                    )
-                )
+        _settings = ObservedObject(wrappedValue: environment.settingsService)
+        _viewModel = StateObject(
+            wrappedValue: HymnDetailViewModel(
+                hymn: hymn,
+                hymnService: environment.hymnService
+            )
+        )
         
     }
     
@@ -49,11 +49,18 @@ struct HymnDetailView: View {
                         VerseView(
                             title: "\(index + 1).",
                             lines: viewModel.versesForSelectedLanguage[index],
-                            fontSize: settings.fontSize
+                            fontSize: settings.fontSize,
+                            fontFamily: settings.fontFamily,
+                            lineSpacing: settings.lineSpacing,
+                            showVerseNumbers: settings.showVerseNumbers
                         )
                         
                         if let chorus = viewModel.hymn.chorus {
-                            ChorusView(lines: chorus)
+                            ChorusView(lines: chorus,
+                                       fontFamily: settings.fontFamily,
+                                       fontSize: settings.fontSize,
+                                       lineSpacing: settings.lineSpacing,
+                            )
                         }
                     }
                     
