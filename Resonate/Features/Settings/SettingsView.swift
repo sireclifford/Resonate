@@ -146,15 +146,15 @@ struct SettingsView: View {
                     
                     VStack(spacing: 12) {
                         
-                        Toggle(
-                            "Auto Download Audio",
-                            isOn: $settings.autoDownloadAudio
-                        )
-                        
-                        Toggle(
-                            "Allow Cellular Downloads",
-                            isOn: $settings.allowCellularDownload
-                        )
+//                        Toggle(
+//                            "Auto Download Audio",
+//                            isOn: $settings.autoDownloadAudio
+//                        )
+//                        
+//                        Toggle(
+//                            "Allow Cellular Downloads",
+//                            isOn: $settings.allowCellularDownload
+//                        )
                         
                         Toggle(
                             "Stop Playback When Leaving Hymn",

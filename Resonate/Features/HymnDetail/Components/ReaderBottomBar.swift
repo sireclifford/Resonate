@@ -25,6 +25,10 @@ struct ReaderBottomBar: View {
                     Image(systemName: audioPlaybackService.isPlaying ? "pause.fill" : "play.fill")
                         .font(.system(size: 28, weight: .semibold))
                 }
+            } else {
+                Image(systemName: "speaker.slash")
+                    .font(.system(size: 22, weight: .medium))
+                    .foregroundColor(.secondary)
             }
 
             Spacer()
