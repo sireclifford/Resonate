@@ -5,6 +5,7 @@ struct HymnDetailView: View {
     let environment: AppEnvironment
     @ObservedObject private var settings: AppSettingsService
     @StateObject private var viewModel: HymnDetailViewModel
+    @ObservedObject private var favouritesService: FavouritesService
     
     let hymn: Hymn
     
@@ -18,6 +19,10 @@ struct HymnDetailView: View {
                 hymnService: environment.hymnService
             )
         )
+        _favouritesService = ObservedObject(
+               wrappedValue: environment.favouritesService
+           )
+
         
     }
     
@@ -32,9 +37,9 @@ struct HymnDetailView: View {
                 onLanguageSelect: { viewModel.selectedLanguage = $0 },
                 fontSize: settings.fontSize,
                 onFontSelect: { settings.fontSize = $0 },
-                isFavourite: environment.favouritesService.isFavourite(viewModel.hymn),
+                isFavourite: favouritesService.isFavourite(viewModel.hymn),
                 onFavouriteToggle: {
-                    environment.favouritesService.toggle(viewModel.hymn)
+                    favouritesService.toggle(viewModel.hymn)
                 }
             )
             
