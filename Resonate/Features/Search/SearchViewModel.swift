@@ -25,21 +25,35 @@ final class SearchViewModel: ObservableObject {
     }
 
     private func search(query: String) {
+
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // Allow single-character searches; only guard against empty input
+        // Only guard against empty input
         guard !trimmed.isEmpty else {
             results = []
             return
         }
 
         let lowercased = trimmed.lowercased()
+        let isNumeric = Int(trimmed) != nil
+
         var matches: [SearchResult] = []
+        var exactNumberMatch: SearchResult?
 
         for hymn in hymnService.hymns {
 
-            // 1. Number match
-            if "\(hymn.id)".contains(lowercased) {
+            // 🔹 1️⃣ Exact hymn number match (priority)
+            if let number = Int(trimmed), hymn.id == number {
+                exactNumberMatch = SearchResult(
+                    hymn: hymn,
+                    matchedText: hymn.title,
+                    verseIndex: nil,
+                    lineIndex: nil
+                )
+            }
+
+            // 🔹 2️⃣ Partial numeric match
+            else if isNumeric, "\(hymn.id)".contains(trimmed) {
                 matches.append(
                     SearchResult(
                         hymn: hymn,
@@ -50,7 +64,7 @@ final class SearchViewModel: ObservableObject {
                 )
             }
 
-            // 2. Title match
+            // 🔹 3️⃣ Title match
             if hymn.title.lowercased().contains(lowercased) {
                 matches.append(
                     SearchResult(
@@ -62,7 +76,7 @@ final class SearchViewModel: ObservableObject {
                 )
             }
 
-            // 3. Verses
+            // 🔹 4️⃣ Verses match
             for (vIndex, verse) in hymn.verses.enumerated() {
                 for (lIndex, line) in verse.enumerated() {
                     if line.lowercased().contains(lowercased) {
@@ -78,7 +92,7 @@ final class SearchViewModel: ObservableObject {
                 }
             }
 
-            // 4. Chorus (optional but recommended)
+            // 🔹 5️⃣ Chorus match
             if let chorus = hymn.chorus {
                 for (lIndex, line) in chorus.enumerated() {
                     if line.lowercased().contains(lowercased) {
@@ -93,6 +107,11 @@ final class SearchViewModel: ObservableObject {
                     }
                 }
             }
+        }
+
+        // 🔹 Insert exact match at top if it exists
+        if let exact = exactNumberMatch {
+            matches.insert(exact, at: 0)
         }
 
         results = matches

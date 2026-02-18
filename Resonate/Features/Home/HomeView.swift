@@ -8,6 +8,7 @@ struct HomeView: View {
 
     @State private var isSearchPresented = false
     @State private var pendingHymnNavigation: Hymn?
+    @State private var showQuickJump = false
 
     init(environment: AppEnvironment) {
         self.environment = environment
