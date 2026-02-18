@@ -63,17 +63,14 @@ It provides structured hymn browsing, intelligent search, reader customization, 
 ---
 
 ## 🖼 Screenshots
-
-```markdown
-![Home](/Resonate/Screenshots/1.PNG)
-![Categories](Resonate/Screenshots/2.PNG)
-![SubCategories](Resonate/Screenshots/4.PNG)
-![Favourites](Resonate/Screenshots/3.PNG)
-![Lyrics](Resonate/Screenshots/6.PNG)
-![Settings](Screenshots/5.PNG)
-```
-
----
+<p align="center">
+<img src="Resonate/Screenshots/1.PNG" alt="Home" width="300"/>
+<img src="Resonate/Screenshots/2.PNG" alt="Home" width="300"/>
+<img src="Resonate/Screenshots/3.PNG" alt="Home" width="300"/>
+<img src="Resonate/Screenshots/4.PNG" alt="Home" width="300"/>
+<img src="Resonate/Screenshots/5.PNG" alt="Home" width="300"/>
+<img src="Resonate/Screenshots/6.PNG" alt="Home" width="300"/>
+</p>
 
 ## 🏗 Architecture
 
