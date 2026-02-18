@@ -100,7 +100,9 @@ struct HymnDetailView: View {
             environment.recentlyViewedService.record(hymn)
         }
         .onDisappear {
-            environment.audioPlaybackService.stop()
+            if settings.stopPlaybackOnExit {
+                environment.audioPlaybackService.stop()
+            }
         }
     }
 }

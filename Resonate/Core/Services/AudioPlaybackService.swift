@@ -7,6 +7,12 @@ final class AudioPlaybackService: NSObject, ObservableObject {
     @Published private(set) var currentHymnID: Int?
     private var player: AVAudioPlayer?
     
+    private let settings: AppSettingsService
+    
+    init(settings: AppSettingsService) {
+        self.settings = settings
+    }
+    
     func togglePlayback(for hymn: Hymn, tuneService: TuneService) {
         
         // Same hymn already loaded
@@ -43,7 +49,9 @@ final class AudioPlaybackService: NSObject, ObservableObject {
             currentHymnID = hymn.id
             isPlaying = true
             
-            Haptics.light()
+            if settings.enableHaptics {
+                Haptics.light()
+            }
             print("▶️ Playing audio:", url.lastPathComponent)
             
         } catch {

@@ -50,6 +50,18 @@ final class AppSettingsService: ObservableObject {
             defaults.set(allowCellularDownload, forKey: Keys.allowCellularDownload)
         }
     }
+    
+    @Published var stopPlaybackOnExit: Bool {
+        didSet {
+            defaults.set(stopPlaybackOnExit, forKey: Keys.stopPlaybackOnExit)
+        }
+    }
+    
+    @Published var enableHaptics: Bool {
+        didSet {
+            defaults.set(enableHaptics, forKey: Keys.enableHaptics)
+        }
+    }
 
     // MARK: - Init
 
@@ -74,15 +86,23 @@ final class AppSettingsService: ObservableObject {
         autoDownloadAudio = defaults.object(forKey: Keys.autoDownloadAudio) as? Bool ?? true
 
         allowCellularDownload = defaults.object(forKey: Keys.allowCellularDownload) as? Bool ?? false
+        
+        stopPlaybackOnExit = defaults.object(forKey: Keys.stopPlaybackOnExit) as? Bool ?? true
+        
+        enableHaptics = defaults.object(forKey: Keys.enableHaptics) as? Bool ?? true
     }
 
     private struct Keys {
         static let fontSize = "settings.fontSize"
-        static let showVerseNumbers = "settings.showVerseNumbers"
-        static let autoDownloadAudio = "settings.autoDownloadAudio"
-        static let allowCellularDownload = "settings.allowCellularDownload"
         static let fontFamily = "settings.fontFamily"
         static let lineSpacing = "settings.lineSpacing"
         static let chorusLabelStyle = "settings.chorusLabelStyle"
+        
+        
+        static let showVerseNumbers = "settings.showVerseNumbers"
+        static let autoDownloadAudio = "settings.autoDownloadAudio"
+        static let allowCellularDownload = "settings.allowCellularDownload"
+        static let stopPlaybackOnExit = "settings.stopPlaybackOnExit"
+        static let enableHaptics = "settings.enableHaptics"
     }
 }

@@ -124,6 +124,16 @@ struct SettingsView: View {
                             "Allow Cellular Downloads",
                             isOn: $settings.allowCellularDownload
                         )
+                        
+                        Toggle(
+                            "Stop Playback When Leaving Hymn",
+                            isOn: $settings.stopPlaybackOnExit
+                        )
+                        
+                        Toggle(
+                            "Enable Haptic Feedback",
+                            isOn: $settings.enableHaptics
+                        )
                     }
                 }
                 

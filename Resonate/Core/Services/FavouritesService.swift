@@ -3,10 +3,12 @@ import Combine
 final class FavouritesService: ObservableObject {
     @Published private(set) var favouriteIDs: Set<Int> = []
     
+    private let settings: AppSettingsService
     private let persistence: PersistenceService
     
-    init(persistence: PersistenceService){
+    init(persistence: PersistenceService, settings: AppSettingsService){
         self.persistence = persistence
+        self.settings = settings
         load()
     }
     
@@ -22,7 +24,9 @@ final class FavouritesService: ObservableObject {
         }
         
         save()
-        Haptics.light()
+        if settings.enableHaptics {
+            Haptics.light()
+        }
     }
     
     private func load() {
