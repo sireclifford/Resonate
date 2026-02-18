@@ -56,11 +56,15 @@ struct HymnDetailView: View {
                         )
                         
                         if let chorus = viewModel.hymn.chorus {
-                            ChorusView(lines: chorus,
-                                       fontFamily: settings.fontFamily,
-                                       fontSize: settings.fontSize,
-                                       lineSpacing: settings.lineSpacing,
-                            )
+                            if settings.chorusLabelStyle != .hide {
+                                ChorusView(
+                                    title: settings.chorusLabelStyle.label,
+                                    lines: chorus,
+                                    fontFamily: settings.fontFamily,
+                                    fontSize: settings.fontSize,
+                                    lineSpacing: settings.lineSpacing,
+                                )
+                            }
                         }
                     }
                     

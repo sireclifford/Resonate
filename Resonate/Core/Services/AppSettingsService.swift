@@ -30,6 +30,12 @@ final class AppSettingsService: ObservableObject {
             defaults.set(showVerseNumbers, forKey: Keys.showVerseNumbers)
         }
     }
+    
+    @Published var chorusLabelStyle: ChorusLabelStyle {
+        didSet {
+            defaults.set(chorusLabelStyle.rawValue, forKey: Keys.chorusLabelStyle)
+        }
+    }
 
     // MARK: - Audio
 
@@ -58,6 +64,10 @@ final class AppSettingsService: ObservableObject {
         lineSpacing = ReaderLineSpacing(
             rawValue: defaults.string(forKey: Keys.lineSpacing) ?? "comfortable"
         ) ?? .comfortable
+        
+        chorusLabelStyle = ChorusLabelStyle(
+            rawValue: defaults.string(forKey: Keys.chorusLabelStyle) ?? "chorus"
+        ) ?? .chorus
 
         showVerseNumbers = defaults.object(forKey: Keys.showVerseNumbers) as? Bool ?? true
 
@@ -73,5 +83,6 @@ final class AppSettingsService: ObservableObject {
         static let allowCellularDownload = "settings.allowCellularDownload"
         static let fontFamily = "settings.fontFamily"
         static let lineSpacing = "settings.lineSpacing"
+        static let chorusLabelStyle = "settings.chorusLabelStyle"
     }
 }

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ChorusView: View {
+    let title: String
     let lines: [String]
     let fontFamily: ReaderFontFamily
     let fontSize: ReaderFontSize
@@ -8,7 +9,7 @@ struct ChorusView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("Chorus")
+            Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)
 
