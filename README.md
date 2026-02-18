@@ -65,7 +65,7 @@ It provides structured hymn browsing, intelligent search, reader customization, 
 ## 🖼 Screenshots
 
 ```markdown
-![Home](Resonate/Screenshots/1.PNG)
+![Home](/Resonate/Screenshots/1.PNG)
 ![Categories](Resonate/Screenshots/2.PNG)
 ![SubCategories](Resonate/Screenshots/4.PNG)
 ![Favourites](Resonate/Screenshots/3.PNG)
