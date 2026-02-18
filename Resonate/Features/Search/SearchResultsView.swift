@@ -25,14 +25,16 @@ struct SearchResultsView: View {
         }
         .navigationTitle("Search")
         .onAppear {
-            isSearchFocused = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                isSearchFocused = true
+            }
         }
     }
 
     private var searchField: some View {
         TextField("Search hymns, numbers, lyrics…", text: $viewModel.query)
+            .focused($isSearchFocused)
             .textFieldStyle(.roundedBorder)
             .padding()
-            .focused($isSearchFocused)
     }
 }
