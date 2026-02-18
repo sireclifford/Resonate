@@ -22,16 +22,16 @@ struct ReaderTopBar: View {
 
             Spacer()
 
-            Menu {
-                ForEach(availableLanguages) { language in
-                    Button(language.displayName) {
-                        onLanguageSelect(language)
-                    }
-                }
-            } label: {
-                Text("\(selectedLanguage.displayName) ▼")
-                    .font(.josefin(size: 14))
-            }
+//            Menu {
+//                ForEach(availableLanguages) { language in
+//                    Button(language.displayName) {
+//                        onLanguageSelect(language)
+//                    }
+//                }
+//            } label: {
+//                Text("\(selectedLanguage.displayName) ▼")
+//                    .font(.josefin(size: 14))
+//            }
 
             Menu {
                 ForEach(ReaderFontSize.allCases) { size in
