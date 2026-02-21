@@ -21,34 +21,26 @@ struct FavouritesView: View {
     ]
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if viewModel.hymns.isEmpty {
-                    emptyState
-                } else {
-                    grid
-                }
-            }
-            .navigationTitle("Favourite Hymns")
-            .navigationDestination(for: Hymn.self) { hymn in
-                HymnDetailView(
-                    hymn: hymn,
-                    environment: environment
-                )
+        Group {
+            if viewModel.hymns.isEmpty {
+                emptyState
+            } else {
+                grid
             }
         }
+        .navigationTitle("Favourite Hymns")
     }
 
     private var grid: some View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 16) {
-                ForEach(viewModel.hymns) { hymn in
-                    NavigationLink(value: hymn) {
+                ForEach(viewModel.hymns) { index in
+                    NavigationLink(value: index) {
                         HymnCardView(
-                            hymn: hymn,
+                            index: index,
                             isFavourite: true,
                             onFavouriteToggle: {
-                                environment.favouritesService.toggle(hymn)
+                                environment.favouritesService.toggle(id: index.id)
                             }
                         )
                     }

@@ -1,13 +1,20 @@
 import Foundation
-struct Hymn: Identifiable, Codable, Hashable {
+
+//Heavy
+struct HymnDetail: Identifiable, Codable, Hashable {
     let id: Int
-    let title: String
-    let verses: [[String]] //each verse = array of lines
+    let verses: [[String]]
     let chorus: [String]?
-    let category: HymnCategory
-    let language: Language
-    
     var tuneFileName: String {
         String(format: "%03d.mid", id)
     }
+}
+
+//Lightweight
+struct HymnIndex: Identifiable, Codable, Hashable {
+    let id: Int
+    let title: String
+    let category: HymnCategory
+    let language: Language
+    let verseCount: Int
 }

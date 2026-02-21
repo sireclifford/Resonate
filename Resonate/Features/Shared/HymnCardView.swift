@@ -2,7 +2,7 @@ import SwiftUI
 
 struct HymnCardView: View {
 
-    let hymn: Hymn
+    let index: HymnIndex
     let isFavourite: Bool
     let onFavouriteToggle: () -> Void
     @EnvironmentObject var environment: AppEnvironment
@@ -11,11 +11,10 @@ struct HymnCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ZStack {
-                HymnCardBackground(seed: hymn.id)
+                HymnCardBackground(seed: index.id)
                     .aspectRatio(1, contentMode: .fit)
 
-                // 🔊 Audio Badge (Top-Left)
-                if environment.tuneService.tuneExists(for: hymn) {
+                if environment.tuneService.tuneExists(for: index.id) {
                     VStack {
                         HStack {
                             Image(systemName: "speaker.wave.2.fill")
@@ -37,7 +36,6 @@ struct HymnCardView: View {
                     }
                 }
 
-                // ❤️ Favourite (Top-Right)
                 VStack {
                     HStack {
                         Spacer()
@@ -52,14 +50,14 @@ struct HymnCardView: View {
                 .padding(8)
             }
 
-            Text("Hymns \(hymn.id) • \(hymn.verses.count) Verses")
+            Text("Hymn \(index.id) • \(index.verseCount) Verses")
                 .font(.josefin(size: 13))
 
-            Text(hymn.title)
+            Text(index.title)
                 .font(.josefin(size: 15, weight: .medium))
                 .lineLimit(2)
 
-            Text(hymn.category.title)
+            Text(index.category.title)
                 .font(.josefin(size: 11))
         }
     }

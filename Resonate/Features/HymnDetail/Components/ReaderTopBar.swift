@@ -2,7 +2,8 @@ import SwiftUI
 
 struct ReaderTopBar: View {
 
-    let hymn: Hymn
+    let index: HymnIndex
+    let verseCount: Int
     let availableLanguages: [Language]
     let selectedLanguage: Language
     let onLanguageSelect: (Language) -> Void
@@ -16,7 +17,7 @@ struct ReaderTopBar: View {
     var body: some View {
         HStack(spacing: 16) {
 
-            Text("Hymns \(hymn.id) • \(hymn.verses.count) Verses")
+            Text("Hymn \(index.id) • \(verseCount) Verses")
                 .font(.josefin(size: 14))
                 .foregroundColor(.secondary)
 

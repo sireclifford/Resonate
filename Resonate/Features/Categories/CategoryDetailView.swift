@@ -3,7 +3,7 @@ import SwiftUI
 struct CategoryDetailView: View {
 
     let category: HymnCategory
-    let hymns: [Hymn]
+    let hymns: [HymnIndex]
     let environment: AppEnvironment
     @ObservedObject var favouritesService: FavouritesService
 
@@ -24,10 +24,10 @@ struct CategoryDetailView: View {
                 ForEach(hymns) { hymn in
                     NavigationLink(value: hymn) {
                         HymnCardView(
-                            hymn: hymn,
-                            isFavourite: favouritesService.isFavourite(hymn),
+                            index: hymn,
+                            isFavourite: favouritesService.isFavourite(id: hymn.id),
                             onFavouriteToggle: {
-                                favouritesService.toggle(hymn)
+                                favouritesService.toggle(id: hymn.id)
                             }
                         )
                     }

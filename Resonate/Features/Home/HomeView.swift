@@ -2,14 +2,14 @@ import SwiftUI
 
 struct HomeView: View {
     let environment: AppEnvironment
-    let onSelectHymn: (Hymn) -> Void
+    let onSelectHymn: (HymnIndex) -> Void
     let onSeeAll: () -> Void
     @StateObject private var viewModel: HomeViewModel
     @ObservedObject private var favouritesService: FavouritesService
     
     @State private var isSearchPresented = false
     
-    init(environment: AppEnvironment, onSelectHymn: @escaping (Hymn) -> Void, onSeeAll: @escaping () -> Void) {
+    init(environment: AppEnvironment, onSelectHymn: @escaping (HymnIndex) -> Void, onSeeAll: @escaping () -> Void) {
         self.environment = environment
         self.onSelectHymn = onSelectHymn
         self.onSeeAll = onSeeAll
@@ -43,8 +43,6 @@ struct HomeView: View {
         }
     }
     
-    // MARK: - Content
-    
     private var content: some View {
         LazyVStack(alignment: .leading, spacing: 24) {
             
@@ -52,7 +50,7 @@ struct HomeView: View {
             if let hymn = viewModel.hymnOfTheDay {
                 NavigationLink(value: hymn) {
                     HymnOfTheDayHeader(
-                        hymn: hymn
+                        index: hymn
                     )
                 }
             }
@@ -80,10 +78,10 @@ struct HomeView: View {
                             ForEach(viewModel.recentlyViewed) { hymn in
                                 NavigationLink(value: hymn) {
                                     HymnCardView(
-                                        hymn: hymn,
-                                        isFavourite: favouritesService.isFavourite(hymn),
+                                        index: hymn,
+                                        isFavourite: favouritesService.isFavourite(id: hymn.id),
                                         onFavouriteToggle: {
-                                            favouritesService.toggle(hymn)
+                                            favouritesService.toggle(id: hymn.id)
                                         }
                                     )
                                     .frame(width: 180)

@@ -7,15 +7,15 @@ struct HymnDetailView: View {
     @StateObject private var viewModel: HymnDetailViewModel
     @ObservedObject private var favouritesService: FavouritesService
     
-    let hymn: Hymn
+    let index: HymnIndex
     
-    init(hymn: Hymn, environment: AppEnvironment) {
-        self.hymn = hymn
+    init(index: HymnIndex, environment: AppEnvironment) {
+        self.index = index
         self.environment = environment
         _settings = ObservedObject(wrappedValue: environment.settingsService)
         _viewModel = StateObject(
             wrappedValue: HymnDetailViewModel(
-                hymn: hymn,
+                index: index,
                 hymnService: environment.hymnService
             )
         )
@@ -31,15 +31,16 @@ struct HymnDetailView: View {
             
             // Top bar
             ReaderTopBar(
-                hymn: viewModel.hymn,
+                index: viewModel.hymn,
+                verseCount: viewModel.detail?.verses.count ?? 0,
                 availableLanguages: viewModel.availableLanguages,
                 selectedLanguage: viewModel.selectedLanguage,
                 onLanguageSelect: { viewModel.selectedLanguage = $0 },
                 fontSize: settings.fontSize,
                 onFontSelect: { settings.fontSize = $0 },
-                isFavourite: favouritesService.isFavourite(viewModel.hymn),
+                isFavourite: favouritesService.isFavourite(id: viewModel.hymn.id),
                 onFavouriteToggle: {
-                    favouritesService.toggle(viewModel.hymn)
+                    favouritesService.toggle(id: viewModel.hymn.id)
                 }
             )
             
@@ -60,7 +61,7 @@ struct HymnDetailView: View {
                             showVerseNumbers: settings.showVerseNumbers
                         )
                         
-                        if let chorus = viewModel.hymn.chorus {
+                        if let chorus = viewModel.detail?.chorus {
                             if settings.chorusLabelStyle != .hide {
                                 ChorusView(
                                     title: settings.chorusLabelStyle.label,
@@ -80,7 +81,7 @@ struct HymnDetailView: View {
             // Bottom bar
             ReaderBottomBar(
                 audioPlaybackService: environment.audioPlaybackService,
-                canPlay: environment.tuneService.tuneExists(for: viewModel.hymn),
+                canPlay: environment.tuneService.tuneExists(for: viewModel.hymn.id),
                 hasNext: viewModel.hasNext,
                 hasPrevious: viewModel.hasPrevious,
                 onPrevious: { /* next phase */
@@ -88,7 +89,7 @@ struct HymnDetailView: View {
                     viewModel.previousHymn()
                 },
                 onPlayToggle: {
-                    environment.audioPlaybackService.togglePlayback(for: viewModel.hymn,
+                    environment.audioPlaybackService.togglePlayback(for: viewModel.hymn.id,
                                                                     tuneService: environment.tuneService
                     )
                 },
@@ -102,7 +103,7 @@ struct HymnDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
         .onAppear {
-            environment.recentlyViewedService.record(hymn)
+            environment.recentlyViewedService.record(id: index.id)
         }
         .onDisappear {
             if settings.stopPlaybackOnExit {

@@ -7,9 +7,9 @@ struct FavouritesStack: View {
     var body: some View {
         NavigationStack(path: $path) {
             FavouritesView(environment: environment)
-                .navigationDestination(for: Hymn.self) { hymn in
+                .navigationDestination(for: HymnIndex.self) { index in
                     HymnDetailView(
-                        hymn: hymn,
+                        index: index,
                         environment: environment
                     )
                 }

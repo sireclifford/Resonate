@@ -16,9 +16,9 @@ struct HomeStack: View {
                     selectedTab = 2
                 }
             )
-            .navigationDestination(for: Hymn.self) { hymn in
+            .navigationDestination(for: HymnIndex.self) { index in
                 HymnDetailView(
-                    hymn: hymn,
+                    index: index,
                     environment: environment
                 )
             }

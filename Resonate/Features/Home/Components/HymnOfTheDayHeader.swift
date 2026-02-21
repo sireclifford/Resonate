@@ -2,7 +2,7 @@ import SwiftUI
 
 struct HymnOfTheDayHeader: View {
 
-    let hymn: Hymn
+    let index: HymnIndex
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -10,7 +10,7 @@ struct HymnOfTheDayHeader: View {
             Text("Hymns of the Day")
                 .font(.josefin(size: 22, weight: .semibold))
 
-            Text("Hymns \(hymn.id) • \(hymn.title)")
+            Text("Hymn \(index.id) • \(index.title)")
                 .font(.josefin(size: 15))
                 .foregroundColor(.secondary)
 

@@ -12,15 +12,15 @@ final class FavouritesService: ObservableObject {
         load()
     }
     
-    func isFavourite(_ hymn: Hymn) -> Bool {
-        favouriteIDs.contains(hymn.id)
+    func isFavourite(id: Int) -> Bool {
+        favouriteIDs.contains(id)
     }
     
-    func toggle(_ hymn: Hymn){
-        if favouriteIDs.contains(hymn.id){
-            favouriteIDs.remove(hymn.id)
+    func toggle(id: Int) {
+        if favouriteIDs.contains(id) {
+            favouriteIDs.remove(id)
         } else {
-            favouriteIDs.insert(hymn.id)
+            favouriteIDs.insert(id)
         }
         
         save()

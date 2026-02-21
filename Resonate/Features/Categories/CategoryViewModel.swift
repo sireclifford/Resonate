@@ -3,7 +3,7 @@ import Combine
 final class CategoryViewModel: ObservableObject {
 
     @Published var categories: [HymnCategory] = []
-    @Published var hymnsByCategory: [HymnCategory: [Hymn]] = [:]
+    @Published var hymnsByCategory: [HymnCategory: [HymnIndex]] = [:]
 
     private let hymnService: HymnService
 
@@ -13,7 +13,7 @@ final class CategoryViewModel: ObservableObject {
     }
 
     private func load() {
-        let hymns = hymnService.hymns
+        let hymns = hymnService.index
 
         let grouped = Dictionary(grouping: hymns, by: \.category)
 
@@ -27,7 +27,7 @@ final class CategoryViewModel: ObservableObject {
         self.hymnsByCategory = grouped
     }
 
-    func hymns(for category: HymnCategory) -> [Hymn] {
+    func hymns(for category: HymnCategory) -> [HymnIndex] {
         hymnsByCategory[category] ?? []
     }
 }

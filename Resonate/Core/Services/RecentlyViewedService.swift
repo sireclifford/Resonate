@@ -13,11 +13,11 @@ final class RecentlyViewedService: ObservableObject {
         hymnIds = defaults.array(forKey: key) as? [Int] ?? []
     }
 
-    func record(_ hymn: Hymn) {
+    func record(id: Int) {
         var ids = hymnIds
 
-        ids.removeAll { $0 == hymn.id }
-        ids.insert(hymn.id, at: 0)
+        ids.removeAll { $0 == id }
+        ids.insert(id, at: 0)
 
         hymnIds = ids
         defaults.set(ids, forKey: key)

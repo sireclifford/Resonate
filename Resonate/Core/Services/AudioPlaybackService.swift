@@ -13,10 +13,10 @@ final class AudioPlaybackService: NSObject, ObservableObject {
         self.settings = settings
     }
     
-    func togglePlayback(for hymn: Hymn, tuneService: TuneService) {
+    func togglePlayback(for id: Int, tuneService: TuneService) {
         
         // Same hymn already loaded
-        if currentHymnID == hymn.id {
+        if currentHymnID == id {
             
             if isPlaying {
                 player?.pause()
@@ -31,7 +31,7 @@ final class AudioPlaybackService: NSObject, ObservableObject {
         
         stop()
         
-        guard let url = tuneService.tuneURL(for: hymn) else {
+        guard let url = tuneService.tuneURL(for: id) else {
             print("❌ Missing audio file")
             return
         }
@@ -46,7 +46,7 @@ final class AudioPlaybackService: NSObject, ObservableObject {
             player?.prepareToPlay()
             player?.play()
             
-            currentHymnID = hymn.id
+            currentHymnID = id
             isPlaying = true
             
             if settings.enableHaptics {

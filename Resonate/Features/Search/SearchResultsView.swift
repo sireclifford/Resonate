@@ -4,7 +4,7 @@ struct SearchResultsView: View {
 
     let environment: AppEnvironment
     @ObservedObject var viewModel: SearchViewModel
-    let onSelectHymn: (Hymn) -> Void
+    let onSelectHymn: (HymnIndex) -> Void
 
     @FocusState private var isSearchFocused: Bool
 

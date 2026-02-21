@@ -40,24 +40,24 @@ final class SearchViewModel: ObservableObject {
         var matches: [SearchResult] = []
         var exactNumberMatch: SearchResult?
 
-        for hymn in hymnService.hymns {
+        for index in hymnService.index {
 
             // 🔹 1️⃣ Exact hymn number match (priority)
-            if let number = Int(trimmed), hymn.id == number {
+            if let number = Int(trimmed), index.id == number {
                 exactNumberMatch = SearchResult(
-                    hymn: hymn,
-                    matchedText: hymn.title,
+                    hymn: index,
+                    matchedText: index.title,
                     verseIndex: nil,
                     lineIndex: nil
                 )
             }
 
             // 🔹 2️⃣ Partial numeric match
-            else if isNumeric, "\(hymn.id)".contains(trimmed) {
+            else if isNumeric, "\(index.id)".contains(trimmed) {
                 matches.append(
                     SearchResult(
-                        hymn: hymn,
-                        matchedText: hymn.title,
+                        hymn: index,
+                        matchedText: index.title,
                         verseIndex: nil,
                         lineIndex: nil
                     )
@@ -65,45 +65,47 @@ final class SearchViewModel: ObservableObject {
             }
 
             // 🔹 3️⃣ Title match
-            if hymn.title.lowercased().contains(lowercased) {
+            if index.title.lowercased().contains(lowercased) {
                 matches.append(
                     SearchResult(
-                        hymn: hymn,
-                        matchedText: hymn.title,
+                        hymn: index,
+                        matchedText: index.title,
                         verseIndex: nil,
                         lineIndex: nil
                     )
                 )
             }
 
-            // 🔹 4️⃣ Verses match
-            for (vIndex, verse) in hymn.verses.enumerated() {
-                for (lIndex, line) in verse.enumerated() {
-                    if line.lowercased().contains(lowercased) {
-                        matches.append(
-                            SearchResult(
-                                hymn: hymn,
-                                matchedText: line,
-                                verseIndex: vIndex,
-                                lineIndex: lIndex
+            // 🔹 4️⃣ Verses and 5️⃣ Chorus match with lazy detail fetch
+            if let detail = hymnService.detail(for: index.id) {
+
+                for (vIndex, verse) in detail.verses.enumerated() {
+                    for (lIndex, line) in verse.enumerated() {
+                        if line.lowercased().contains(lowercased) {
+                            matches.append(
+                                SearchResult(
+                                    hymn: index,
+                                    matchedText: line,
+                                    verseIndex: vIndex,
+                                    lineIndex: lIndex
+                                )
                             )
-                        )
+                        }
                     }
                 }
-            }
 
-            // 🔹 5️⃣ Chorus match
-            if let chorus = hymn.chorus {
-                for (lIndex, line) in chorus.enumerated() {
-                    if line.lowercased().contains(lowercased) {
-                        matches.append(
-                            SearchResult(
-                                hymn: hymn,
-                                matchedText: line,
-                                verseIndex: nil,
-                                lineIndex: lIndex
+                if let chorus = detail.chorus {
+                    for (lIndex, line) in chorus.enumerated() {
+                        if line.lowercased().contains(lowercased) {
+                            matches.append(
+                                SearchResult(
+                                    hymn: index,
+                                    matchedText: line,
+                                    verseIndex: nil,
+                                    lineIndex: lIndex
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
@@ -122,4 +124,3 @@ final class SearchViewModel: ObservableObject {
         results = []
     }
 }
-

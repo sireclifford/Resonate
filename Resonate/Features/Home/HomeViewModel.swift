@@ -3,18 +3,12 @@ import Combine
 
 final class HomeViewModel: ObservableObject {
     
-    // MARK: - Published UI State
-    
-    @Published private(set) var recentlyViewed: [Hymn] = []
-    @Published private(set) var hymnOfTheDay: Hymn?
-    
-    // MARK: - Dependencies
+    @Published private(set) var recentlyViewed: [HymnIndex] = []
+    @Published private(set) var hymnOfTheDay: HymnIndex?
     
     private let hymnService: HymnService
     private let recentlyViewedService: RecentlyViewedService
     private var cancellables = Set<AnyCancellable>()
-    
-    // MARK: - Init
     
     init(
         hymnService: HymnService,
@@ -26,7 +20,9 @@ final class HomeViewModel: ObservableObject {
         
         recentlyViewedService.$hymnIds
             .map { ids in
-                ids.compactMap { hymnService.hymn(by: $0) }
+                ids.compactMap { id in
+                    hymnService.hymnIndex(by: id)
+                }
             }
             .assign(to: &$recentlyViewed)
         
@@ -34,22 +30,20 @@ final class HomeViewModel: ObservableObject {
         computeHymnOfTheDay()
     }
     
-    // MARK: - Recently Viewed Binding
-    
     private func bindRecentlyViewed() {
         recentlyViewedService.$hymnIds
             .map { [weak self] ids in
                 guard let self else { return [] }
-                return ids.compactMap { self.hymnService.hymn(by: $0) }
+                return ids.compactMap { id in
+                    self.hymnService.hymnIndex(by: id)
+                }
             }
             .receive(on: RunLoop.main)
             .assign(to: &$recentlyViewed)
     }
     
-    // MARK: - Hymn of the Day
-    
     private func computeHymnOfTheDay() {
-        let hymns = hymnService.hymns
+        let hymns = hymnService.index
         guard !hymns.isEmpty else {
             hymnOfTheDay = nil
             return
