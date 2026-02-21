@@ -27,13 +27,5 @@ final class RecentlyViewedService: ObservableObject {
         hymnIds = []
         defaults.removeObject(forKey: key)
     }
-
-//    private func save() {
-//        UserDefaults.standard.set(hymnIds, forKey: key)
-//    }
-//
-//    private func load() {
-//        hymnIds = UserDefaults.standard.array(forKey: key) as? [Int] ?? []
-//    }
     
 }

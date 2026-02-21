@@ -11,7 +11,6 @@ struct SearchResultsView: View {
     var body: some View {
         VStack {
             searchField
-
             List(viewModel.results) { result in
                 Button {
                     onSelectHymn(result.hymn)

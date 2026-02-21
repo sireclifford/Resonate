@@ -4,7 +4,6 @@ struct CategoriesView: View {
     
     let environment: AppEnvironment
     @StateObject private var viewModel: CategoryViewModel
-    @State private var path = NavigationPath()
     
     init(environment: AppEnvironment) {
         self.environment = environment
@@ -21,7 +20,6 @@ struct CategoriesView: View {
     ]
     
     var body: some View {
-        NavigationStack(path: $path) {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 16) {
                     ForEach(viewModel.categories) { category in
@@ -38,20 +36,5 @@ struct CategoriesView: View {
             }
             .scrollIndicators(.hidden)
             .navigationTitle("Topics")
-            .navigationDestination(for: HymnCategory.self) { category in
-                CategoryDetailView(
-                    category: category,
-                    hymns: viewModel.hymns(for: category),
-                    environment: environment,
-                    favouritesService: environment.favouritesService,
-                    onSelectHymn: { hymn in
-                        path.append(hymn)
-                    }
-                )
-            }
-            .navigationDestination(for: Hymn.self) { hymn in
-                HymnDetailView(hymn: hymn, environment: environment)
-            }
         }
     }
-}

@@ -4,7 +4,6 @@ struct FavouritesView: View {
 
     let environment: AppEnvironment
     @StateObject private var viewModel: FavouritesViewModel
-    @State private var path = NavigationPath()
 
     init(environment: AppEnvironment) {
         self.environment = environment
@@ -22,7 +21,7 @@ struct FavouritesView: View {
     ]
 
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack {
             Group {
                 if viewModel.hymns.isEmpty {
                     emptyState
@@ -44,16 +43,16 @@ struct FavouritesView: View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(viewModel.hymns) { hymn in
-                    HymnCardView(
-                        hymn: hymn,
-                        isFavourite: true,
-                        onFavouriteToggle: {
-                            environment.favouritesService.toggle(hymn)
-                        }
-                    )
-                    .onTapGesture {
-                        path.append(hymn)
+                    NavigationLink(value: hymn) {
+                        HymnCardView(
+                            hymn: hymn,
+                            isFavourite: true,
+                            onFavouriteToggle: {
+                                environment.favouritesService.toggle(hymn)
+                            }
+                        )
                     }
+                    .buttonStyle(.plain)
                 }
             }
             .padding()

@@ -10,9 +10,7 @@ struct HymnCardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-
             ZStack {
-
                 HymnCardBackground(seed: hymn.id)
                     .aspectRatio(1, contentMode: .fit)
 
@@ -43,7 +41,6 @@ struct HymnCardView: View {
                 VStack {
                     HStack {
                         Spacer()
-
                         Button(action: onFavouriteToggle) {
                             Image(systemName: isFavourite ? "heart.fill" : "heart")
                                 .foregroundColor(isFavourite ? .red : .white)
@@ -66,21 +63,4 @@ struct HymnCardView: View {
                 .font(.josefin(size: 11))
         }
     }
-}
-
-
-#Preview {
-    HymnCardView(
-        hymn: Hymn(
-            id: 28,
-            title: "To God Be the Glory",
-            verses: Array(repeating: ["Line 1", "Line 2"], count: 6),
-            chorus: nil,
-            category: .adoration_and_praise,
-            language: .english
-        ),
-        isFavourite: true,
-        onFavouriteToggle: {}
-    )
-    .padding()
 }
