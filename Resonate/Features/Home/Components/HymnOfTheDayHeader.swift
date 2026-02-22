@@ -7,7 +7,7 @@ struct HymnOfTheDayHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
 
-            Text("Hymns of the Day")
+            Text("Hymn of the Day")
                 .font(.josefin(size: 22, weight: .semibold))
 
             Text("Hymn \(index.id) • \(index.title)")
