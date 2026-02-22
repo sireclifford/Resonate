@@ -6,7 +6,7 @@ struct HymnStory: Codable {
     // Historical
     let historicalContext: String?
     let theologicalTheme: String?
-    
+    let scriptureReferences: [ScriptureReference]?
     // Musical Metadata
     let music: HymnMusicMetadata?
 }

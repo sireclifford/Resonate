@@ -5,7 +5,11 @@ final class AppSettingsService: ObservableObject {
 
     private let defaults = UserDefaults.standard
 
-    // MARK: - Reader
+    @Published var selectedVersionId: Int {
+        didSet {
+            defaults.set(selectedVersionId, forKey: Keys.selectedVersionId)
+        }
+    }
 
     @Published var fontSize: ReaderFontSize {
         didSet {
@@ -37,8 +41,6 @@ final class AppSettingsService: ObservableObject {
         }
     }
 
-    // MARK: - Audio
-
     @Published var autoDownloadAudio: Bool {
         didSet {
             defaults.set(autoDownloadAudio, forKey: Keys.autoDownloadAudio)
@@ -68,10 +70,11 @@ final class AppSettingsService: ObservableObject {
             defaults.set(theme.rawValue, forKey: Keys.theme)
         }
     }
-
-    // MARK: - Init
+    
 
     init() {
+        selectedVersionId = defaults.object(forKey: Keys.selectedVersionId) as? Int ?? 3034
+
         fontSize = ReaderFontSize(
             rawValue: defaults.string(forKey: Keys.fontSize) ?? "medium"
         ) ?? .medium
@@ -115,5 +118,6 @@ final class AppSettingsService: ObservableObject {
         static let stopPlaybackOnExit = "settings.stopPlaybackOnExit"
         static let enableHaptics = "settings.enableHaptics"
         static let theme = "settings.theme"
+        static let selectedVersionId = "settings.selectedVersionId"
     }
 }

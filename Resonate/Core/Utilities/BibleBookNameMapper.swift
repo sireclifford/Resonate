@@ -1,0 +1,81 @@
+import Foundation
+
+struct BibleBookNameMapper {
+    
+    static func displayName(for usfm: String) -> String {
+        switch usfm {
+        // Old Testament
+        case "GEN": return "Genesis"
+        case "EXO": return "Exodus"
+        case "LEV": return "Leviticus"
+        case "NUM": return "Numbers"
+        case "DEU": return "Deuteronomy"
+        case "JOS": return "Joshua"
+        case "JDG": return "Judges"
+        case "RUT": return "Ruth"
+        case "1SA": return "1 Samuel"
+        case "2SA": return "2 Samuel"
+        case "1KI": return "1 Kings"
+        case "2KI": return "2 Kings"
+        case "1CH": return "1 Chronicles"
+        case "2CH": return "2 Chronicles"
+        case "EZR": return "Ezra"
+        case "NEH": return "Nehemiah"
+        case "EST": return "Esther"
+        case "JOB": return "Job"
+        case "PSA": return "Psalms"
+        case "PRO": return "Proverbs"
+        case "ECC": return "Ecclesiastes"
+        case "SNG": return "Song of Solomon"
+        case "ISA": return "Isaiah"
+        case "JER": return "Jeremiah"
+        case "LAM": return "Lamentations"
+        case "EZK": return "Ezekiel"
+        case "DAN": return "Daniel"
+        case "HOS": return "Hosea"
+        case "JOL": return "Joel"
+        case "AMO": return "Amos"
+        case "OBA": return "Obadiah"
+        case "JON": return "Jonah"
+        case "MIC": return "Micah"
+        case "NAM": return "Nahum"
+        case "HAB": return "Habakkuk"
+        case "ZEP": return "Zephaniah"
+        case "HAG": return "Haggai"
+        case "ZEC": return "Zechariah"
+        case "MAL": return "Malachi"
+            
+        // New Testament
+        case "MAT": return "Matthew"
+        case "MRK": return "Mark"
+        case "LUK": return "Luke"
+        case "JHN": return "John"
+        case "ACT": return "Acts"
+        case "ROM": return "Romans"
+        case "1CO": return "1 Corinthians"
+        case "2CO": return "2 Corinthians"
+        case "GAL": return "Galatians"
+        case "EPH": return "Ephesians"
+        case "PHP": return "Philippians"
+        case "COL": return "Colossians"
+        case "1TH": return "1 Thessalonians"
+        case "2TH": return "2 Thessalonians"
+        case "1TI": return "1 Timothy"
+        case "2TI": return "2 Timothy"
+        case "TIT": return "Titus"
+        case "PHM": return "Philemon"
+        case "HEB": return "Hebrews"
+        case "JAS": return "James"
+        case "1PE": return "1 Peter"
+        case "2PE": return "2 Peter"
+        case "1JN": return "1 John"
+        case "2JN": return "2 John"
+        case "3JN": return "3 John"
+        case "JUD": return "Jude"
+        case "REV": return "Revelation"
+            
+        default:
+            return usfm
+        }
+    }
+}

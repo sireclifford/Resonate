@@ -1,4 +1,5 @@
 import Combine
+import YouVersionPlatform
 
 final class AppEnvironment: ObservableObject {
     
@@ -16,8 +17,8 @@ final class AppEnvironment: ObservableObject {
     init(
         hymnService: HymnService = HymnService(),
         persistenceService: PersistenceService = UserDefaultsStore()
-    )
-    {
+    ) {
+        
         self.hymnService = hymnService
         self.persistenceService = persistenceService
         
