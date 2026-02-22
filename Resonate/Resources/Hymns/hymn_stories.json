@@ -1,0 +1,224 @@
+[
+    {
+        "hymnID": 1,
+        "historicalContext": "Joachim Neander (1650–1680), a German Reformed pastor and hymn writer, composed this hymn during the height of the Pietist movement in Germany. Pietism emphasized heartfelt devotion and personal spiritual renewal over rigid formalism. Neander often retreated to the countryside near Düsseldorf for prayer and meditation, and it was during these solitary walks that he wrote many of his hymns. 'Praise to the Lord, the Almighty' is a paraphrase of Psalm 103 and reflects his deep gratitude for God’s providential care. The hymn became widely popular across Protestant Europe and later entered English hymnals in the 19th century, where it has remained one of the most enduring calls to corporate praise.",
+        "theologicalTheme": "Praise, divine providence, personal trust in God.",
+        "music": {
+            "tuneName": "Lobe den Herren",
+            "originalKey": "G Major",
+            "mode": "Major",
+            "timeSignature": "4/4",
+            "tempoMarking": "Moderato Maestoso",
+            "bpm": 96,
+            "meterPattern": "14.14.4.7.8",
+            "approximateLowestNote": "D4",
+            "approximateHighestNote": "E5",
+            "congregationalDifficulty": 2,
+            "choirSuitability": true,
+            "performanceStyle": "Majestic and confident",
+            "suggestedInstrumentation": ["Organ", "Piano"],
+            "dynamicCharacter": "Strong opening, full congregational participation",
+            "typicalUseCase": "Opening worship, praise services"
+        }
+    },
+    {
+        "hymnID": 2,
+        "historicalContext": "The text originates from the 'Canticle of the Sun,' written around 1225 by St. Francis of Assisi. Composed near the end of his life while he was suffering from illness and partial blindness, the canticle reflects Francis’s profound joy in God despite physical pain. He personifies elements of nature—sun, moon, wind, water—as fellow worshippers praising their Creator. The English hymn text was adapted in 1919 by Anglican priest William H. Draper for a children’s festival, preserving the exuberant spirit of Francis’s medieval poetry. Its triumphant alleluias and expansive melody have made it one of the most beloved hymns of creation-centered praise.",
+        "theologicalTheme": "Creation’s praise and worship of the Creator.",
+        "music": {
+            "tuneName": "Lasst Uns Erfreuen",
+            "originalKey": "A Major",
+            "mode": "Major",
+            "timeSignature": "4/4",
+            "tempoMarking": "Moderate with joy",
+            "bpm": 100,
+            "meterPattern": "8.4.8.4.8.8.4 with refrain",
+            "approximateLowestNote": "E4",
+            "approximateHighestNote": "F#5",
+            "congregationalDifficulty": 3,
+            "choirSuitability": true,
+            "performanceStyle": "Joyful and triumphant",
+            "suggestedInstrumentation": ["Organ", "Brass", "Piano"],
+            "dynamicCharacter": "Bright and energetic",
+            "typicalUseCase": "Praise services, special celebrations"
+        }
+    },
+    {
+        "hymnID": 3,
+        "historicalContext": "Gerhard Tersteegen (1697–1769), a German mystic and Pietist writer, composed this hymn as a call to reverent worship. Tersteegen was deeply influenced by quiet devotional spirituality and often emphasized stillness before God. The hymn urges worshippers to silence worldly distractions and recognize the holiness of God's presence. Originally written in German, it reflects the contemplative atmosphere of small prayer gatherings in which Tersteegen participated. Its solemn tone has made it especially suitable as an opening hymn for worship services, calling believers to humility and attentiveness before the Divine.",
+        "theologicalTheme": "Reverence, holiness, awareness of divine presence.",
+        "music": {
+            "tuneName": "Arnsberg",
+            "originalKey": "F Major",
+            "mode": "Major",
+            "timeSignature": "4/4",
+            "tempoMarking": "Reverently",
+            "bpm": 72,
+            "meterPattern": "8.8.8.8",
+            "approximateLowestNote": "C4",
+            "approximateHighestNote": "D5",
+            "congregationalDifficulty": 2,
+            "choirSuitability": true,
+            "performanceStyle": "Solemn and reverent",
+            "suggestedInstrumentation": ["Organ"],
+            "dynamicCharacter": "Soft and controlled",
+            "typicalUseCase": "Call to worship, prayer services"
+        }
+    },
+    {
+        "hymnID": 100,
+        "historicalContext": "Thomas O. Chisholm (1866–1960), a Methodist minister who left pastoral ministry due to fragile health, wrote this hymn in 1923. Unlike many hymn writers shaped by dramatic events, Chisholm reflected on the steady, quiet faithfulness of God throughout ordinary life. Inspired by Lamentations 3:22–23, he emphasized God’s unchanging character rather than emotional experience. Composer William M. Runyan later set the text to music, and the hymn gained widespread recognition through Moody Bible Institute. Its message of divine constancy deeply resonates with believers who see God’s providence in daily life."
+        ,
+        "theologicalTheme": "God’s faithfulness and steadfast love.",
+        "music": {
+            "tuneName": "Faithfulness",
+            "originalKey": "C Major",
+            "mode": "Major",
+            "timeSignature": "3/4",
+            "tempoMarking": "Moderate",
+            "bpm": 84,
+            "meterPattern": "11.10.11.10 with refrain",
+            "approximateLowestNote": "E4",
+            "approximateHighestNote": "F5",
+            "congregationalDifficulty": 2,
+            "choirSuitability": true,
+            "performanceStyle": "Warm and reassuring",
+            "suggestedInstrumentation": ["Piano", "Organ"],
+            "dynamicCharacter": "Steady and expressive",
+            "typicalUseCase": "Thanksgiving services, testimonies"
+        }
+    },
+    {
+        "hymnID": 108,
+        "historicalContext": "John Newton (1725–1807), once a participant in the transatlantic slave trade, wrote this hymn in 1772 after his profound spiritual awakening. During a violent storm at sea in 1748, Newton cried out to God for mercy—a turning point that began his journey toward faith and eventual ministry. Though he continued maritime work for several years, he ultimately became an Anglican minister and advocate against slavery. 'Amazing Grace' was originally part of a New Year’s sermon in 1773. Its simple testimony of redemption has transcended denominations and cultures, becoming one of the most beloved hymns in Christian worship."
+        ,
+        "theologicalTheme": "Grace, redemption, spiritual transformation.",
+        "music": {
+            "tuneName": "New Britain",
+            "originalKey": "G Major",
+            "mode": "Major",
+            "timeSignature": "3/4",
+            "tempoMarking": "Andante",
+            "bpm": 72,
+            "meterPattern": "8.6.8.6 (Common Meter)",
+            "approximateLowestNote": "D4",
+            "approximateHighestNote": "E5",
+            "congregationalDifficulty": 1,
+            "choirSuitability": true,
+            "performanceStyle": "Reflective and reverent",
+            "suggestedInstrumentation": ["Piano", "Organ", "Strings"],
+            "dynamicCharacter": "Soft opening, gradual build",
+            "typicalUseCase": "Communion, funerals, testimony services"
+        }
+    },
+    {
+        "hymnID": 214,
+        "historicalContext": "Wayne Hooper (1920–2007), an influential Adventist musician and long-time member of the King’s Heralds quartet, composed this hymn in 1962 for the General Conference Session of Seventh-day Adventists in San Francisco. Intended as a theme song, it captured the distinctive Adventist emphasis on Christ’s soon return. The hymn quickly became an unofficial anthem of the denomination, expressing collective identity and eschatological hope. Its forward-driving melody and confident refrain reflect the movement’s missionary vision and expectation of the Second Advent.",
+        "theologicalTheme": "Second Coming hope, Adventist identity, mission.",
+        "music": {
+            "tuneName": "We Have This Hope",
+            "originalKey": "Bb Major",
+            "mode": "Major",
+            "timeSignature": "4/4",
+            "tempoMarking": "Moderato",
+            "bpm": 96,
+            "meterPattern": "Irregular with refrain",
+            "approximateLowestNote": "F4",
+            "approximateHighestNote": "G5",
+            "congregationalDifficulty": 2,
+            "choirSuitability": true,
+            "performanceStyle": "Confident and forward-looking",
+            "suggestedInstrumentation": ["Piano", "Organ"],
+            "dynamicCharacter": "Bright, energetic refrain",
+            "typicalUseCase": "Adventist gatherings, evangelistic meetings"
+        }
+    },
+    {
+        "hymnID": 506,
+        "historicalContext": "Martin Luther (1483–1546) composed this hymn around 1529 during the height of the Protestant Reformation. Based on Psalm 46, it affirms God as a refuge and defender amid political unrest and religious persecution. Written during a period of tension between reformers and the Holy Roman Empire, the hymn became a rallying cry for Protestant believers. Its strong melody and theological boldness reinforced confidence in divine sovereignty over earthly powers. Often called the 'Battle Hymn of the Reformation,' it remains one of the most influential hymns in Christian history.",
+        "theologicalTheme": "Divine protection, spiritual warfare, sovereignty of God.",
+        "music": {
+            "tuneName": "Ein feste Burg",
+            "originalKey": "C Major",
+            "mode": "Major",
+            "timeSignature": "4/4",
+            "tempoMarking": "Maestoso",
+            "bpm": 100,
+            "meterPattern": "Irregular",
+            "approximateLowestNote": "E4",
+            "approximateHighestNote": "G5",
+            "congregationalDifficulty": 4,
+            "choirSuitability": true,
+            "performanceStyle": "Bold and triumphant",
+            "suggestedInstrumentation": ["Organ", "Brass"],
+            "dynamicCharacter": "Strong, driving rhythm",
+            "typicalUseCase": "Reformation services, emphasis Sabbaths"
+        }
+    },
+    {
+        "hymnID": 530,
+        "historicalContext": "Horatio G. Spafford (1828–1888), a Chicago lawyer and devout Christian, wrote this hymn in 1873 following profound personal tragedy. After losing his business in the Great Chicago Fire, Spafford sent his wife and four daughters ahead to Europe. Their ship collided with another vessel and sank, and all four daughters drowned. While traveling to join his grieving wife, Spafford passed near the location of the tragedy and penned the words expressing peace amid sorrow. Composer Philip P. Bliss set the text to music shortly thereafter. The hymn has become a timeless testimony of faith sustained through suffering.",
+        "theologicalTheme": "Peace in suffering, trust in divine providence, eternal hope.",
+        "music": {
+            "tuneName": "Ville du Havre",
+            "originalKey": "G Major",
+            "mode": "Major",
+            "timeSignature": "4/4",
+            "tempoMarking": "Adagio",
+            "bpm": 66,
+            "meterPattern": "8.6.8.6 with refrain",
+            "approximateLowestNote": "D4",
+            "approximateHighestNote": "F#5",
+            "congregationalDifficulty": 2,
+            "choirSuitability": true,
+            "performanceStyle": "Deeply reflective",
+            "suggestedInstrumentation": ["Piano", "Strings"],
+            "dynamicCharacter": "Gradual emotional lift in refrain",
+            "typicalUseCase": "Funerals, memorial services"
+        }
+    },
+    {
+        "hymnID": 606,
+        "historicalContext": "Written by James Russell Lowell in 1845 as a protest against injustice and moral compromise. It was later adopted into hymnals as a call to moral courage.",
+        "theologicalTheme": "Moral conviction, justice, standing for truth.",
+        "music": {
+            "tuneName": "Ton-y-Botel",
+            "originalKey": "Eb Major",
+            "mode": "Major",
+            "timeSignature": "4/4",
+            "tempoMarking": "Moderato",
+            "bpm": 88,
+            "meterPattern": "8.7.8.7.8.7",
+            "approximateLowestNote": "Bb3",
+            "approximateHighestNote": "Eb5",
+            "congregationalDifficulty": 3,
+            "choirSuitability": true,
+            "performanceStyle": "Resolute and firm",
+            "suggestedInstrumentation": ["Organ"],
+            "dynamicCharacter": "Strong and steady",
+            "typicalUseCase": "Mission emphasis, social justice themes"
+        }
+    },
+    {
+        "hymnID": 661,
+        "historicalContext": "Reginald Heber (1783–1826), an Anglican bishop and missionary, wrote this hymn in 1826 for Trinity Sunday worship. Drawing from Isaiah 6 and Revelation 4, the text emphasizes the holiness and majesty of the Triune God. After Heber’s death, composer John B. Dykes set the text to the tune 'Nicaea' in 1861, giving it a stately and majestic musical framework. Its doctrinal clarity and grand melodic structure have made it one of the most enduring hymns of Christian liturgy.",
+        "theologicalTheme": "Holiness of God, Trinity, heavenly worship.",
+        "music": {
+            "tuneName": "Nicaea",
+            "originalKey": "D Major",
+            "mode": "Major",
+            "timeSignature": "4/4",
+            "tempoMarking": "Maestoso",
+            "bpm": 92,
+            "meterPattern": "11.12.12.10",
+            "approximateLowestNote": "D4",
+            "approximateHighestNote": "F#5",
+            "congregationalDifficulty": 3,
+            "choirSuitability": true,
+            "performanceStyle": "Majestic and solemn",
+            "suggestedInstrumentation": ["Organ"],
+            "dynamicCharacter": "Full, stately phrasing",
+            "typicalUseCase": "Opening worship, Trinity emphasis"
+        }
+    }
+]

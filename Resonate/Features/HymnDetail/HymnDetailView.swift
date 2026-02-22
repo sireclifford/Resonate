@@ -6,6 +6,7 @@ struct HymnDetailView: View {
     @ObservedObject private var settings: AppSettingsService
     @StateObject private var viewModel: HymnDetailViewModel
     @ObservedObject private var favouritesService: FavouritesService
+    @State private var showStory = false
     
     let index: HymnIndex
     
@@ -84,7 +85,7 @@ struct HymnDetailView: View {
                 canPlay: environment.tuneService.tuneExists(for: viewModel.hymn.id),
                 hasNext: viewModel.hasNext,
                 hasPrevious: viewModel.hasPrevious,
-                onPrevious: { /* next phase */
+                onPrevious: {
                     environment.audioPlaybackService.stop()
                     viewModel.previousHymn()
                 },
@@ -93,7 +94,7 @@ struct HymnDetailView: View {
                                                                     tuneService: environment.tuneService
                     )
                 },
-                onNext: { /* next phase */
+                onNext: {
                     environment.audioPlaybackService.stop()
                     viewModel.nextHymn()
                 }
@@ -101,6 +102,31 @@ struct HymnDetailView: View {
         }
         .navigationTitle(viewModel.hymn.title)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    showStory = true
+                } label: {
+                    Image(systemName: "book.closed")
+                }
+            }
+        }
+        .sheet(isPresented: $showStory) {
+            NavigationStack {
+                if let story = environment.hymnStoryService.story(for: viewModel.hymn.id) {
+                    HymnStoryView(
+                        story: story,
+                        hymnTitle: viewModel.hymn.title,
+                        hymnNumber: viewModel.hymn.id
+                    )
+                } else {
+                    StoryUnavailableView()
+                }
+            }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+        }
         .toolbar(.hidden, for: .tabBar)
         .onAppear {
             environment.recentlyViewedService.record(id: index.id)
