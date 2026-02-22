@@ -1,259 +1,902 @@
 [
+  {
+    "hymnID": 1,
+    "title": "Praise to the Lord",
+    "author": "Joachim Neander",
+    "authorBirthDeath": "1650–1680",
+    "yearWritten": 1680,
+    "historicalContext": "Written by German Reformed pastor Joachim Neander during the Pietist movement, this hymn reflects deep personal devotion and gratitude for God’s sustaining providence. Neander composed many hymns during solitary retreats for prayer and meditation near Düsseldorf. The hymn paraphrases Psalm 103 and became widely embraced across Protestant Europe before entering English hymnals in the 19th century.",
+    "theologicalTheme": "Praise, divine providence, trust in God’s sustaining care.",
+    "scriptureReferences": [
+      { "bookUSFM": "PSA", "chapter": 103, "verseStart": 1, "verseEnd": 5 },
+      { "bookUSFM": "PSA", "chapter": 150, "verseStart": 1, "verseEnd": 6 },
+      { "bookUSFM": "JAS", "chapter": 1, "verseStart": 17, "verseEnd": null }
+    ],
+    "music": {
+      "tuneName": "Lobe den Herren",
+      "composer": "Traditional German Melody",
+      "yearComposed": 1665,
+      "originalKey": "G Major",
+      "mode": "Major",
+      "timeSignature": "4/4",
+      "tempoMarking": "Moderato Maestoso",
+      "bpm": 96,
+      "meterPattern": "14.14.4.7.8",
+      "clef": "Treble",
+      "range": {
+        "lowestNote": "D4",
+        "highestNote": "E5"
+      },
+      "congregationalDifficulty": 2,
+      "choirSuitability": true,
+      "performanceStyle": "Majestic and confident",
+      "suggestedInstrumentation": ["Organ", "Piano"]
+    },
+    "liturgicalUse": ["Opening Worship", "Praise Services"],
+    "keywords": ["Praise", "Providence", "Gratitude", "Worship"]
+  },
+  {
+    "hymnID": 2,
+    "title": "All Creatures of Our God and King",
+    "author": "St. Francis of Assisi (text); William H. Draper (English paraphrase)",
+    "authorBirthDeath": "1181–1226; 1855–1933",
+    "yearWritten": 1225,
+    "historicalContext": "Based on the Canticle of the Sun by St. Francis of Assisi, this hymn expresses joyful praise through creation imagery. Written near the end of Francis’s life during illness, it reflects radiant faith despite suffering. The English paraphrase by William H. Draper (1919) preserved its exuberant tone, making it one of the most beloved hymns of creation-centered worship.",
+    "theologicalTheme": "Creation’s praise and universal worship of the Creator.",
+    "scriptureReferences": [
+      { "bookUSFM": "PSA", "chapter": 148, "verseStart": 1, "verseEnd": 13 },
+      { "bookUSFM": "DAN", "chapter": 3, "verseStart": 57, "verseEnd": 88 },
+      { "bookUSFM": "REV", "chapter": 5, "verseStart": 13, "verseEnd": null }
+    ],
+    "music": {
+      "tuneName": "Lasst Uns Erfreuen",
+      "composer": "Traditional German Melody",
+      "yearComposed": 1623,
+      "originalKey": "A Major",
+      "mode": "Major",
+      "timeSignature": "4/4",
+      "tempoMarking": "Joyfully",
+      "bpm": 100,
+      "meterPattern": "8.4.8.4.8.8.4 with refrain",
+      "clef": "Treble",
+      "range": {
+        "lowestNote": "E4",
+        "highestNote": "F#5"
+      },
+      "congregationalDifficulty": 3,
+      "choirSuitability": true,
+      "performanceStyle": "Triumphant and celebratory",
+      "suggestedInstrumentation": ["Organ", "Brass", "Piano"]
+    },
+    "liturgicalUse": ["Praise Services", "Creation Emphasis"],
+    "keywords": ["Creation", "Joy", "Praise", "Alleluia"]
+  },
+  {
+    "hymnID": 3,
+    "title": "God Himself Is With Us",
+    "author": "Gerhard Tersteegen",
+    "authorBirthDeath": "1697–1769",
+    "yearWritten": 1729,
+    "historicalContext": "Gerhard Tersteegen, a German mystic and Pietist writer, composed this hymn as a call to reverent stillness before God. Reflecting small prayer gatherings that emphasized humility and inward devotion, the hymn invites worshippers to silence distractions and recognize divine holiness.",
+    "theologicalTheme": "Reverence, holiness, divine presence.",
+    "scriptureReferences": [
+      { "bookUSFM": "HAB", "chapter": 2, "verseStart": 20, "verseEnd": null },
+      { "bookUSFM": "EXO", "chapter": 3, "verseStart": 5, "verseEnd": null },
+      { "bookUSFM": "HEB", "chapter": 12, "verseStart": 28, "verseEnd": 29 }
+    ],
+    "music": {
+      "tuneName": "Arnsberg",
+      "composer": "Joachim Neander (melody adapted)",
+      "yearComposed": 1680,
+      "originalKey": "F Major",
+      "mode": "Major",
+      "timeSignature": "4/4",
+      "tempoMarking": "Reverently",
+      "bpm": 72,
+      "meterPattern": "8.8.8.8",
+      "clef": "Treble",
+      "range": {
+        "lowestNote": "C4",
+        "highestNote": "D5"
+      },
+      "congregationalDifficulty": 2,
+      "choirSuitability": true,
+      "performanceStyle": "Solemn and reflective",
+      "suggestedInstrumentation": ["Organ"]
+    },
+    "liturgicalUse": ["Call to Worship", "Prayer Services"],
+    "keywords": ["Holiness", "Reverence", "Stillness", "Presence of God"]
+  },
+  {
+    "hymnID": 4,
+    "title": "Praise, My Soul, the King of Heaven",
+    "author": "Henry F. Lyte",
+    "authorBirthDeath": "1793–1847",
+    "yearWritten": 1834,
+    "historicalContext": "Henry Francis Lyte, an Anglican minister, wrote this hymn as a paraphrase of Psalm 103. Emphasizing gratitude for divine mercy and forgiveness, it reflects Lyte’s pastoral sensitivity and poetic expression during a period of renewed Anglican hymn writing.",
+    "theologicalTheme": "Divine mercy, forgiveness, enduring faithfulness.",
+    "scriptureReferences": [
+      { "bookUSFM": "PSA", "chapter": 103, "verseStart": 1, "verseEnd": 22 },
+      { "bookUSFM": "ISA", "chapter": 40, "verseStart": 6, "verseEnd": 8 },
+      { "bookUSFM": "LUK", "chapter": 1, "verseStart": 50, "verseEnd": null }
+    ],
+    "music": {
+      "tuneName": "Lauda Anima",
+      "composer": "John Goss",
+      "yearComposed": 1869,
+      "originalKey": "D Major",
+      "mode": "Major",
+      "timeSignature": "4/4",
+      "tempoMarking": "Maestoso",
+      "bpm": 92,
+      "meterPattern": "8.7.8.7.8.7",
+      "clef": "Treble",
+      "range": {
+        "lowestNote": "D4",
+        "highestNote": "F#5"
+      },
+      "congregationalDifficulty": 3,
+      "choirSuitability": true,
+      "performanceStyle": "Stately and confident",
+      "suggestedInstrumentation": ["Organ"]
+    },
+    "liturgicalUse": ["Opening Worship", "Praise Services"],
+    "keywords": ["Mercy", "Forgiveness", "Praise", "Faithfulness"]
+  },
+  {
+    "hymnID": 5,
+    "title": "All My Hope on God Is Founded",
+    "author": "Joachim Neander (German text); Robert Bridges (English)",
+    "authorBirthDeath": "1650–1680; 1844–1930",
+    "yearWritten": 1680,
+    "historicalContext": "Originally written in German by Joachim Neander and later translated by poet Robert Bridges, this hymn affirms reliance upon God rather than earthly security. Its theology reflects Protestant emphasis on divine sovereignty and human dependence.",
+    "theologicalTheme": "Trust in God, divine sovereignty, humility.",
+    "scriptureReferences": [
+      { "bookUSFM": "PSA", "chapter": 62, "verseStart": 5, "verseEnd": 8 },
+      { "bookUSFM": "PRO", "chapter": 3, "verseStart": 5, "verseEnd": 6 },
+      { "bookUSFM": "JER", "chapter": 17, "verseStart": 7, "verseEnd": 8 }
+    ],
+    "music": {
+      "tuneName": "Michael",
+      "composer": "Herbert Howells",
+      "yearComposed": 1930,
+      "originalKey": "G Major",
+      "mode": "Major",
+      "timeSignature": "4/4",
+      "tempoMarking": "Moderately",
+      "bpm": 88,
+      "meterPattern": "8.7.8.7.8.7",
+      "clef": "Treble",
+      "range": {
+        "lowestNote": "D4",
+        "highestNote": "E5"
+      },
+      "congregationalDifficulty": 3,
+      "choirSuitability": true,
+      "performanceStyle": "Reflective yet confident",
+      "suggestedInstrumentation": ["Organ", "Piano"]
+    },
+    "liturgicalUse": ["General Worship", "Trust Themes"],
+    "keywords": ["Hope", "Trust", "Sovereignty", "Faith"]
+  },
+  {
+      "hymnID": 6,
+      "title": "O Worship the Lord",
+      "author": "Robert Grant",
+      "authorBirthDeath": "1779–1838",
+      "yearWritten": 1833,
+      "historicalContext": "Robert Grant, a British statesman and hymn writer, composed this hymn as a paraphrase of Psalm 104. It reflects early 19th-century Anglican reverence for divine majesty and emphasizes worship marked by humility and awe before God's glory.",
+      "theologicalTheme": "Majesty of God, reverence, divine glory.",
+      "scriptureReferences": [
+        { "bookUSFM": "PSA", "chapter": 104, "verseStart": 1, "verseEnd": 2 },
+        { "bookUSFM": "PSA", "chapter": 96, "verseStart": 9, "verseEnd": null },
+        { "bookUSFM": "HEB", "chapter": 12, "verseStart": 28, "verseEnd": 29 }
+      ],
+      "music": {
+        "tuneName": "Hanover",
+        "composer": "William Croft",
+        "yearComposed": 1708,
+        "originalKey": "F Major",
+        "mode": "Major",
+        "timeSignature": "4/4",
+        "tempoMarking": "Maestoso",
+        "bpm": 92,
+        "meterPattern": "10.10.11.11",
+        "clef": "Treble",
+        "range": {
+          "lowestNote": "C4",
+          "highestNote": "D5"
+        },
+        "congregationalDifficulty": 2,
+        "choirSuitability": true,
+        "performanceStyle": "Stately and reverent",
+        "suggestedInstrumentation": ["Organ"]
+      },
+      "liturgicalUse": ["Opening Worship", "Call to Worship"],
+      "keywords": ["Majesty", "Reverence", "Glory", "Worship"]
+    },
     {
-        "hymnID": 1,
-        "historicalContext": "Joachim Neander (1650–1680), a German Reformed pastor and hymn writer, composed this hymn during the height of the Pietist movement in Germany. Pietism emphasized heartfelt devotion and personal spiritual renewal over rigid formalism. Neander often retreated to the countryside near Düsseldorf for prayer and meditation, and it was during these solitary walks that he wrote many of his hymns. 'Praise to the Lord, the Almighty' is a paraphrase of Psalm 103 and reflects his deep gratitude for God’s providential care. The hymn became widely popular across Protestant Europe and later entered English hymnals in the 19th century, where it has remained one of the most enduring calls to corporate praise.",
-        "theologicalTheme": "Praise, divine providence, personal trust in God.",
-        "scriptureReferences": [],
+      "hymnID": 7,
+      "title": "The Lord in Zion Reigneth",
+      "author": "Fanny J. Crosby",
+      "authorBirthDeath": "1820–1915",
+      "yearWritten": 1905,
+      "historicalContext": "Fanny Crosby, one of the most prolific hymn writers in Christian history, composed this hymn emphasizing God's sovereign reign. Written during the height of revivalist hymnody in America, it reflects triumphant confidence in divine authority and praise.",
+      "theologicalTheme": "Sovereignty of God, praise, divine kingship.",
+      "scriptureReferences": [
+        { "bookUSFM": "PSA", "chapter": 99, "verseStart": 1, "verseEnd": 2 },
+        { "bookUSFM": "PSA", "chapter": 97, "verseStart": 1, "verseEnd": null },
+        { "bookUSFM": "REV", "chapter": 19, "verseStart": 6, "verseEnd": null }
+      ],
+      "music": {
+        "tuneName": "Zion",
+        "composer": "John R. Sweney",
+        "yearComposed": 1905,
+        "originalKey": "Bb Major",
+        "mode": "Major",
+        "timeSignature": "4/4",
+        "tempoMarking": "Moderately bright",
+        "bpm": 96,
+        "meterPattern": "11.11.11.11",
+        "clef": "Treble",
+        "range": {
+          "lowestNote": "F4",
+          "highestNote": "G5"
+        },
+        "congregationalDifficulty": 3,
+        "choirSuitability": true,
+        "performanceStyle": "Triumphant and confident",
+        "suggestedInstrumentation": ["Organ", "Piano"]
+      },
+      "liturgicalUse": ["Praise Services", "Kingdom Themes"],
+      "keywords": ["Reign", "Zion", "Kingship", "Praise"]
+    },
+    {
+      "hymnID": 8,
+      "title": "We Gather Together",
+      "author": "Anonymous (Dutch text); Theodore Baker (English translation)",
+      "authorBirthDeath": "16th century; 1851–1934",
+      "yearWritten": 1597,
+      "historicalContext": "Originating in the Netherlands during the struggle for independence from Spain, this hymn was written as a thanksgiving for deliverance. It later entered American worship, especially associated with Thanksgiving celebrations.",
+      "theologicalTheme": "Thanksgiving, providence, divine guidance.",
+      "scriptureReferences": [
+        { "bookUSFM": "PSA", "chapter": 118, "verseStart": 1, "verseEnd": null },
+        { "bookUSFM": "PSA", "chapter": 95, "verseStart": 1, "verseEnd": 2 },
+        { "bookUSFM": "1TH", "chapter": 5, "verseStart": 18, "verseEnd": null }
+      ],
+      "music": {
+        "tuneName": "Kremser",
+        "composer": "Traditional Dutch Melody",
+        "yearComposed": 1597,
+        "originalKey": "F Major",
+        "mode": "Major",
+        "timeSignature": "4/4",
+        "tempoMarking": "Moderate",
+        "bpm": 88,
+        "meterPattern": "12.11.12.11",
+        "clef": "Treble",
+        "range": {
+          "lowestNote": "C4",
+          "highestNote": "E5"
+        },
+        "congregationalDifficulty": 2,
+        "choirSuitability": true,
+        "performanceStyle": "Warm and thankful",
+        "suggestedInstrumentation": ["Organ", "Piano"]
+      },
+      "liturgicalUse": ["Thanksgiving", "General Worship"],
+      "keywords": ["Thanksgiving", "Gathering", "Providence", "Gratitude"]
+    },
+    {
+      "hymnID": 9,
+      "title": "Let All the World in Every Corner Sing",
+      "author": "George Herbert",
+      "authorBirthDeath": "1593–1633",
+      "yearWritten": 1633,
+      "historicalContext": "George Herbert, a Welsh Anglican priest and poet, included this text in his devotional poetry collection 'The Temple.' It calls for universal praise, expressing early Anglican liturgical theology and poetic devotion.",
+      "theologicalTheme": "Universal praise, worship of Christ.",
+      "scriptureReferences": [
+        { "bookUSFM": "PSA", "chapter": 96, "verseStart": 1, "verseEnd": 3 },
+        { "bookUSFM": "PSA", "chapter": 100, "verseStart": 1, "verseEnd": null },
+        { "bookUSFM": "REV", "chapter": 5, "verseStart": 9, "verseEnd": 10 }
+      ],
+      "music": {
+        "tuneName": "Luckington",
+        "composer": "Basil Harwood",
+        "yearComposed": 1913,
+        "originalKey": "G Major",
+        "mode": "Major",
+        "timeSignature": "4/4",
+        "tempoMarking": "Allegro",
+        "bpm": 104,
+        "meterPattern": "6.3.6.3.D",
+        "clef": "Treble",
+        "range": {
+          "lowestNote": "D4",
+          "highestNote": "G5"
+        },
+        "congregationalDifficulty": 4,
+        "choirSuitability": true,
+        "performanceStyle": "Energetic and celebratory",
+        "suggestedInstrumentation": ["Organ", "Brass"]
+      },
+      "liturgicalUse": ["Praise Services", "Festival Worship"],
+      "keywords": ["Global Praise", "Celebration", "Christ"]
+    },
+    {
+      "hymnID": 10,
+      "title": "Come, Christians, Join to Sing",
+      "author": "Christian H. Bateman",
+      "authorBirthDeath": "1813–1889",
+      "yearWritten": 1843,
+      "historicalContext": "Christian Henry Bateman wrote this hymn as an accessible congregational song encouraging collective praise. It reflects mid-19th-century evangelical emphasis on joyful participation in worship.",
+      "theologicalTheme": "Corporate praise, joy in worship.",
+      "scriptureReferences": [
+        { "bookUSFM": "PSA", "chapter": 95, "verseStart": 1, "verseEnd": 2 },
+        { "bookUSFM": "COL", "chapter": 3, "verseStart": 16, "verseEnd": null },
+        { "bookUSFM": "HEB", "chapter": 13, "verseStart": 15, "verseEnd": null }
+      ],
+      "music": {
+        "tuneName": "Madrid",
+        "composer": "Henry Smart",
+        "yearComposed": 1867,
+        "originalKey": "F Major",
+        "mode": "Major",
+        "timeSignature": "4/4",
+        "tempoMarking": "Brightly",
+        "bpm": 100,
+        "meterPattern": "7.7.7.7.D",
+        "clef": "Treble",
+        "range": {
+          "lowestNote": "C4",
+          "highestNote": "F5"
+        },
+        "congregationalDifficulty": 2,
+        "choirSuitability": true,
+        "performanceStyle": "Joyful and spirited",
+        "suggestedInstrumentation": ["Organ", "Piano"]
+      },
+      "liturgicalUse": ["Opening Worship", "Praise Services"],
+      "keywords": ["Praise", "Joy", "Congregational Singing"]
+    },
+    {
+        "hymnID": 11,
+        "title": "The God of Abraham Praise",
+        "author": "Thomas Olivers",
+        "authorBirthDeath": "1725–1799",
+        "yearWritten": 1770,
+        "historicalContext": "Thomas Olivers, a Methodist preacher influenced by John Wesley, adapted this hymn from a Jewish doxology known as the Yigdal. It affirms monotheistic faith and God’s eternal covenant promises. The hymn reflects 18th-century evangelical revival theology and interfaith reverence for the God of Abraham.",
+        "theologicalTheme": "Covenant faithfulness, eternal God, praise.",
+        "scriptureReferences": [
+          { "bookUSFM": "GEN", "chapter": 17, "verseStart": 1, "verseEnd": 7 },
+          { "bookUSFM": "EXO", "chapter": 3, "verseStart": 14, "verseEnd": null },
+          { "bookUSFM": "HEB", "chapter": 11, "verseStart": 8, "verseEnd": 10 }
+        ],
         "music": {
-            "tuneName": "Lobe den Herren",
+          "tuneName": "Leoni",
+          "composer": "Traditional Jewish Melody; adapted by Meyer Lyon",
+          "yearComposed": 1770,
+          "originalKey": "D Major",
+          "mode": "Major",
+          "timeSignature": "4/4",
+          "tempoMarking": "Maestoso",
+          "bpm": 92,
+          "meterPattern": "6.6.8.4.D",
+          "clef": "Treble",
+          "range": {
+            "lowestNote": "D4",
+            "highestNote": "F#5"
+          },
+          "congregationalDifficulty": 3,
+          "choirSuitability": true,
+          "performanceStyle": "Bold and affirming",
+          "suggestedInstrumentation": ["Organ"]
+        },
+        "liturgicalUse": ["Praise Services", "Covenant Themes"],
+        "keywords": ["Abraham", "Covenant", "Eternal God", "Faith"]
+      },
+      {
+        "hymnID": 12,
+        "title": "Joyful, Joyful, We Adore Thee",
+        "author": "Henry van Dyke",
+        "authorBirthDeath": "1852–1933",
+        "yearWritten": 1907,
+        "historicalContext": "Henry van Dyke, a Presbyterian minister and poet, wrote this hymn as a celebration of Christian joy rooted in divine love. Set to Beethoven’s 'Ode to Joy' from Symphony No. 9, it combines classical musical grandeur with theological affirmation.",
+        "theologicalTheme": "Joy in God, divine love, unity.",
+        "scriptureReferences": [
+          { "bookUSFM": "NEH", "chapter": 8, "verseStart": 10, "verseEnd": null },
+          { "bookUSFM": "ROM", "chapter": 15, "verseStart": 13, "verseEnd": null },
+          { "bookUSFM": "PHI", "chapter": 4, "verseStart": 4, "verseEnd": null }
+        ],
+        "music": {
+          "tuneName": "Hymn to Joy",
+          "composer": "Ludwig van Beethoven",
+          "yearComposed": 1824,
+          "originalKey": "D Major",
+          "mode": "Major",
+          "timeSignature": "4/4",
+          "tempoMarking": "Allegro",
+          "bpm": 104,
+          "meterPattern": "8.7.8.7.D",
+          "clef": "Treble",
+          "range": {
+            "lowestNote": "D4",
+            "highestNote": "F#5"
+          },
+          "congregationalDifficulty": 2,
+          "choirSuitability": true,
+          "performanceStyle": "Exuberant and uplifting",
+          "suggestedInstrumentation": ["Organ", "Orchestra", "Piano"]
+        },
+        "liturgicalUse": ["Praise Services", "Celebrations"],
+        "keywords": ["Joy", "Adoration", "Unity", "Love"]
+      },
+      {
+        "hymnID": 13,
+        "title": "O for a Thousand Tongues to Sing",
+        "author": "Charles Wesley",
+        "authorBirthDeath": "1707–1788",
+        "yearWritten": 1739,
+        "historicalContext": "Charles Wesley wrote this hymn to commemorate the first anniversary of his conversion experience. It became one of the foundational hymns of the Methodist revival, emphasizing evangelistic zeal and proclamation of Christ’s redeeming power.",
+        "theologicalTheme": "Redemption, evangelism, praise of Christ.",
+        "scriptureReferences": [
+          { "bookUSFM": "PSA", "chapter": 35, "verseStart": 28, "verseEnd": null },
+          { "bookUSFM": "REV", "chapter": 5, "verseStart": 9, "verseEnd": null },
+          { "bookUSFM": "ACT", "chapter": 4, "verseStart": 12, "verseEnd": null }
+        ],
+        "music": {
+          "tuneName": "Azmon",
+          "composer": "Carl G. Glaser; adapted by Lowell Mason",
+          "yearComposed": 1839,
+          "originalKey": "G Major",
+          "mode": "Major",
+          "timeSignature": "4/4",
+          "tempoMarking": "Moderately bright",
+          "bpm": 96,
+          "meterPattern": "8.6.8.6",
+          "clef": "Treble",
+          "range": {
+            "lowestNote": "D4",
+            "highestNote": "E5"
+          },
+          "congregationalDifficulty": 2,
+          "choirSuitability": true,
+          "performanceStyle": "Energetic proclamation",
+          "suggestedInstrumentation": ["Organ", "Piano"]
+        },
+        "liturgicalUse": ["Opening Worship", "Evangelistic Meetings"],
+        "keywords": ["Conversion", "Praise", "Salvation", "Christ"]
+      },
+      {
+        "hymnID": 14,
+        "title": "Praise Ye the Lord",
+        "author": "John Hampden Gurney",
+        "authorBirthDeath": "1802–1862",
+        "yearWritten": 1838,
+        "historicalContext": "John Hampden Gurney, an Anglican clergyman, wrote this hymn as a call to communal praise rooted in Psalm tradition. It reflects the 19th-century Anglican revival of hymnody for congregational use.",
+        "theologicalTheme": "Corporate praise, worship, thanksgiving.",
+        "scriptureReferences": [
+          { "bookUSFM": "PSA", "chapter": 150, "verseStart": 1, "verseEnd": 6 },
+          { "bookUSFM": "PSA", "chapter": 111, "verseStart": 1, "verseEnd": null },
+          { "bookUSFM": "HEB", "chapter": 13, "verseStart": 15, "verseEnd": null }
+        ],
+        "music": {
+          "tuneName": "Alleluia",
+          "composer": "Traditional",
+          "yearComposed": 18,
+          "originalKey": "F Major",
+          "mode": "Major",
+          "timeSignature": "4/4",
+          "tempoMarking": "Moderately",
+          "bpm": 92,
+          "meterPattern": "6.6.8.6",
+          "clef": "Treble",
+          "range": {
+            "lowestNote": "C4",
+            "highestNote": "E5"
+          },
+          "congregationalDifficulty": 2,
+          "choirSuitability": true,
+          "performanceStyle": "Bright and confident",
+          "suggestedInstrumentation": ["Organ"]
+        },
+        "liturgicalUse": ["Praise Services"],
+        "keywords": ["Alleluia", "Praise", "Worship"]
+      },
+      {
+        "hymnID": 15,
+        "title": "My Maker and My King",
+        "author": "Anne Steele",
+        "authorBirthDeath": "1717–1778",
+        "yearWritten": 1760,
+        "historicalContext": "Anne Steele, one of the earliest published female hymn writers, composed devotional hymns reflecting Baptist spirituality. This hymn expresses gratitude for divine mercy and grace, rooted in personal piety and heartfelt worship.",
+        "theologicalTheme": "Gratitude, grace, devotion.",
+        "scriptureReferences": [
+          { "bookUSFM": "PSA", "chapter": 145, "verseStart": 1, "verseEnd": 2 },
+          { "bookUSFM": "PSA", "chapter": 116, "verseStart": 12, "verseEnd": 14 },
+          { "bookUSFM": "EPH", "chapter": 2, "verseStart": 8, "verseEnd": 9 }
+        ],
+        "music": {
+          "tuneName": "St. Thomas",
+          "composer": "Aaron Williams",
+          "yearComposed": 1763,
+          "originalKey": "C Major",
+          "mode": "Major",
+          "timeSignature": "4/4",
+          "tempoMarking": "Moderate",
+          "bpm": 88,
+          "meterPattern": "6.6.8.6",
+          "clef": "Treble",
+          "range": {
+            "lowestNote": "C4",
+            "highestNote": "E5"
+          },
+          "congregationalDifficulty": 2,
+          "choirSuitability": true,
+          "performanceStyle": "Warm and thankful",
+          "suggestedInstrumentation": ["Organ", "Piano"]
+        },
+        "liturgicalUse": ["General Worship", "Thanksgiving"],
+        "keywords": ["Gratitude", "Grace", "Praise", "Devotion"]
+      },
+      {
+          "hymnID": 16,
+          "title": "All People That on Earth Do Dwell",
+          "author": "William Kethe",
+          "authorBirthDeath": "c.1535–c.1594",
+          "yearWritten": 1561,
+          "historicalContext": "William Kethe, a Scottish Reformer associated with John Knox and the Geneva Psalter tradition, wrote this metrical paraphrase of Psalm 100. It became one of the most enduring expressions of Reformation-era congregational psalm singing, emphasizing accessible worship in the vernacular.",
+          "theologicalTheme": "Universal worship, gratitude, covenant faithfulness.",
+          "scriptureReferences": [
+            { "bookUSFM": "PSA", "chapter": 100, "verseStart": 1, "verseEnd": 5 },
+            { "bookUSFM": "PSA", "chapter": 95, "verseStart": 1, "verseEnd": 3 },
+            { "bookUSFM": "REV", "chapter": 7, "verseStart": 9, "verseEnd": 10 }
+          ],
+          "music": {
+            "tuneName": "Old Hundredth",
+            "composer": "Louis Bourgeois",
+            "yearComposed": 1551,
             "originalKey": "G Major",
             "mode": "Major",
             "timeSignature": "4/4",
-            "tempoMarking": "Moderato Maestoso",
-            "bpm": 96,
-            "meterPattern": "14.14.4.7.8",
-            "approximateLowestNote": "D4",
-            "approximateHighestNote": "E5",
-            "congregationalDifficulty": 2,
+            "tempoMarking": "Moderate",
+            "bpm": 88,
+            "meterPattern": "8.8.8.8",
+            "clef": "Treble",
+            "range": {
+              "lowestNote": "D4",
+              "highestNote": "E5"
+            },
+            "congregationalDifficulty": 1,
             "choirSuitability": true,
-            "performanceStyle": "Majestic and confident",
-            "suggestedInstrumentation": ["Organ", "Piano"],
-            "dynamicCharacter": "Strong opening, full congregational participation",
-            "typicalUseCase": "Opening worship, praise services"
-        }
-    },
-    {
-        "hymnID": 2,
-        "historicalContext": "The text originates from the 'Canticle of the Sun,' written around 1225 by St. Francis of Assisi. Composed near the end of his life while he was suffering from illness and partial blindness, the canticle reflects Francis’s profound joy in God despite physical pain. He personifies elements of nature—sun, moon, wind, water—as fellow worshippers praising their Creator. The English hymn text was adapted in 1919 by Anglican priest William H. Draper for a children’s festival, preserving the exuberant spirit of Francis’s medieval poetry. Its triumphant alleluias and expansive melody have made it one of the most beloved hymns of creation-centered praise.",
-        "theologicalTheme": "Creation’s praise and worship of the Creator.",
-        "scriptureReferences": [],
-        "music": {
-            "tuneName": "Lasst Uns Erfreuen",
-            "originalKey": "A Major",
-            "mode": "Major",
-            "timeSignature": "4/4",
-            "tempoMarking": "Moderate with joy",
-            "bpm": 100,
-            "meterPattern": "8.4.8.4.8.8.4 with refrain",
-            "approximateLowestNote": "E4",
-            "approximateHighestNote": "F#5",
-            "congregationalDifficulty": 3,
-            "choirSuitability": true,
-            "performanceStyle": "Joyful and triumphant",
-            "suggestedInstrumentation": ["Organ", "Brass", "Piano"],
-            "dynamicCharacter": "Bright and energetic",
-            "typicalUseCase": "Praise services, special celebrations"
-        }
-    },
-    {
-        "hymnID": 3,
-        "historicalContext": "Gerhard Tersteegen (1697–1769), a German mystic and Pietist writer, composed this hymn as a call to reverent worship. Tersteegen was deeply influenced by quiet devotional spirituality and often emphasized stillness before God. The hymn urges worshippers to silence worldly distractions and recognize the holiness of God's presence. Originally written in German, it reflects the contemplative atmosphere of small prayer gatherings in which Tersteegen participated. Its solemn tone has made it especially suitable as an opening hymn for worship services, calling believers to humility and attentiveness before the Divine.",
-        "theologicalTheme": "Reverence, holiness, awareness of divine presence.",
-        "scriptureReferences": [],
-        "music": {
-            "tuneName": "Arnsberg",
+            "performanceStyle": "Dignified and steady",
+            "suggestedInstrumentation": ["Organ"]
+          },
+          "liturgicalUse": ["Opening Worship", "Doxology"],
+          "keywords": ["Psalm", "Universal Praise", "Thanksgiving"]
+        },
+        {
+          "hymnID": 17,
+          "title": "Praise the Lord! Ye Heavens, Adore Him",
+          "author": "Anonymous (based on Psalm paraphrase); Edward Osler",
+          "authorBirthDeath": "1798–1863",
+          "yearWritten": 1836,
+          "historicalContext": "Edward Osler adapted earlier Psalm-based texts into this hymn emphasizing creation’s praise. Emerging from the 19th-century Anglican hymn revival, it reflects strong biblical paraphrasing and liturgical clarity.",
+          "theologicalTheme": "Creation’s praise, divine sovereignty.",
+          "scriptureReferences": [
+            { "bookUSFM": "PSA", "chapter": 148, "verseStart": 1, "verseEnd": 13 },
+            { "bookUSFM": "NEH", "chapter": 9, "verseStart": 6, "verseEnd": null },
+            { "bookUSFM": "REV", "chapter": 5, "verseStart": 13, "verseEnd": null }
+          ],
+          "music": {
+            "tuneName": "Hyfrydol",
+            "composer": "Rowland H. Prichard",
+            "yearComposed": 1830,
             "originalKey": "F Major",
             "mode": "Major",
             "timeSignature": "4/4",
-            "tempoMarking": "Reverently",
-            "bpm": 72,
-            "meterPattern": "8.8.8.8",
-            "approximateLowestNote": "C4",
-            "approximateHighestNote": "D5",
+            "tempoMarking": "Moderately",
+            "bpm": 92,
+            "meterPattern": "8.7.8.7.D",
+            "clef": "Treble",
+            "range": {
+              "lowestNote": "C4",
+              "highestNote": "F5"
+            },
             "congregationalDifficulty": 2,
             "choirSuitability": true,
-            "performanceStyle": "Solemn and reverent",
-            "suggestedInstrumentation": ["Organ"],
-            "dynamicCharacter": "Soft and controlled",
-            "typicalUseCase": "Call to worship, prayer services"
-        }
-    },
-    {
-        "hymnID": 100,
-        "historicalContext": "Thomas O. Chisholm (1866–1960), a Methodist minister who left pastoral ministry due to fragile health, wrote this hymn in 1923. Unlike many hymn writers shaped by dramatic events, Chisholm reflected on the steady, quiet faithfulness of God throughout ordinary life. Inspired by Lamentations 3:22–23, he emphasized God’s unchanging character rather than emotional experience. Composer William M. Runyan later set the text to music, and the hymn gained widespread recognition through Moody Bible Institute. Its message of divine constancy deeply resonates with believers who see God’s providence in daily life."
-        ,
-        "theologicalTheme": "God’s faithfulness and steadfast love.",
-        "scriptureReferences": [],
-        "music": {
-            "tuneName": "Faithfulness",
-            "originalKey": "C Major",
+            "performanceStyle": "Warm and expansive",
+            "suggestedInstrumentation": ["Organ", "Piano"]
+          },
+          "liturgicalUse": ["Praise Services", "Creation Themes"],
+          "keywords": ["Heavens", "Creation", "Praise"]
+        },
+        {
+          "hymnID": 18,
+          "title": "O Morning Star, How Fair and Bright",
+          "author": "Philipp Nicolai",
+          "authorBirthDeath": "1556–1608",
+          "yearWritten": 1599,
+          "historicalContext": "Philipp Nicolai, a Lutheran pastor during the plague epidemic in Germany, wrote this hymn as a song of hope and anticipation of Christ’s return. Often called the 'Queen of Chorales,' it reflects deep eschatological longing amid suffering.",
+          "theologicalTheme": "Second Advent, hope, longing for Christ.",
+          "scriptureReferences": [
+            { "bookUSFM": "REV", "chapter": 22, "verseStart": 16, "verseEnd": null },
+            { "bookUSFM": "ISA", "chapter": 60, "verseStart": 1, "verseEnd": 3 },
+            { "bookUSFM": "JHN", "chapter": 8, "verseStart": 12, "verseEnd": null }
+          ],
+          "music": {
+            "tuneName": "Wie schön leuchtet",
+            "composer": "Philipp Nicolai",
+            "yearComposed": 1599,
+            "originalKey": "E Major",
             "mode": "Major",
-            "timeSignature": "3/4",
-            "tempoMarking": "Moderate",
+            "timeSignature": "4/4",
+            "tempoMarking": "Moderate with dignity",
             "bpm": 84,
-            "meterPattern": "11.10.11.10 with refrain",
-            "approximateLowestNote": "E4",
-            "approximateHighestNote": "F5",
-            "congregationalDifficulty": 2,
-            "choirSuitability": true,
-            "performanceStyle": "Warm and reassuring",
-            "suggestedInstrumentation": ["Piano", "Organ"],
-            "dynamicCharacter": "Steady and expressive",
-            "typicalUseCase": "Thanksgiving services, testimonies"
-        }
-    },
-    {
-        "hymnID": 108,
-        "historicalContext": "John Newton (1725–1807), once a participant in the transatlantic slave trade, wrote this hymn in 1772 after his profound spiritual awakening. During a violent storm at sea in 1748, Newton cried out to God for mercy—a turning point that began his journey toward faith and eventual ministry. Though he continued maritime work for several years, he ultimately became an Anglican minister and advocate against slavery. 'Amazing Grace' was originally part of a New Year’s sermon in 1773. Its simple testimony of redemption has transcended denominations and cultures, becoming one of the most beloved hymns in Christian worship."
-        ,
-        "theologicalTheme": "Grace, redemption, spiritual transformation.",
-        "scriptureReferences": [],
-        "music": {
-            "tuneName": "New Britain",
-            "originalKey": "G Major",
-            "mode": "Major",
-            "timeSignature": "3/4",
-            "tempoMarking": "Andante",
-            "bpm": 72,
-            "meterPattern": "8.6.8.6 (Common Meter)",
-            "approximateLowestNote": "D4",
-            "approximateHighestNote": "E5",
-            "congregationalDifficulty": 1,
-            "choirSuitability": true,
-            "performanceStyle": "Reflective and reverent",
-            "suggestedInstrumentation": ["Piano", "Organ", "Strings"],
-            "dynamicCharacter": "Soft opening, gradual build",
-            "typicalUseCase": "Communion, funerals, testimony services"
-        }
-    },
-    {
-        "hymnID": 214,
-        "historicalContext": "Wayne Hooper (1920–2007), an influential Adventist musician and long-time member of the King’s Heralds quartet, composed this hymn in 1962 for the General Conference Session of Seventh-day Adventists in San Francisco. Intended as a theme song, it captured the distinctive Adventist emphasis on Christ’s soon return. The hymn quickly became an unofficial anthem of the denomination, expressing collective identity and eschatological hope. Its forward-driving melody and confident refrain reflect the movement’s missionary vision and expectation of the Second Advent.",
-        "theologicalTheme": "Second Coming hope, Adventist identity, mission.",
-        "scriptureReferences": [
-          {
-            "bookUSFM": "JHN",
-            "chapter": 14,
-            "verseStart": 1,
-            "verseEnd": 3
-          },
-          {
-            "bookUSFM": "TIT",
-            "chapter": 2,
-            "verseStart": 13,
-            "verseEnd": null
-          },
-          {
-            "bookUSFM": "1TH",
-            "chapter": 4,
-            "verseStart": 16,
-            "verseEnd": 17
-          },
-          {
-            "bookUSFM": "REV",
-            "chapter": 21,
-            "verseStart": 1,
-            "verseEnd": 4
-          }
-        ],
-        "music": {
-            "tuneName": "We Have This Hope",
-            "originalKey": "Bb Major",
-            "mode": "Major",
-            "timeSignature": "4/4",
-            "tempoMarking": "Moderato",
-            "bpm": 96,
-            "meterPattern": "Irregular with refrain",
-            "approximateLowestNote": "F4",
-            "approximateHighestNote": "G5",
-            "congregationalDifficulty": 2,
-            "choirSuitability": true,
-            "performanceStyle": "Confident and forward-looking",
-            "suggestedInstrumentation": ["Piano", "Organ"],
-            "dynamicCharacter": "Bright, energetic refrain",
-            "typicalUseCase": "Adventist gatherings, evangelistic meetings"
-        }
-    },
-    {
-        "hymnID": 506,
-        "historicalContext": "Martin Luther (1483–1546) composed this hymn around 1529 during the height of the Protestant Reformation. Based on Psalm 46, it affirms God as a refuge and defender amid political unrest and religious persecution. Written during a period of tension between reformers and the Holy Roman Empire, the hymn became a rallying cry for Protestant believers. Its strong melody and theological boldness reinforced confidence in divine sovereignty over earthly powers. Often called the 'Battle Hymn of the Reformation,' it remains one of the most influential hymns in Christian history.",
-        "theologicalTheme": "Divine protection, spiritual warfare, sovereignty of God.",
-        "scriptureReferences": [],
-        "music": {
-            "tuneName": "Ein feste Burg",
-            "originalKey": "C Major",
-            "mode": "Major",
-            "timeSignature": "4/4",
-            "tempoMarking": "Maestoso",
-            "bpm": 100,
-            "meterPattern": "Irregular",
-            "approximateLowestNote": "E4",
-            "approximateHighestNote": "G5",
+            "meterPattern": "8.7.8.7.8.8.7",
+            "clef": "Treble",
+            "range": {
+              "lowestNote": "E4",
+              "highestNote": "G#5"
+            },
             "congregationalDifficulty": 4,
             "choirSuitability": true,
-            "performanceStyle": "Bold and triumphant",
-            "suggestedInstrumentation": ["Organ", "Brass"],
-            "dynamicCharacter": "Strong, driving rhythm",
-            "typicalUseCase": "Reformation services, emphasis Sabbaths"
-        }
-    },
-    {
-        "hymnID": 530,
-        "historicalContext": "Horatio G. Spafford (1828–1888), a Chicago lawyer and devout Christian, wrote this hymn in 1873 following profound personal tragedy. After losing his business in the Great Chicago Fire, Spafford sent his wife and four daughters ahead to Europe. Their ship collided with another vessel and sank, and all four daughters drowned. While traveling to join his grieving wife, Spafford passed near the location of the tragedy and penned the words expressing peace amid sorrow. Composer Philip P. Bliss set the text to music shortly thereafter. The hymn has become a timeless testimony of faith sustained through suffering.",
-        "theologicalTheme": "Peace in suffering, trust in divine providence, eternal hope.",
-        "scriptureReferences": [],
-        "music": {
-            "tuneName": "Ville du Havre",
+            "performanceStyle": "Noble and luminous",
+            "suggestedInstrumentation": ["Organ"]
+          },
+          "liturgicalUse": ["Advent", "Second Coming Themes"],
+          "keywords": ["Morning Star", "Advent", "Hope", "Light"]
+        },
+        {
+          "hymnID": 19,
+          "title": "O Sing a New Song to the Lord",
+          "author": "Georg Thurmair",
+          "authorBirthDeath": "1909–1984",
+          "yearWritten": 1935,
+          "historicalContext": "Georg Thurmair, a German Catholic hymn writer during a turbulent political era, composed texts encouraging renewal in worship. This hymn echoes Psalm language and calls believers to fresh expressions of praise.",
+          "theologicalTheme": "Renewed praise, salvation, proclamation.",
+          "scriptureReferences": [
+            { "bookUSFM": "PSA", "chapter": 96, "verseStart": 1, "verseEnd": 3 },
+            { "bookUSFM": "PSA", "chapter": 98, "verseStart": 1, "verseEnd": null },
+            { "bookUSFM": "ISA", "chapter": 42, "verseStart": 10, "verseEnd": null }
+          ],
+          "music": {
+            "tuneName": "Singt dem Herrn",
+            "composer": "German Melody",
+            "yearComposed": 20,
             "originalKey": "G Major",
             "mode": "Major",
             "timeSignature": "4/4",
-            "tempoMarking": "Adagio",
-            "bpm": 66,
-            "meterPattern": "8.6.8.6 with refrain",
-            "approximateLowestNote": "D4",
-            "approximateHighestNote": "F#5",
-            "congregationalDifficulty": 2,
-            "choirSuitability": true,
-            "performanceStyle": "Deeply reflective",
-            "suggestedInstrumentation": ["Piano", "Strings"],
-            "dynamicCharacter": "Gradual emotional lift in refrain",
-            "typicalUseCase": "Funerals, memorial services"
-        }
-    },
-    {
-        "hymnID": 606,
-        "historicalContext": "Written by James Russell Lowell in 1845 as a protest against injustice and moral compromise. It was later adopted into hymnals as a call to moral courage.",
-        "theologicalTheme": "Moral conviction, justice, standing for truth.",
-        "scriptureReferences": [],
-        "music": {
-            "tuneName": "Ton-y-Botel",
-            "originalKey": "Eb Major",
-            "mode": "Major",
-            "timeSignature": "4/4",
-            "tempoMarking": "Moderato",
-            "bpm": 88,
-            "meterPattern": "8.7.8.7.8.7",
-            "approximateLowestNote": "Bb3",
-            "approximateHighestNote": "Eb5",
+            "tempoMarking": "Bright",
+            "bpm": 96,
+            "meterPattern": "8.7.8.7.D",
+            "clef": "Treble",
+            "range": {
+              "lowestNote": "D4",
+              "highestNote": "G5"
+            },
             "congregationalDifficulty": 3,
             "choirSuitability": true,
-            "performanceStyle": "Resolute and firm",
-            "suggestedInstrumentation": ["Organ"],
-            "dynamicCharacter": "Strong and steady",
-            "typicalUseCase": "Mission emphasis, social justice themes"
-        }
-    },
-    {
-        "hymnID": 661,
-        "historicalContext": "Reginald Heber (1783–1826), an Anglican bishop and missionary, wrote this hymn in 1826 for Trinity Sunday worship. Drawing from Isaiah 6 and Revelation 4, the text emphasizes the holiness and majesty of the Triune God. After Heber’s death, composer John B. Dykes set the text to the tune 'Nicaea' in 1861, giving it a stately and majestic musical framework. Its doctrinal clarity and grand melodic structure have made it one of the most enduring hymns of Christian liturgy.",
-        "theologicalTheme": "Holiness of God, Trinity, heavenly worship.",
-        "scriptureReferences": [],
-        "music": {
-            "tuneName": "Nicaea",
+            "performanceStyle": "Energetic and uplifting",
+            "suggestedInstrumentation": ["Organ", "Piano"]
+          },
+          "liturgicalUse": ["Praise Services"],
+          "keywords": ["New Song", "Praise", "Proclamation"]
+        },
+        {
+          "hymnID": 20,
+          "title": "O Praise Ye the Lord!",
+          "author": "Henry Williams Baker",
+          "authorBirthDeath": "1821–1877",
+          "yearWritten": 1861,
+          "historicalContext": "Henry Williams Baker, editor of 'Hymns Ancient and Modern,' contributed significantly to Anglican hymnody. This hymn draws heavily from Psalm 148, calling all creation to praise the Lord.",
+          "theologicalTheme": "Creation’s praise, divine majesty.",
+          "scriptureReferences": [
+            { "bookUSFM": "PSA", "chapter": 148, "verseStart": 1, "verseEnd": 14 },
+            { "bookUSFM": "PSA", "chapter": 150, "verseStart": 1, "verseEnd": 6 },
+            { "bookUSFM": "REV", "chapter": 19, "verseStart": 1, "verseEnd": null }
+          ],
+          "music": {
+            "tuneName": "Laudate Dominum",
+            "composer": "Charles Hubert Hastings Parry",
+            "yearComposed": 1888,
             "originalKey": "D Major",
             "mode": "Major",
             "timeSignature": "4/4",
             "tempoMarking": "Maestoso",
             "bpm": 92,
-            "meterPattern": "11.12.12.10",
-            "approximateLowestNote": "D4",
-            "approximateHighestNote": "F#5",
+            "meterPattern": "6.6.6.6.8.8",
+            "clef": "Treble",
+            "range": {
+              "lowestNote": "D4",
+              "highestNote": "F#5"
+            },
             "congregationalDifficulty": 3,
             "choirSuitability": true,
-            "performanceStyle": "Majestic and solemn",
-            "suggestedInstrumentation": ["Organ"],
-            "dynamicCharacter": "Full, stately phrasing",
-            "typicalUseCase": "Opening worship, Trinity emphasis"
-        }
-    }
+            "performanceStyle": "Stately and triumphant",
+            "suggestedInstrumentation": ["Organ"]
+          },
+          "liturgicalUse": ["Praise Services", "Festival Worship"],
+          "keywords": ["Praise", "Creation", "Majesty"]
+        },
+        {
+           "hymnID": 21,
+           "title": "Immortal, Invisible, God Only Wise",
+           "author": "Walter Chalmers Smith",
+           "authorBirthDeath": "1824–1908",
+           "yearWritten": 1867,
+           "historicalContext": "Walter Chalmers Smith, a Scottish Free Church minister, wrote this hymn as a reflection on 1 Timothy 1:17. It emphasizes the transcendence and mystery of God while maintaining reverent awe. Emerging during the 19th-century Scottish hymn revival, it reflects doctrinal clarity combined with poetic devotion.",
+           "theologicalTheme": "Divine transcendence, holiness, eternity of God.",
+           "scriptureReferences": [
+             { "bookUSFM": "1TI", "chapter": 1, "verseStart": 17, "verseEnd": null },
+             { "bookUSFM": "PSA", "chapter": 90, "verseStart": 1, "verseEnd": 2 },
+             { "bookUSFM": "JHN", "chapter": 4, "verseStart": 24, "verseEnd": null }
+           ],
+           "music": {
+             "tuneName": "St. Denio",
+             "composer": "Welsh Melody",
+             "yearComposed": 1839,
+             "originalKey": "D Major",
+             "mode": "Major",
+             "timeSignature": "4/4",
+             "tempoMarking": "Maestoso",
+             "bpm": 88,
+             "meterPattern": "11.11.11.11",
+             "clef": "Treble",
+             "range": {
+               "lowestNote": "D4",
+               "highestNote": "F#5"
+             },
+             "congregationalDifficulty": 2,
+             "choirSuitability": true,
+             "performanceStyle": "Majestic and reverent",
+             "suggestedInstrumentation": ["Organ"]
+           },
+           "liturgicalUse": ["Opening Worship", "Trinity Themes"],
+           "keywords": ["Immortal", "Invisible", "Holiness", "Majesty"]
+         },
+         {
+           "hymnID": 22,
+           "title": "The Lord Is in His Holy Temple",
+           "author": "George F. Root",
+           "authorBirthDeath": "1820–1895",
+           "yearWritten": 1862,
+           "historicalContext": "George Frederick Root composed this brief hymn during the American Civil War era. Drawing directly from Habakkuk 2:20, it serves as a call to quiet reverence before God’s presence.",
+           "theologicalTheme": "Reverence, divine presence, sacred silence.",
+           "scriptureReferences": [
+             { "bookUSFM": "HAB", "chapter": 2, "verseStart": 20, "verseEnd": null },
+             { "bookUSFM": "ECC", "chapter": 5, "verseStart": 1, "verseEnd": 2 },
+             { "bookUSFM": "PSA", "chapter": 46, "verseStart": 10, "verseEnd": null }
+           ],
+           "music": {
+             "tuneName": "Holy Temple",
+             "composer": "George F. Root",
+             "yearComposed": 1862,
+             "originalKey": "C Major",
+             "mode": "Major",
+             "timeSignature": "4/4",
+             "tempoMarking": "Very reverent",
+             "bpm": 60,
+             "meterPattern": "Short refrain",
+             "clef": "Treble",
+             "range": {
+               "lowestNote": "C4",
+               "highestNote": "E5"
+             },
+             "congregationalDifficulty": 1,
+             "choirSuitability": true,
+             "performanceStyle": "Soft and meditative",
+             "suggestedInstrumentation": ["Organ", "Piano"]
+           },
+           "liturgicalUse": ["Call to Worship", "Prayer Services"],
+           "keywords": ["Temple", "Silence", "Reverence"]
+         },
+         {
+           "hymnID": 23,
+           "title": "Now the Joyful Bells a-Ringing",
+           "author": "Unknown",
+           "authorBirthDeath": "Unknown",
+           "yearWritten": null,
+           "historicalContext": "This hymn reflects festive celebration imagery, calling believers to gather in joyful praise. Its emphasis on communal worship reflects the liturgical joy found in traditional Christian gatherings.",
+           "theologicalTheme": "Joyful worship, celebration.",
+           "scriptureReferences": [
+             { "bookUSFM": "PSA", "chapter": 95, "verseStart": 1, "verseEnd": 2 },
+             { "bookUSFM": "PSA", "chapter": 100, "verseStart": 1, "verseEnd": null },
+             { "bookUSFM": "LUK", "chapter": 1, "verseStart": 46, "verseEnd": 47 }
+           ],
+           "music": {
+             "tuneName": "Festal Song",
+             "composer": "Traditional",
+             "yearComposed": null,
+             "originalKey": "F Major",
+             "mode": "Major",
+             "timeSignature": "4/4",
+             "tempoMarking": "Brightly",
+             "bpm": 100,
+             "meterPattern": "Irregular",
+             "clef": "Treble",
+             "range": {
+               "lowestNote": "C4",
+               "highestNote": "F5"
+             },
+             "congregationalDifficulty": 2,
+             "choirSuitability": true,
+             "performanceStyle": "Festive and energetic",
+             "suggestedInstrumentation": ["Organ", "Piano"]
+           },
+           "liturgicalUse": ["Festival Worship", "Celebrations"],
+           "keywords": ["Joy", "Celebration", "Praise"]
+         },
+         {
+           "hymnID": 24,
+           "title": "O Worship the King",
+           "author": "Robert Grant",
+           "authorBirthDeath": "1779–1838",
+           "yearWritten": 1833,
+           "historicalContext": "Robert Grant wrote this hymn as a paraphrase of Psalm 104, celebrating the majesty and sustaining power of God. It became one of the most enduring hymns of praise in English-language worship.",
+           "theologicalTheme": "Divine majesty, providence, kingship of God.",
+           "scriptureReferences": [
+             { "bookUSFM": "PSA", "chapter": 104, "verseStart": 1, "verseEnd": 5 },
+             { "bookUSFM": "PSA", "chapter": 145, "verseStart": 1, "verseEnd": 3 },
+             { "bookUSFM": "1TI", "chapter": 6, "verseStart": 15, "verseEnd": null }
+           ],
+           "music": {
+             "tuneName": "Lyons",
+             "composer": "Joseph M. Haydn (attributed)",
+             "yearComposed": 1774,
+             "originalKey": "G Major",
+             "mode": "Major",
+             "timeSignature": "4/4",
+             "tempoMarking": "Moderately majestic",
+             "bpm": 92,
+             "meterPattern": "10.10.11.11",
+             "clef": "Treble",
+             "range": {
+               "lowestNote": "D4",
+               "highestNote": "E5"
+             },
+             "congregationalDifficulty": 2,
+             "choirSuitability": true,
+             "performanceStyle": "Confident and triumphant",
+             "suggestedInstrumentation": ["Organ"]
+           },
+           "liturgicalUse": ["Opening Worship", "Praise Services"],
+           "keywords": ["King", "Majesty", "Providence"]
+         },
+         {
+           "hymnID": 25,
+           "title": "Praise the Lord! His Glories Show",
+           "author": "Henry Francis Lyte",
+           "authorBirthDeath": "1793–1847",
+           "yearWritten": 1834,
+           "historicalContext": "Henry Francis Lyte composed this hymn as a paraphrase of Psalm 150, calling believers to exuberant praise. It reflects Anglican hymn tradition emphasizing Scripture-based worship.",
+           "theologicalTheme": "Exuberant praise, glory of God.",
+           "scriptureReferences": [
+             { "bookUSFM": "PSA", "chapter": 150, "verseStart": 1, "verseEnd": 6 },
+             { "bookUSFM": "PSA", "chapter": 96, "verseStart": 4, "verseEnd": 6 },
+             { "bookUSFM": "HEB", "chapter": 13, "verseStart": 15, "verseEnd": null }
+           ],
+           "music": {
+             "tuneName": "Llanfair",
+             "composer": "Robert Williams",
+             "yearComposed": 1817,
+             "originalKey": "F Major",
+             "mode": "Major",
+             "timeSignature": "4/4",
+             "tempoMarking": "Bright and lively",
+             "bpm": 100,
+             "meterPattern": "7.7.7.7.D",
+             "clef": "Treble",
+             "range": {
+               "lowestNote": "C4",
+               "highestNote": "F5"
+             },
+             "congregationalDifficulty": 2,
+             "choirSuitability": true,
+             "performanceStyle": "Energetic and uplifting",
+             "suggestedInstrumentation": ["Organ", "Piano"]
+           },
+           "liturgicalUse": ["Praise Services", "Festival Worship"],
+           "keywords": ["Glory", "Praise", "Celebration"]
+         }
 ]
