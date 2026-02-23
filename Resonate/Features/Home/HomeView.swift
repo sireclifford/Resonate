@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     let environment: AppEnvironment
+    @ObservedObject private var audioService: AudioPlaybackService
     let onSelectHymn: (HymnIndex) -> Void
     let onSeeAll: () -> Void
     @StateObject private var viewModel: HomeViewModel
@@ -21,27 +22,39 @@ struct HomeView: View {
                 recentlyViewedService: environment.recentlyViewedService
             )
         )
+        
+        _audioService = ObservedObject(
+               wrappedValue: environment.audioPlaybackService
+           )
     }
     
     var body: some View {
-        ScrollView {
-            content
-        }
-        .scrollIndicators(.hidden)
-        .sheet(isPresented: $isSearchPresented) {
-            NavigationStack {
-                SearchResultsView(
-                    environment: environment,
-                    viewModel: environment.searchViewModel,
-                    onSelectHymn: { hymn in
-                        isSearchPresented = false
-                        DispatchQueue.main.async {
-                            onSelectHymn(hymn)
-                        }
-                    }
-                )
+            ScrollView {
+                content
             }
-        }
+            .scrollIndicators(.hidden)
+            .sheet(isPresented: $isSearchPresented) {
+                NavigationStack {
+                    SearchResultsView(
+                        environment: environment,
+                        viewModel: environment.searchViewModel,
+                        onSelectHymn: { hymn in
+                            isSearchPresented = false
+                            DispatchQueue.main.async {
+                                onSelectHymn(hymn)
+                            }
+                        }
+                    )
+                }
+            }
+        
+        if audioService.currentHymnID != nil {
+            MiniPlayerView(environment: environment)
+                   .environmentObject(environment)
+                   .padding(.horizontal)
+                   .padding(.vertical, 8)
+           }
+        
     }
     
     private var content: some View {

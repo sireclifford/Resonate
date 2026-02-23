@@ -7,7 +7,7 @@ final class AppEnvironment: ObservableObject {
     let persistenceService: PersistenceService
     let favouritesService: FavouritesService
     let tuneService: TuneService
-    let audioPlaybackService: AudioPlaybackService
+    @Published var audioPlaybackService: AudioPlaybackService
     let categoryViewModel: CategoryViewModel
     let searchViewModel: SearchViewModel
     let recentlyViewedService: RecentlyViewedService

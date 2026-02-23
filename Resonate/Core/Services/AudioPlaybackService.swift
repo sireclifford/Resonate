@@ -14,7 +14,7 @@ final class AudioPlaybackService: NSObject, ObservableObject {
     }
     
     func togglePlayback(for id: Int, tuneService: TuneService) {
-        
+        print("IS PLAYING:", isPlaying)
         // Same hymn already loaded
         if currentHymnID == id {
             
@@ -57,13 +57,17 @@ final class AudioPlaybackService: NSObject, ObservableObject {
         } catch {
             print("❌ Audio error:", error)
         }
+        print("Setting currentHymnID to:", id)
+        currentHymnID = id
     }
     
     func stop() {
+        print("STOP CALLED — STACK TRACE:")
+        Thread.callStackSymbols.forEach { print($0) }
         player?.stop()
-        player = nil
-        currentHymnID = nil
-        isPlaying = false
+           player = nil
+           currentHymnID = nil
+           isPlaying = false
     }
 }
 
