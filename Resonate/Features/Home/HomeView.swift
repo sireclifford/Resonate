@@ -11,10 +11,6 @@ struct HomeView: View {
     
     init(environment: AppEnvironment, onSelectHymn: @escaping (HymnIndex) -> Void, onSeeAll: @escaping () -> Void) {
         
-        if let story = environment.hymnStoryService.story(for: 1) {
-            print(story.music?.originalKey ?? "No key")
-        }
-        
         self.environment = environment
         self.onSelectHymn = onSelectHymn
         self.onSeeAll = onSeeAll
@@ -110,3 +106,4 @@ struct HomeView: View {
         .padding()
     }
 }
+

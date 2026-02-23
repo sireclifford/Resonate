@@ -1,14 +1,24 @@
 import Foundation
 
-struct HymnStory: Codable {
-    let hymnID: Int
+struct HymnStory: Codable, Identifiable {
     
-    // Historical
+    let hymnID: Int
+    var id: Int { hymnID }
+    
+    let title: String
+    
+    let author: String?
+    let authorBirthDeath: String?
+    let yearWritten: Int?
+    let copyright: String?
     let historicalContext: String?
     let theologicalTheme: String?
+    
     let scriptureReferences: [ScriptureReference]?
-    // Musical Metadata
-    let music: HymnMusicMetadata?
+    let music: HymnMusic?
+    
+    let liturgicalUse: [String]?
+    let keywords: [String]?
 }
 
 struct HymnMusicMetadata: Codable {

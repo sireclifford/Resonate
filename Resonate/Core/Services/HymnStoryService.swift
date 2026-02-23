@@ -9,7 +9,7 @@ final class HymnStoryService {
     }
     
     private func loadStories() {
-        guard let url = Bundle.main.url(forResource: "hymn_stories", withExtension: "json"),
+        guard let url = Bundle.main.url(forResource: "hymns_merged", withExtension: "json"),
               let data = try? Data(contentsOf: url),
               let decoded = try? JSONDecoder().decode([HymnStory].self, from: data)
         else {

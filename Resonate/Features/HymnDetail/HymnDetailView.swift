@@ -116,10 +116,9 @@ struct HymnDetailView: View {
             NavigationStack {
                 if let story = environment.hymnStoryService.story(for: viewModel.hymn.id) {
                     HymnStoryView(
-                        story: story,
-                        hymnTitle: viewModel.hymn.title,
-                        hymnNumber: viewModel.hymn.id
+                        story: story
                     )
+                    .environmentObject(environment)
                 } else {
                     StoryUnavailableView()
                 }

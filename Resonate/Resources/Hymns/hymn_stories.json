@@ -406,7 +406,7 @@
         "scriptureReferences": [
           { "bookUSFM": "NEH", "chapter": 8, "verseStart": 10, "verseEnd": null },
           { "bookUSFM": "ROM", "chapter": 15, "verseStart": 13, "verseEnd": null },
-          { "bookUSFM": "PHI", "chapter": 4, "verseStart": 4, "verseEnd": null }
+          { "bookUSFM": "PHP", "chapter": 4, "verseStart": 4, "verseEnd": null }
         ],
         "music": {
           "tuneName": "Hymn to Joy",

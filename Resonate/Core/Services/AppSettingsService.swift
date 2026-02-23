@@ -1,8 +1,10 @@
 import Foundation
+import SwiftUI
 import Combine
 
 final class AppSettingsService: ObservableObject {
 
+    @AppStorage("selectedBibleID") var selectedBibleID: Int = 3034
     private let defaults = UserDefaults.standard
 
     @Published var selectedVersionId: Int {
