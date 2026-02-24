@@ -2,7 +2,6 @@ import SwiftUI
 
 struct HomeView: View {
     let environment: AppEnvironment
-    @ObservedObject private var audioService: AudioPlaybackService
     let onSelectHymn: (HymnIndex) -> Void
     let onSeeAll: () -> Void
     @StateObject private var viewModel: HomeViewModel
@@ -22,10 +21,6 @@ struct HomeView: View {
                 recentlyViewedService: environment.recentlyViewedService
             )
         )
-        
-        _audioService = ObservedObject(
-               wrappedValue: environment.audioPlaybackService
-           )
     }
     
     var body: some View {
@@ -46,15 +41,7 @@ struct HomeView: View {
                         }
                     )
                 }
-            }
-        
-        if audioService.currentHymnID != nil {
-            MiniPlayerView(environment: environment)
-                   .environmentObject(environment)
-                   .padding(.horizontal)
-                   .padding(.vertical, 8)
-           }
-        
+            }        
     }
     
     private var content: some View {
@@ -117,6 +104,7 @@ struct HomeView: View {
             )
         }
         .padding()
+//        .padding(.bottom, audioService.currentHymnID != nil ? 10 : 0)
     }
 }
 

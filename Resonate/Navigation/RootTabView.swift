@@ -2,8 +2,8 @@ import SwiftUI
 
 struct RootTabView: View {
     @EnvironmentObject private var environment: AppEnvironment
-    @ObservedObject private var audio: AudioPlaybackService
     @ObservedObject private var settings: AppSettingsService
+    @ObservedObject private var audioService: AudioPlaybackService
     
     @State private var selectedTab = 0
     
@@ -11,11 +11,14 @@ struct RootTabView: View {
         _settings = ObservedObject(
             wrappedValue: environment.settingsService
         )
-        _audio = ObservedObject(wrappedValue: environment.audioPlaybackService)
+        
+        _audioService = ObservedObject(
+               wrappedValue: environment.audioPlaybackService
+           )
     }
     
     var body: some View {
-
+        ZStack(alignment: .bottom) {
             TabView(selection: $selectedTab) {
                 HomeStack(environment: environment, selectedTab: $selectedTab)
                     .tag(0)
@@ -33,7 +36,17 @@ struct RootTabView: View {
                     .tag(3)
                     .tabItem { Label("Settings", systemImage: "gear") }
             }
-            .preferredColorScheme(settings.theme.colorScheme)
-            
+                .preferredColorScheme(settings.theme.colorScheme)
+                .padding(.top, audioService.currentHymnID != nil ? 72 : 0)
+                .overlay(alignment: .top) {
+                    if audioService.currentHymnID != nil {
+                        MiniPlayerView(environment: environment)
+                            .environmentObject(environment)
+                            .padding(.horizontal)
+                            .padding(.top, 8)
+                    }
+                }
+        }
     }
+    
 }

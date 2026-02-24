@@ -69,7 +69,7 @@ struct MiniPlayerView: View {
                     .opacity(0.9)
             )
             .shadow(color: .black.opacity(0.15), radius: 20, y: 8)
-            .padding(.horizontal)
+//            .padding(.horizontal)
             .padding(.bottom, 6)
         }
     }
