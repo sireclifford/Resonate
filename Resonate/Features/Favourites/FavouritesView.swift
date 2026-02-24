@@ -55,15 +55,7 @@ struct FavouritesView: View {
                     }
                 }
                 .padding()
-//                .padding(.bottom, audioService.currentHymnID != nil ? 100 : 0)
             }
-
-//            if audioService.currentHymnID != nil {
-//                MiniPlayerView(environment: environment)
-//                    .environmentObject(environment)
-//                    .padding(.horizontal)
-//                    .padding(.bottom, 8)
-//            }
         }
     }
 
