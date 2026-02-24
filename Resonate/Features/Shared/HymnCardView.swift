@@ -12,7 +12,7 @@ struct HymnCardView: View {
         VStack(alignment: .leading, spacing: 8) {
             ZStack {
                 HymnCardBackground(seed: index.id)
-                    .aspectRatio(1, contentMode: .fit)
+                    .frame(height: 180)
 
                 if environment.tuneService.tuneExists(for: index.id) {
                     VStack {
@@ -52,13 +52,20 @@ struct HymnCardView: View {
 
             Text("Hymn \(index.id) • \(index.verseCount) Verses")
                 .font(.josefin(size: 13))
+                .frame(height: 18, alignment: .topLeading)
 
             Text(index.title)
                 .font(.josefin(size: 15, weight: .medium))
                 .lineLimit(2)
+                .multilineTextAlignment(.leading)
+                .frame(height: 22, alignment: .topLeading)
 
             Text(index.category.title)
                 .font(.josefin(size: 11))
+                .lineLimit(1)
+                .frame(height: 14, alignment: .topLeading)
         }
+        .frame(maxWidth: .infinity)
+        .frame(height: 260, alignment: .top)
     }
 }
