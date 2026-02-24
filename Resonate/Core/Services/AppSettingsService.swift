@@ -98,7 +98,7 @@ final class AppSettingsService: ObservableObject {
 
         allowCellularDownload = defaults.object(forKey: Keys.allowCellularDownload) as? Bool ?? false
         
-        stopPlaybackOnExit = defaults.object(forKey: Keys.stopPlaybackOnExit) as? Bool ?? true
+        stopPlaybackOnExit = defaults.object(forKey: Keys.stopPlaybackOnExit) as? Bool ?? false
         
         enableHaptics = defaults.object(forKey: Keys.enableHaptics) as? Bool ?? true
         
