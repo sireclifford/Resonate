@@ -21,11 +21,13 @@ struct SettingsView: View {
     var body: some View {
         
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: 16) {
                 
                 //MARK: Appearance
                 SettingsSectionCard(title: "Appearance", icon: "circle.lefthalf.filled") {
-
+                    Text("Customize the app look and feel")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                     VStack(spacing: 12) {
 
                         Menu {
@@ -48,7 +50,8 @@ struct SettingsView: View {
                                 Text("Theme")
                                 Spacer()
                                 Text(settings.theme.label)
-                                    .foregroundColor(.secondary)
+                                    .foregroundStyle(.secondary)
+                                    .font(.subheadline)
                             }
                         }
                     }
@@ -79,7 +82,8 @@ struct SettingsView: View {
                                 Text("Font Style")
                                 Spacer()
                                 Text(settings.fontFamily.label)
-                                    .foregroundColor(.secondary)
+                                    .foregroundStyle(.secondary)
+                                    .font(.subheadline)
                             }
                         }
                         
@@ -104,7 +108,8 @@ struct SettingsView: View {
                                 Text("Line Spacing")
                                 Spacer()
                                 Text(settings.lineSpacing.label)
-                                    .foregroundColor(.secondary)
+                                    .foregroundStyle(.secondary)
+                                    .font(.subheadline)
                             }
                         }
                         
@@ -129,7 +134,8 @@ struct SettingsView: View {
                                 Text("Chorus Label")
                                 Spacer()
                                 Text(settings.chorusLabelStyle.label)
-                                    .foregroundColor(.secondary)
+                                    .foregroundStyle(.secondary)
+                                    .font(.subheadline)
                             }
                         }
                         
@@ -144,7 +150,7 @@ struct SettingsView: View {
                 // MARK: Audio
                 SettingsSectionCard(title: "Audio", icon: "speaker.wave.2") {
                     
-                    VStack(spacing: 12) {
+                    VStack(spacing: 8) {
                         
 //                        Toggle(
 //                            "Auto Download Audio",
@@ -177,6 +183,8 @@ struct SettingsView: View {
                             environment.recentlyViewedService.clear()
                         }
                         
+                        Divider()
+                        
                         Button(role: .destructive) {
                             environment.audioPlaybackService.stop()
                         } label: {
@@ -188,107 +196,71 @@ struct SettingsView: View {
                 // MARK: About
                 SettingsSectionCard(title: "About", icon: "info.circle") {
                     
-                    VStack(alignment: .leading, spacing: 16) {
+                    VStack(spacing: 20) {
                         
-                        // MARK: App Identity
-                        VStack(alignment: .leading, spacing: 4) {
+                        // App Identity
+                        VStack(spacing: 6) {
                             Text("Resonate")
                                 .font(.headline)
                             
                             Text("Seventh-day Adventist Hymnal")
-                                .foregroundColor(.secondary)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
                             
-                            Text(Bundle.main.appVersion)
-                                .foregroundColor(.secondary)
+                            HStack {
+                                Text("Version")
+                                Spacer()
+                                Text(Bundle.main.appVersion)
+                                    .foregroundStyle(.secondary)
+                                    .font(.subheadline)
+                            }
                         }
                         
                         Divider()
                         
-                        // MARK: Developer
-                        VStack(alignment: .leading, spacing: 8) {
-                            
-                            Text("Built by Clifford Owusu")
-                                .foregroundColor(.secondary)
-                            
-                            Text("House of Praise (Organization Placeholder)")
-                                .foregroundColor(.secondary)
+                        // Support
+                        VStack(spacing: 12) {
                             
                             Button {
                                 showSupportMail = true
                             } label: {
-                                HStack {
-                                    Text("Contact Support")
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(.secondary)
-                                }
+                                settingsRow(title: "Contact Support")
                             }
                             
                             Button {
                                 showBugReport = true
                             } label: {
-                                HStack {
-                                    Text("Report a Bug")
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(.secondary)
-                                }
+                                settingsRow(title: "Report a Bug")
                             }
                             
                             Button {
                                 showSuggestion = true
                             } label: {
-                                HStack {
-                                    Text("Suggest a Hymn")
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(.secondary)
-                                }
+                                settingsRow(title: "Suggest a Hymn")
                             }
                         }
                         
                         Divider()
                         
-                        // MARK: Legal
-                        VStack(alignment: .leading, spacing: 8) {
+                        // Legal & Credits
+                        VStack(spacing: 12) {
                             
                             Button {
                                 showPrivacyPolicy = true
                             } label: {
-                                HStack {
-                                    Text("Privacy Policy")
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(.secondary)
-                                }
+                                settingsRow(title: "Privacy Policy")
                             }
                             
                             Button {
                                 showTerms = true
                             } label: {
-                                HStack {
-                                    Text("Terms of Use")
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(.secondary)
-                                }
+                                settingsRow(title: "Terms of Use")
                             }
-                        }
-                        
-                        Divider()
-                        
-                        // MARK: Credits
-                        VStack(alignment: .leading, spacing: 8) {
                             
                             Button {
                                 showCredits = true
                             } label: {
-                                HStack {
-                                    Text("Credits")
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(.secondary)
-                                }
+                                settingsRow(title: "Credits")
                             }
                         }
                     }
@@ -320,8 +292,26 @@ struct SettingsView: View {
                     }
                 }
             }
-            .padding()
+            .padding(.horizontal)
+            .padding(.top, 8)
+            .padding(.bottom, 32)
         }
+        .background(
+            LinearGradient(
+                colors: [Color(.systemBackground), Color(.secondarySystemBackground)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
         .navigationTitle("Settings")
+    }
+
+    private func settingsRow(title: String) -> some View {
+        HStack {
+            Text(title)
+            Spacer()
+            Image(systemName: "chevron.right")
+                .foregroundStyle(.secondary)
+        }
     }
 }

@@ -33,8 +33,8 @@ struct SettingsSectionCard<Content: View>: View {
         }
         .padding(16)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.secondarySystemBackground))
+            RoundedRectangle(cornerRadius: 18)
+                .fill(.thinMaterial)
         )
     }
 }
