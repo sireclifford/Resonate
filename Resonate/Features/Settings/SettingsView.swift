@@ -279,11 +279,11 @@ struct SettingsView: View {
                 }
                 
                 .sheet(isPresented: $showPrivacyPolicy) {
-                    WebView(url: URL(string: "https://your-privacy-url.com")!)
+                    WebView(url: URL(string: "https://sireclifford.github.io/Resonate/")!)
                 }
                 
                 .sheet(isPresented: $showTerms) {
-                    WebView(url: URL(string: "https://your-terms-url.com")!)
+                    WebView(url: URL(string: "https://sireclifford.github.io/Resonate/")!)
                 }
                 
                 .sheet(isPresented: $showCredits) {
