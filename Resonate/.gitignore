@@ -1,2 +1,4 @@
 Resonate/Resources/Tunes/
 **/Tunes/
+GoogleService-Info.plist
+*.json
