@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E63A1B6A2F4E94FF00AD24ED /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = E63A1B692F4E94FF00AD24ED /* FirebaseAnalytics */; };
+		E63A1B6C2F4E94FF00AD24ED /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = E63A1B6B2F4E94FF00AD24ED /* FirebaseCrashlytics */; };
+		E63A1B722F4EC45B00AD24ED /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E63A1B712F4EC45B00AD24ED /* GoogleService-Info.plist */; };
+		E644D5D02F4A923300ACCDB4 /* YouVersionPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = E644D5CF2F4A923300ACCDB4 /* YouVersionPlatform */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		E6138A3A2F3735540069DC98 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +34,7 @@
 		E6138A2C2F3735520069DC98 /* Resonate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Resonate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6138A392F3735540069DC98 /* ResonateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ResonateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6138A432F3735540069DC98 /* ResonateUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ResonateUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E63A1B712F4EC45B00AD24ED /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -35,6 +43,12 @@
 			membershipExceptions = (
 				Core/Constants/UIConstants.swift,
 				Info.plist,
+				Resources/Screenshots/1.PNG,
+				Resources/Screenshots/2.PNG,
+				Resources/Screenshots/3.PNG,
+				Resources/Screenshots/4.PNG,
+				Resources/Screenshots/5.PNG,
+				Resources/Screenshots/6.PNG,
 			);
 			target = E6138A2B2F3735520069DC98 /* Resonate */;
 		};
@@ -66,6 +80,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E63A1B6C2F4E94FF00AD24ED /* FirebaseCrashlytics in Frameworks */,
+				E63A1B6A2F4E94FF00AD24ED /* FirebaseAnalytics in Frameworks */,
+				E644D5D02F4A923300ACCDB4 /* YouVersionPlatform in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,6 +106,7 @@
 		E6138A232F3735520069DC98 = {
 			isa = PBXGroup;
 			children = (
+				E63A1B712F4EC45B00AD24ED /* GoogleService-Info.plist */,
 				E6138A2E2F3735520069DC98 /* Resonate */,
 				E6138A3C2F3735540069DC98 /* ResonateTests */,
 				E6138A462F3735540069DC98 /* ResonateUITests */,
@@ -126,6 +144,9 @@
 			);
 			name = Resonate;
 			packageProductDependencies = (
+				E644D5CF2F4A923300ACCDB4 /* YouVersionPlatform */,
+				E63A1B692F4E94FF00AD24ED /* FirebaseAnalytics */,
+				E63A1B6B2F4E94FF00AD24ED /* FirebaseCrashlytics */,
 			);
 			productName = Resonate;
 			productReference = E6138A2C2F3735520069DC98 /* Resonate.app */;
@@ -209,6 +230,10 @@
 			);
 			mainGroup = E6138A232F3735520069DC98;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E644D5CE2F4A923300ACCDB4 /* XCRemoteSwiftPackageReference "platform-sdk-swift" */,
+				E63A1B682F4E94FF00AD24ED /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E6138A2D2F3735520069DC98 /* Products */;
 			projectDirPath = "";
@@ -226,6 +251,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E63A1B722F4EC45B00AD24ED /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,21 +436,22 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 634P93U8YW;
+				CURRENT_PROJECT_VERSION = 3;
+				DEVELOPMENT_TEAM = Y5FH4367CS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Resonate/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = ckowusu.Resonate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -443,21 +470,22 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 634P93U8YW;
+				CURRENT_PROJECT_VERSION = 3;
+				DEVELOPMENT_TEAM = Y5FH4367CS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Resonate/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = ckowusu.Resonate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -594,6 +622,43 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E63A1B682F4E94FF00AD24ED /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.9.0;
+			};
+		};
+		E644D5CE2F4A923300ACCDB4 /* XCRemoteSwiftPackageReference "platform-sdk-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/youversion/platform-sdk-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E63A1B692F4E94FF00AD24ED /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E63A1B682F4E94FF00AD24ED /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		E63A1B6B2F4E94FF00AD24ED /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E63A1B682F4E94FF00AD24ED /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		E644D5CF2F4A923300ACCDB4 /* YouVersionPlatform */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E644D5CE2F4A923300ACCDB4 /* XCRemoteSwiftPackageReference "platform-sdk-swift" */;
+			productName = YouVersionPlatform;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E6138A242F3735520069DC98 /* Project object */;
 }
