@@ -9,7 +9,7 @@ struct SupportMailView: UIViewControllerRepresentable {
     
     func makeUIViewController(context: Context) -> MFMailComposeViewController {
         let controller = MFMailComposeViewController()
-        controller.setToRecipients(["your@email.com"])
+        controller.setToRecipients(["ckowusu.engineer@gmail.com"])
         controller.setSubject(subject)
         controller.mailComposeDelegate = context.coordinator
         return controller

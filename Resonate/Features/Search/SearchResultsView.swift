@@ -14,6 +14,7 @@ struct SearchResultsView: View {
             List(viewModel.results) { result in
                 Button {
                     onSelectHymn(result.hymn)
+                    environment.analyticsService.searchResultTapped(id: result.hymn.id)
                     viewModel.reset()
                     
                 } label: {

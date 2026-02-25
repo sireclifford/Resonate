@@ -46,6 +46,23 @@ struct RootTabView: View {
                             .padding(.top, 8)
                     }
                 }
+                .onChange(of: selectedTab) { oldValue, newValue in
+                    let tabName: String
+                    switch newValue {
+                    case 0: tabName = "home"
+                    case 1: tabName = "favourites"
+                    case 2: tabName = "categories"
+                    case 3: tabName = "settings"
+                    default: tabName = "unknown"
+                    }
+
+                    environment.analyticsService.log(
+                        .tabSwitched,
+                        parameters: [
+                            AnalyticsParameter.tab.rawValue: tabName
+                        ]
+                    )
+                }
         }
     }
     

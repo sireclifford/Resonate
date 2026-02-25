@@ -6,6 +6,7 @@ final class AppSettingsService: ObservableObject {
 
     @AppStorage("selectedBibleID") var selectedBibleID: Int = 3034
     private let defaults = UserDefaults.standard
+    private let analytics: AnalyticsService
 
     @Published var selectedVersionId: Int {
         didSet {
@@ -22,24 +23,36 @@ final class AppSettingsService: ObservableObject {
     @Published var fontFamily: ReaderFontFamily {
         didSet {
             defaults.set(fontFamily.rawValue, forKey: Keys.fontFamily)
+            analytics.log(.fontFamilyChanged, parameters: [
+                AnalyticsParameter.fontFamily.rawValue: fontFamily.rawValue
+            ])
         }
     }
     
     @Published var lineSpacing: ReaderLineSpacing {
         didSet {
             defaults.set(lineSpacing.rawValue, forKey: Keys.lineSpacing)
+            analytics.log(.lineSpacingChanged, parameters: [
+                AnalyticsParameter.lineSpacing.rawValue: lineSpacing.rawValue
+            ])
         }
     }
 
     @Published var showVerseNumbers: Bool {
         didSet {
             defaults.set(showVerseNumbers, forKey: Keys.showVerseNumbers)
+            analytics.log(.verseNumbersToggled, parameters: [
+                "enabled": showVerseNumbers
+            ])
         }
     }
     
     @Published var chorusLabelStyle: ChorusLabelStyle {
         didSet {
             defaults.set(chorusLabelStyle.rawValue, forKey: Keys.chorusLabelStyle)
+            analytics.log(.chorusLabelChanged, parameters: [
+                AnalyticsParameter.chorusLabel.rawValue: chorusLabelStyle.rawValue
+            ])
         }
     }
 
@@ -58,23 +71,33 @@ final class AppSettingsService: ObservableObject {
     @Published var stopPlaybackOnExit: Bool {
         didSet {
             defaults.set(stopPlaybackOnExit, forKey: Keys.stopPlaybackOnExit)
+            analytics.log(.stopPlaybackToggled, parameters: [
+                "enabled": stopPlaybackOnExit
+            ])
         }
     }
     
     @Published var enableHaptics: Bool {
         didSet {
             defaults.set(enableHaptics, forKey: Keys.enableHaptics)
+            analytics.log(.hapticsToggled, parameters: [
+                "enabled": enableHaptics
+            ])
         }
     }
     
     @Published var theme: AppTheme {
         didSet {
             defaults.set(theme.rawValue, forKey: Keys.theme)
+            analytics.log(.themeChanged, parameters: [
+                AnalyticsParameter.theme.rawValue: theme.rawValue
+            ])
         }
     }
     
 
-    init() {
+    init(analytics: AnalyticsService) {
+        self.analytics = analytics
         selectedVersionId = defaults.object(forKey: Keys.selectedVersionId) as? Int ?? 3034
 
         fontSize = ReaderFontSize(

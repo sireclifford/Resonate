@@ -13,29 +13,34 @@ final class AppEnvironment: ObservableObject {
     let recentlyViewedService: RecentlyViewedService
     let settingsService: AppSettingsService
     let hymnStoryService: HymnStoryService
+    let analyticsService: AnalyticsService
     
     init(
         hymnService: HymnService = HymnService(),
         persistenceService: PersistenceService = UserDefaultsStore()
     ) {
-        
+        self.analyticsService = AnalyticsService.shared
         self.hymnService = hymnService
         self.persistenceService = persistenceService
         
         // Settings first (because audio depends on it)
-            self.settingsService = AppSettingsService()
+        self.settingsService = AppSettingsService(analytics: analyticsService)
         
-        self.favouritesService = FavouritesService(persistence: persistenceService, settings: settingsService)
+        self.favouritesService = FavouritesService(persistence: persistenceService, settings: settingsService,
+                                                   analyticsService: analyticsService
+        )
         self.tuneService = TuneService()
         self.recentlyViewedService = RecentlyViewedService()
         
         // Inject settings into audio service
-            self.audioPlaybackService = AudioPlaybackService(
-                settings: settingsService
-            )
+        self.audioPlaybackService = AudioPlaybackService(
+            settings: settingsService,
+            analyticsService: analyticsService
+        )
         self.categoryViewModel = CategoryViewModel(hymnService: hymnService)
         self.searchViewModel = SearchViewModel(
-            hymnService: hymnService
+            hymnService: hymnService,
+            analytics: analyticsService
         )
         self.hymnStoryService = HymnStoryService()
     }

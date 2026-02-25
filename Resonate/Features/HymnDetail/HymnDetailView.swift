@@ -21,9 +21,9 @@ struct HymnDetailView: View {
             )
         )
         _favouritesService = ObservedObject(
-               wrappedValue: environment.favouritesService
-           )
-
+            wrappedValue: environment.favouritesService
+        )
+        
         
     }
     
@@ -108,7 +108,7 @@ struct HymnDetailView: View {
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
                     showStory = true
                 } label: {
-                    Image(systemName: "book.closed")
+                    Image(systemName: "book.pages")
                 }
             }
         }
@@ -129,6 +129,10 @@ struct HymnDetailView: View {
         .toolbar(.hidden, for: .tabBar)
         .onAppear {
             environment.recentlyViewedService.record(id: index.id)
+            environment.analyticsService.hymnOpened(
+                id: viewModel.hymn.id,
+                category: viewModel.hymn.category.rawValue
+            )
         }
         .onDisappear {
             if settings.stopPlaybackOnExit {

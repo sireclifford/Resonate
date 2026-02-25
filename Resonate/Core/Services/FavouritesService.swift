@@ -5,10 +5,13 @@ final class FavouritesService: ObservableObject {
     
     private let settings: AppSettingsService
     private let persistence: PersistenceService
+    private let analyticsService: AnalyticsService
     
-    init(persistence: PersistenceService, settings: AppSettingsService){
+    init(persistence: PersistenceService, settings: AppSettingsService,analyticsService: AnalyticsService){
         self.persistence = persistence
         self.settings = settings
+        self.analyticsService = analyticsService
+        
         load()
     }
     
@@ -19,8 +22,10 @@ final class FavouritesService: ObservableObject {
     func toggle(id: Int) {
         if favouriteIDs.contains(id) {
             favouriteIDs.remove(id)
+            analyticsService.hymnUnfavourited(id: id)
         } else {
             favouriteIDs.insert(id)
+            analyticsService.hymnFavourited(id: id)
         }
         
         save()

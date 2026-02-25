@@ -30,6 +30,16 @@ struct CategoriesView: View {
                             )
                         }
                         .buttonStyle(.plain)
+                        .simultaneousGesture(
+                            TapGesture().onEnded {
+                                environment.analyticsService.log(
+                                    .categoryOpened,
+                                    parameters: [
+                                        AnalyticsParameter.category.rawValue: category.title
+                                    ]
+                                )
+                            }
+                        )
                     }
                 }
                 .padding()

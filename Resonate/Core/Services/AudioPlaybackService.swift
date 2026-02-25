@@ -8,9 +8,11 @@ final class AudioPlaybackService: NSObject, ObservableObject {
     private var player: AVAudioPlayer?
     
     private let settings: AppSettingsService
+    private let analyticsService: AnalyticsService
     
-    init(settings: AppSettingsService) {
+    init(settings: AppSettingsService, analyticsService: AnalyticsService) {
         self.settings = settings
+        self.analyticsService = analyticsService
     }
     
     func togglePlayback(for id: Int, tuneService: TuneService) {
@@ -48,6 +50,8 @@ final class AudioPlaybackService: NSObject, ObservableObject {
             
             currentHymnID = id
             isPlaying = true
+            
+            analyticsService.hymnAudioPlayed(id: id)
             
             if settings.enableHaptics {
                 Haptics.light()

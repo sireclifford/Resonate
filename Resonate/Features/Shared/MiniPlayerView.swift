@@ -42,6 +42,9 @@ struct MiniPlayerView: View {
                         for: id,
                         tuneService: environment.tuneService
                     )
+                    if let id = environment.audioPlaybackService.currentHymnID {
+                        environment.analyticsService.miniPlayerToggled(id: id)
+                    }
                 } label: {
                     Image(systemName: audio.isPlaying ? "pause.fill" : "play.fill")
                         .font(.system(size: 18, weight: .bold))
@@ -69,8 +72,11 @@ struct MiniPlayerView: View {
                     .opacity(0.9)
             )
             .shadow(color: .black.opacity(0.15), radius: 20, y: 8)
-//            .padding(.horizontal)
+            //            .padding(.horizontal)
             .padding(.bottom, 6)
+            .onTapGesture {
+                    environment.analyticsService.miniPlayerTapped(id: id)
+            }
         }
     }
 }
