@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		E63A1B6A2F4E94FF00AD24ED /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = E63A1B692F4E94FF00AD24ED /* FirebaseAnalytics */; };
 		E63A1B6C2F4E94FF00AD24ED /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = E63A1B6B2F4E94FF00AD24ED /* FirebaseCrashlytics */; };
-		E63A1B722F4EC45B00AD24ED /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E63A1B712F4EC45B00AD24ED /* GoogleService-Info.plist */; };
 		E644D5D02F4A923300ACCDB4 /* YouVersionPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = E644D5CF2F4A923300ACCDB4 /* YouVersionPlatform */; };
 /* End PBXBuildFile section */
 
@@ -34,7 +33,6 @@
 		E6138A2C2F3735520069DC98 /* Resonate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Resonate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6138A392F3735540069DC98 /* ResonateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ResonateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6138A432F3735540069DC98 /* ResonateUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ResonateUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		E63A1B712F4EC45B00AD24ED /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -106,7 +104,6 @@
 		E6138A232F3735520069DC98 = {
 			isa = PBXGroup;
 			children = (
-				E63A1B712F4EC45B00AD24ED /* GoogleService-Info.plist */,
 				E6138A2E2F3735520069DC98 /* Resonate */,
 				E6138A3C2F3735540069DC98 /* ResonateTests */,
 				E6138A462F3735540069DC98 /* ResonateUITests */,
@@ -251,7 +248,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E63A1B722F4EC45B00AD24ED /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
