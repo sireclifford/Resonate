@@ -1,211 +1,205 @@
-# 📖 Resonate
+# Resonate 📖🎵
 
-**Resonate** is a modern Seventh-day Adventist hymnal app built with SwiftUI.
+## Production-Grade iOS Hymnal App (SwiftUI)
 
-It provides structured hymn browsing, intelligent search, reader customization, and limited bundled audio playback — designed with clean architecture and future scalability in mind.
+**Resonate** is a fully architected iOS application built using
+**SwiftUI, MVVM, and service-based dependency injection**.
 
----
+The project demonstrates production-level state management,
+deterministic UI rendering, structured domain modeling, scalable audio
+architecture, smart notifications, deep-link navigation, and analytics
+instrumentation.
 
-## 🏷 Badges
+------------------------------------------------------------------------
 
-![Platform](https://img.shields.io/badge/Platform-iOS-blue)
-![Swift](https://img.shields.io/badge/Swift-5.9-orange)
-![SwiftUI](https://img.shields.io/badge/UI-SwiftUI-green)
-![Architecture](https://img.shields.io/badge/Architecture-MVVM-lightgrey)
-![Version](https://img.shields.io/badge/Version-1.0.0-success)
+## 🚀 Engineering Goals
 
----
+Resonate was designed to demonstrate:
 
-## ✨ Features
+-   Clean dependency injection\
+-   Modular service architecture\
+-   Deterministic UI behavior\
+-   Deep-link navigation via state\
+-   Smart notification scheduling\
+-   Offline-first audio handling\
+-   Strongly-typed analytics instrumentation\
+-   Scalable feature expansion
 
-### 🎵 Hymn Library
-- Browse hymns by category
-- View hymn details with structured verses and chorus
-- Recently viewed hymns
-- Favourite hymns with persistent storage
+------------------------------------------------------------------------
 
-### 🔎 Intelligent Search
-- Search by hymn number (exact and partial)
-- Search by title
-- Search by lyrics (verse-level matching)
-- Numeric quick jump behavior
-- Debounced search for performance
+# 🧠 Architecture
 
-### 📖 Reader Experience
-- Adjustable font size
-- Adjustable font family
-- Line spacing control
-- Toggle verse numbers
-- Rename “Chorus” / “Refrain”
-- Clean immersive reading layout
+Resonate uses a modular dependency container:
 
-### 🔊 Audio (Limited v1)
-- Bundled audio for selected hymns
-- Deterministic audio badge indicator
-- AVAudioPlayer-based playback
-- Haptic feedback integration
-- Automatic stop on navigation
-
-### 🎨 UI & Visual Design
-- Procedurally generated gradient card backgrounds
-- Deterministic color system
-- Adaptive dark mode support
-- Responsive grid layouts
-- Clean SwiftUI navigation
-
-### ⚙️ Settings
-- Reader preferences
-- Haptics toggle
-- Library management
-- Audio controls
-- About & Credits section
-
----
-
-## 🖼 Screenshots
-<p align="center">
-<img src="Resonate/Screenshots/1.PNG" alt="Home" width="300"/>
-<img src="Resonate/Screenshots/2.PNG" alt="Home" width="300"/>
-<img src="Resonate/Screenshots/3.PNG" alt="Home" width="300"/>
-<img src="Resonate/Screenshots/4.PNG" alt="Home" width="300"/>
-<img src="Resonate/Screenshots/5.PNG" alt="Home" width="300"/>
-<img src="Resonate/Screenshots/6.PNG" alt="Home" width="300"/>
-</p>
-
-## 🏗 Architecture
-
-Resonate follows a layered, modular architecture:
-
-```
-AppEnvironment
- ├── HymnService
- ├── TuneService
- ├── AudioPlaybackService
- ├── RecentlyViewedService
- ├── FavouritesService
- ├── SearchViewModel
- └── CategoryViewModel
-```
+    AppEnvironment (Dependency Container)
+     ├── HymnService
+     ├── TuneService
+     ├── AudioPlaybackService
+     ├── FavouritesService
+     ├── RecentlyViewedService
+     ├── NotificationService
+     ├── LastAppOpenService
+     ├── AnalyticsService
+     ├── SearchViewModel
+     ├── CategoryViewModel
+     └── HymnStoryService
 
 ### Architectural Principles
 
-- Dependency injection via `AppEnvironment`
-- MVVM pattern for feature modules
-- Separation of UI, business logic, and services
-- Deterministic design (no random UI state)
-- Type-safe navigation
-- Scalable audio system (future cloud-ready)
+-   Explicit dependency injection\
+-   MVVM separation of concerns\
+-   Service isolation\
+-   Reactive state propagation\
+-   Deterministic behavior\
+-   Type-safe navigation\
+-   Feature scalability
 
----
+------------------------------------------------------------------------
 
-## 🔊 Audio Strategy (v1)
+# 📚 Structured Hymn Engine
 
-To maintain a lightweight app size:
+## Hymn Modeling
 
-- Only 10 hymns include bundled `.m4a` files
-- Audio availability is determined at runtime via `TuneService`
-- Playback uses `AVAudioPlayer`
-- Architecture prepared for future remote streaming or download model
+-   JSON-driven hymn data\
+-   Structured verses & chorus separation\
+-   Metadata normalization\
+-   Scripture references (USFM codes)\
+-   Historical companion content
 
-Future versions may include:
-- On-demand audio downloads
-- Remote hosting
-- Offline caching
-- Full audio library support
+## Deterministic Hymn of the Day
 
----
+Daily hymn rotation is computed using:
 
-## 📱 Tech Stack
-
-- SwiftUI
-- Combine
-- AVFoundation
-- MVVM Architecture
-- Environment-driven dependency injection
-- Deterministic gradient rendering
-- Local persistence (UserDefaults-based services)
-
----
-
-## 🚀 Installation
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/your-username/Resonate.git
+``` swift
+let index = daysSinceEpoch % hymnCount
 ```
 
-2. Open in Xcode:
+Benefits:
 
-```bash
-open Resonate.xcodeproj
-```
+-   Device consistency\
+-   Predictable behavior\
+-   No randomization bugs\
+-   Stable analytics tracking
 
-3. Select target device or simulator.
+------------------------------------------------------------------------
 
-4. Build and run.
+# 🔎 Intelligent Search
 
----
+-   Debounced search input\
+-   Numeric hymn quick-jump\
+-   Title matching\
+-   Verse-level lyric search\
+-   Category filtering\
+-   Efficient index-based filtering
 
-## 📌 Roadmap
+Business logic lives inside `SearchViewModel`.
 
-### v1.x
-- Performance refinements
-- Reader mode enhancements
-- Minor UI polish
+------------------------------------------------------------------------
 
-### v2
-- Full cloud-based audio delivery
-- Offline download manager
-- Immersive reading mode
-- Bookmarking system
-- Verse highlighting
-- Audio streaming support
+# 🎼 Audio System
 
----
+## AudioPlaybackService
 
-## 📄 License
+-   AVAudioPlayer-based playback\
+-   Background audio support\
+-   Global floating MiniPlayer\
+-   Deterministic audio availability detection\
+-   Haptic feedback integration\
+-   Auto-stop on navigation (configurable)
 
-This project is currently proprietary.
+### State Model
 
-All rights reserved.
+    AudioPlaybackService
+     ├── @Published currentHymnID
+     ├── @Published isPlaying
+     ├── AVAudioPlayer instance
+     └── Analytics hooks
 
-(You may replace this section with MIT, Apache 2.0, or other license if you choose.)
+Designed to evolve into:
 
----
+-   Remote streaming\
+-   On-demand downloads\
+-   Offline caching\
+-   Background fetch
 
-## 👤 Author
+------------------------------------------------------------------------
 
-Clifford Owusu  
-House of Praise
+# 🔔 Smart Notification System
 
----
+## Capabilities
 
-## 🤝 Contributing
+-   User-selectable daily reminder time\
+-   Suppresses reminder if app already opened that day\
+-   Deep-link navigation to hymn detail\
+-   Intelligent non-repeating scheduling\
+-   Foreground banner support\
+-   State-driven routing via environment container
 
-Contributions are not currently open.
+------------------------------------------------------------------------
 
-Future collaboration guidelines will be provided as the project evolves.
+# 📊 Analytics
 
----
+Integrated Firebase Analytics with strongly-typed event definitions.
 
-## 📬 Contact
+Tracked events:
 
-For support, suggestions, or bug reports:
+-   hymn_opened\
+-   hymn_favourited / hymn_unfavourited\
+-   category_opened\
+-   tab_switched\
+-   audio_played / audio_paused\
+-   reminder_enabled / reminder_disabled
 
-- Use the in-app feedback feature  
-- Or contact via email (to be added)
+No personal user data is collected.
 
----
+------------------------------------------------------------------------
 
-## 🏁 Version
+# 🔐 Privacy & Compliance
 
-**v1.0.0**
+-   Explicit notification permission request\
+-   Privacy policy hosted via GitHub Pages\
+-   Terms of use\
+-   API attribution (YouVersion)\
+-   Firebase keys removed from repository history\
+-   No invasive tracking
 
-Initial release featuring:
+------------------------------------------------------------------------
 
-- Core hymn browsing
-- Intelligent search
-- Reader customization
-- Limited bundled audio
-- Production-ready UI polish
+# 📱 Tech Stack
+
+-   SwiftUI\
+-   Combine\
+-   AVFoundation\
+-   UserNotifications\
+-   Firebase Analytics\
+-   MVVM\
+-   Service-based dependency injection\
+-   JSON content modeling
+
+------------------------------------------------------------------------
+
+# 📈 Scalability Roadmap
+
+Prepared for:
+
+-   Remote audio streaming\
+-   Offline download manager\
+-   Cross-device sync\
+-   Cloud content updates\
+-   Widgets\
+-   Apple Watch support\
+-   AI-powered hymn discovery
+
+------------------------------------------------------------------------
+
+# 👨🏾‍💻 Author
+
+Clifford Owusu\
+iOS Engineer
+
+------------------------------------------------------------------------
+
+# 📌 Status
+
+Currently distributed via TestFlight.\
+App Store release in preparation.
