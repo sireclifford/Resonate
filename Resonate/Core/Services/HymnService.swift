@@ -1,3 +1,5 @@
+import Foundation
+
 final class HymnService {
     
     private(set) var index: [HymnIndex] = []
@@ -70,5 +72,26 @@ final class HymnService {
         guard let currentIndex = index.firstIndex(where: { $0.id == id }) else { return nil }
         let previousIndex = currentIndex - 1
         return index.indices.contains(previousIndex) ? index[previousIndex] : nil
+    }
+    
+    func hymnOfTheDay() -> HymnIndex? {
+        let hymns = index
+        guard !hymns.isEmpty else { return nil }
+
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+
+        let epoch = calendar.date(
+            from: DateComponents(year: 2024, month: 1, day: 1)
+        )!
+
+        let days = calendar.dateComponents(
+            [.day],
+            from: epoch,
+            to: today
+        ).day ?? 0
+
+        let index = days % hymns.count
+        return hymns[index]
     }
 }

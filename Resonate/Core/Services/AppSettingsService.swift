@@ -7,6 +7,17 @@ final class AppSettingsService: ObservableObject {
     @AppStorage("selectedBibleID") var selectedBibleID: Int = 3034
     private let defaults = UserDefaults.standard
     private let analytics: AnalyticsService
+    
+    @Published var dailyReminderEnabled: Bool {
+        didSet {
+            UserDefaults.standard.set(dailyReminderEnabled, forKey: Keys.dailyReminderEnabled)
+        }
+    }
+    @Published var dailyReminderTime: Date {
+        didSet {
+                UserDefaults.standard.set(dailyReminderTime, forKey: Keys.dailyReminderTime)
+            }
+    }
 
     @Published var selectedVersionId: Int {
         didSet {
@@ -99,7 +110,7 @@ final class AppSettingsService: ObservableObject {
     init(analytics: AnalyticsService) {
         self.analytics = analytics
         selectedVersionId = defaults.object(forKey: Keys.selectedVersionId) as? Int ?? 3034
-
+        
         fontSize = ReaderFontSize(
             rawValue: defaults.string(forKey: Keys.fontSize) ?? "medium"
         ) ?? .medium
@@ -114,11 +125,11 @@ final class AppSettingsService: ObservableObject {
         chorusLabelStyle = ChorusLabelStyle(
             rawValue: defaults.string(forKey: Keys.chorusLabelStyle) ?? "chorus"
         ) ?? .chorus
-
+        
         showVerseNumbers = defaults.object(forKey: Keys.showVerseNumbers) as? Bool ?? true
-
+        
         autoDownloadAudio = defaults.object(forKey: Keys.autoDownloadAudio) as? Bool ?? true
-
+        
         allowCellularDownload = defaults.object(forKey: Keys.allowCellularDownload) as? Bool ?? false
         
         stopPlaybackOnExit = defaults.object(forKey: Keys.stopPlaybackOnExit) as? Bool ?? false
@@ -128,6 +139,15 @@ final class AppSettingsService: ObservableObject {
         theme = AppTheme(
             rawValue: defaults.string(forKey: Keys.theme) ?? "system"
         ) ?? .system
+        
+        self.dailyReminderEnabled = defaults.object(forKey: Keys.dailyReminderEnabled) as? Bool ?? false
+        
+        self.dailyReminderTime = defaults.object(forKey: Keys.dailyReminderTime) as? Date ?? {
+            var components = DateComponents()
+            components.hour = 8
+            components.minute = 0
+            return Calendar.current.date(from: components) ?? Date()
+        }()
     }
 
     private struct Keys {
@@ -144,5 +164,8 @@ final class AppSettingsService: ObservableObject {
         static let enableHaptics = "settings.enableHaptics"
         static let theme = "settings.theme"
         static let selectedVersionId = "settings.selectedVersionId"
+        
+        static let dailyReminderTime = "dailyReminderTime"
+        static let dailyReminderEnabled = "dailyReminderEnabled"
     }
 }

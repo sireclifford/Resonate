@@ -16,7 +16,7 @@ final class HomeViewModel: ObservableObject {
     ) {
         self.hymnService = hymnService
         self.recentlyViewedService = recentlyViewedService
-        
+        self.hymnOfTheDay = hymnService.hymnOfTheDay()
         
         recentlyViewedService.$hymnIds
             .map { ids in
@@ -27,7 +27,6 @@ final class HomeViewModel: ObservableObject {
             .assign(to: &$recentlyViewed)
         
         bindRecentlyViewed()
-        computeHymnOfTheDay()
     }
     
     private func bindRecentlyViewed() {
@@ -42,27 +41,4 @@ final class HomeViewModel: ObservableObject {
             .assign(to: &$recentlyViewed)
     }
     
-    private func computeHymnOfTheDay() {
-        let hymns = hymnService.index
-        guard !hymns.isEmpty else {
-            hymnOfTheDay = nil
-            return
-        }
-        
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        
-        let epoch = calendar.date(
-            from: DateComponents(year: 2024, month: 1, day: 1)
-        )!
-        
-        let days = calendar.dateComponents(
-            [.day],
-            from: epoch,
-            to: today
-        ).day ?? 0
-        
-        let index = days % hymns.count
-        hymnOfTheDay = hymns[index]
-    }
 }

@@ -7,13 +7,19 @@ final class AppEnvironment: ObservableObject {
     let persistenceService: PersistenceService
     let favouritesService: FavouritesService
     let tuneService: TuneService
-    @Published var audioPlaybackService: AudioPlaybackService
+    
     let categoryViewModel: CategoryViewModel
     let searchViewModel: SearchViewModel
     let recentlyViewedService: RecentlyViewedService
     let settingsService: AppSettingsService
     let hymnStoryService: HymnStoryService
     let analyticsService: AnalyticsService
+    
+    let notificationService: NotificationService
+    let hymnOfTheDayEngagementService: HymnOfTheDayEngagementService
+
+    @Published var notificationHymnID: Int?
+    @Published var audioPlaybackService: AudioPlaybackService
     
     init(
         hymnService: HymnService = HymnService(),
@@ -43,6 +49,13 @@ final class AppEnvironment: ObservableObject {
             analytics: analyticsService
         )
         self.hymnStoryService = HymnStoryService()
+        
+        self.notificationService = NotificationService()
+        self.hymnOfTheDayEngagementService = HymnOfTheDayEngagementService(persistence: persistenceService)
+
+        self.notificationService.onNotificationTapped = { [weak self] hymnID in
+            self?.notificationHymnID = hymnID
+        }
     }
     
 }

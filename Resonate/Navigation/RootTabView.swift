@@ -13,8 +13,8 @@ struct RootTabView: View {
         )
         
         _audioService = ObservedObject(
-               wrappedValue: environment.audioPlaybackService
-           )
+            wrappedValue: environment.audioPlaybackService
+        )
     }
     
     var body: some View {
@@ -36,33 +36,37 @@ struct RootTabView: View {
                     .tag(3)
                     .tabItem { Label("Settings", systemImage: "gear") }
             }
-                .preferredColorScheme(settings.theme.colorScheme)
-                .padding(.top, audioService.currentHymnID != nil ? 72 : 0)
-                .overlay(alignment: .top) {
-                    if audioService.currentHymnID != nil {
-                        MiniPlayerView(environment: environment)
-                            .environmentObject(environment)
-                            .padding(.horizontal)
-                            .padding(.top, 8)
-                    }
+            .preferredColorScheme(settings.theme.colorScheme)
+            .padding(.top, audioService.currentHymnID != nil ? 72 : 0)
+            .overlay(alignment: .top) {
+                if audioService.currentHymnID != nil {
+                    MiniPlayerView(environment: environment)
+                        .environmentObject(environment)
+                        .padding(.horizontal)
+                        .padding(.top, 8)
                 }
-                .onChange(of: selectedTab) { oldValue, newValue in
-                    let tabName: String
-                    switch newValue {
-                    case 0: tabName = "home"
-                    case 1: tabName = "favourites"
-                    case 2: tabName = "categories"
-                    case 3: tabName = "settings"
-                    default: tabName = "unknown"
-                    }
-
-                    environment.analyticsService.log(
-                        .tabSwitched,
-                        parameters: [
-                            AnalyticsParameter.tab.rawValue: tabName
-                        ]
-                    )
+            }
+            .onChange(of: selectedTab) { oldValue, newValue in
+                let tabName: String
+                switch newValue {
+                case 0: tabName = "home"
+                case 1: tabName = "favourites"
+                case 2: tabName = "categories"
+                case 3: tabName = "settings"
+                default: tabName = "unknown"
                 }
+                
+                environment.analyticsService.log(
+                    .tabSwitched,
+                    parameters: [
+                        AnalyticsParameter.tab.rawValue: tabName
+                    ]
+                )
+            }
+            .onChange(of: environment.notificationHymnID) { _, newValue in
+                guard newValue != nil else { return }
+                selectedTab = 0
+            }
         }
     }
     
