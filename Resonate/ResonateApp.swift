@@ -15,6 +15,19 @@ struct ResonateApp: App {
         WindowGroup {
             RootTabView(environment: environment)
                 .environmentObject(environment)
+                .onAppear {
+                    environment.notificationService.cancelReminder()
+                    
+                    if environment.settingsService.dailyReminderEnabled,
+                       let hymn = environment.hymnService.hymnOfTheDay() {
+                        
+                        environment.notificationService.scheduleSmartDailyReminder(
+                            reminderTime: environment.settingsService.dailyReminderTime,
+                            hymn: hymn,
+                            engagementService: environment.hymnOfTheDayEngagementService
+                        )
+                    }
+                }
         }
     }
 }

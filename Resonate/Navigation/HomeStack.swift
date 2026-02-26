@@ -36,7 +36,31 @@ struct HomeStack: View {
                     CategoriesView(environment: environment)
                 }
             }
+            .onAppear {
+                handleNotificationRouting()
+            }
+            .onChange(of: environment.notificationHymnID) { _, _ in
+                handleNotificationRouting()
+            }
         }
+    }
+    
+    private func handleNotificationRouting() {
+        guard let id = environment.notificationHymnID else { return }
+
+        if let hymn = environment.hymnService.index.first(where: { $0.id == id }) {
+
+            // Ensure we are on Home tab
+            selectedTab = 0
+
+            // Reset navigation safely
+            path = NavigationPath()
+
+            // Push
+            path.append(hymn)
+        }
+
+        environment.notificationHymnID = nil
     }
 }
 

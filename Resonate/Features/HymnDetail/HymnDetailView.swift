@@ -133,6 +133,11 @@ struct HymnDetailView: View {
                 id: viewModel.hymn.id,
                 category: viewModel.hymn.category.rawValue
             )
+            
+            if let hotd = environment.hymnService.hymnOfTheDay(),
+               viewModel.hymn.id == hotd.id {
+                environment.hymnOfTheDayEngagementService.markOpened(hymnID: viewModel.hymn.id)
+            }
         }
         .onDisappear {
             if settings.stopPlaybackOnExit {
