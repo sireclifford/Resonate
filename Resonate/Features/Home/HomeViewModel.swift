@@ -16,16 +16,8 @@ final class HomeViewModel: ObservableObject {
     ) {
         self.hymnService = hymnService
         self.recentlyViewedService = recentlyViewedService
-        self.hymnOfTheDay = hymnService.hymnOfTheDay()
         
-        recentlyViewedService.$hymnIds
-            .map { ids in
-                ids.compactMap { id in
-                    hymnService.hymnIndex(by: id)
-                }
-            }
-            .assign(to: &$recentlyViewed)
-        
+        refreshHymnOfTheDay()
         bindRecentlyViewed()
     }
     
@@ -39,6 +31,10 @@ final class HomeViewModel: ObservableObject {
             }
             .receive(on: RunLoop.main)
             .assign(to: &$recentlyViewed)
+    }
+    
+    func refreshHymnOfTheDay() {
+        hymnOfTheDay = hymnService.hymnOfTheDay()
     }
     
 }
