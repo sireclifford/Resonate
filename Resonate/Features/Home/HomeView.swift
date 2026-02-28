@@ -8,6 +8,7 @@ struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     @ObservedObject private var favouritesService: FavouritesService
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.colorScheme) private var colorScheme
     @State private var midnightTimer: Timer?
     
     @State private var isSearchPresented = false
@@ -59,21 +60,9 @@ struct HomeView: View {
     }
     
     private var content: some View {
-        LazyVStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: 32) {
             
-            // Hymn of the Day
-            if let hymn = viewModel.hymnOfTheDay {
-                NavigationLink(value: hymn) {
-                    HymnOfTheDayHeader(
-                        index: hymn
-                    )
-                    .id(hymn.id)
-                    .transition(.opacity)
-//                    .transition(.opacity.combined(with: .scale(scale: 0.98)))
-                }
-            }
-            
-            // Global Search
+            // MARK: SEARCH
             GlobalSearchBar(
                 viewModel: environment.searchViewModel,
                 onActivate: {
@@ -81,19 +70,43 @@ struct HomeView: View {
                 }
             )
             
-            // Recently Viewed (FIXED)
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Text("Recently Viewed")
-                        .font(.headline)
-                    Spacer()
+            // MARK: DAILY HYMN (Hero)
+            if let hymn = viewModel.hymnOfTheDay {
+                VStack(alignment: .leading, spacing: 12) {
+                    
+                    NavigationLink(value: hymn) {
+                        HymnOfTheDayHeader(index: hymn)
+                            .id(hymn.id)
+                            .padding(.vertical, 4)
+                    }
                 }
+            }
+            
+            // MARK: CONTINUE
+            VStack(alignment: .leading, spacing: 12) {
+                
+                Text("Continue")
+                    .font(.title3.weight(.semibold))
+                
                 if viewModel.recentlyViewed.isEmpty {
-                    RecentlyViewedPlaceholder()
+                    
+                    VStack(spacing: 6) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 22))
+                            .foregroundStyle(.secondary.opacity(0.5))
+                        
+                        Text("Your recent hymns will appear here.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary.opacity(0.8))
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
                 } else {
+                    
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 16) {
-                            ForEach(viewModel.recentlyViewed) { hymn in
+                        HStack(spacing: 14) {
+                            ForEach(viewModel.recentlyViewed.prefix(4)) { hymn in
                                 NavigationLink(value: hymn) {
                                     HymnCardView(
                                         index: hymn,
@@ -102,7 +115,7 @@ struct HomeView: View {
                                             favouritesService.toggle(id: hymn.id)
                                         }
                                     )
-                                    .frame(width: 180)
+                                    .frame(width: 190)
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -111,17 +124,72 @@ struct HomeView: View {
                 }
             }
             
-            // Categories (TYPE-SAFE ONLY)
-            HomeCategoriesSection(
-                categories: environment.categoryViewModel.categories,
-                counts: environment.categoryViewModel.hymnsByCategory
-                    .mapValues { $0.count },
-                onSeeAll: onSeeAll,
-                environment: environment
-            )
+            // MARK: THEMES (Curated + Horizontal)
+            VStack(alignment: .leading, spacing: 16) {
+                
+                HStack {
+                    Text("Themes")
+                        .font(.title3.weight(.semibold))
+                    
+                    Spacer()
+                    Button("See All") {
+                        onSeeAll()
+                    }
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                }
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 16) {
+                        ForEach(environment.categoryViewModel.categories.prefix(6)) { category in
+                            NavigationLink(value: category) {
+                                VStack {
+                                    Spacer()
+                                    HStack {
+                                        Text(category.title)
+                                            .font(.headline.weight(.semibold))
+                                            .foregroundStyle(.white)
+                                            .multilineTextAlignment(.leading)
+                                            .lineLimit(2)
+                                        
+                                        Spacer()
+                                    }
+                                }
+                                .padding(24)
+                                .frame(width: 190, height: 150, alignment: .topLeading)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 24)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: gradientColors(for: category),
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+                                )
+                                .overlay(
+                                    ZStack {
+                                        Image(systemName: symbol(for: category))
+                                            .font(.system(size: 90, weight: .regular))
+                                            .foregroundStyle(Color.white.opacity(colorScheme == .dark ? 0.06 : 0.12))
+                                    }
+                                )
+                                .shadow(
+                                    color: Color.black.opacity(0.12),
+                                    radius: 14,
+                                    y: 8
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 4)
+                }
+                .scrollContentBackground(.hidden)
+            }
         }
         .padding()
-        //        .padding(.bottom, audioService.currentHymnID != nil ? 10 : 0)
+        .animation(.easeInOut(duration: 0.6), value: viewModel.hymnOfTheDay?.id)
     }
     
     private func scheduleMidnightRefresh() {
@@ -145,6 +213,39 @@ struct HomeView: View {
                 }
                 scheduleMidnightRefresh()
             }
+        }
+    }
+    
+    private func gradientColors(for category: HymnCategory) -> [Color] {
+        let base = abs(category.id.hashValue)
+        switch base % 4 {
+        case 0:
+            return [Color(red: 0.32, green: 0.36, blue: 0.62),
+                    Color(red: 0.20, green: 0.24, blue: 0.45)]
+        case 1:
+            return [Color(red: 0.20, green: 0.48, blue: 0.35),
+                    Color(red: 0.12, green: 0.32, blue: 0.24)]
+        case 2:
+            return [Color(red: 0.55, green: 0.42, blue: 0.22),
+                    Color(red: 0.35, green: 0.26, blue: 0.12)]
+        default:
+            return [Color(red: 0.40, green: 0.30, blue: 0.50),
+                    Color(red: 0.24, green: 0.18, blue: 0.32)]
+        }
+    }
+    
+    private func symbol(for category: HymnCategory) -> String {
+        switch category.title.lowercased() {
+        case let title where title.contains("praise"):
+            return "hands.clap"
+        case let title where title.contains("baptism"):
+            return "drop.fill"
+        case let title where title.contains("worship"):
+            return "sparkles"
+        case let title where title.contains("birth"):
+            return "star.fill"
+        default:
+            return "book.closed"
         }
     }
 }
