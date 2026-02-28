@@ -14,10 +14,11 @@ struct HymnOfTheDayHeader: View {
                 .foregroundStyle(Color("BrandAccent"))
                 .textCase(.uppercase)
             
-            // Hymn Title
+            // Hymn Number
             Text("Hymn \(index.id)")
                 .font(.josefin(size: 20, weight: .semibold))
             
+            // Hymn Title
             Text(index.title)
                 .font(.josefin(size: 16))
                 .foregroundStyle(.secondary)
@@ -38,13 +39,13 @@ struct HymnOfTheDayHeader: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             ZStack {
-                // Soft gold gradient base
+                // Soft gradient under glass
                 RoundedRectangle(cornerRadius: 20)
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color("BrandAccent").opacity(0.08),
-                                Color.clear
+                                Color("BrandAccent").opacity(colorScheme == .dark ? 0.18 : 0.10),
+                                Color("BrandAccent").opacity(colorScheme == .dark ? 0.05 : 0.03)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -53,22 +54,28 @@ struct HymnOfTheDayHeader: View {
                 
                 // Glass layer
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(.ultraThinMaterial)
+                    .fill(
+                        colorScheme == .dark
+                        ? AnyShapeStyle(.ultraThinMaterial)
+                        : AnyShapeStyle(Color("BrandAccent").opacity(0.06))
+                    )
             }
         )
         .overlay(
             RoundedRectangle(cornerRadius: 20)
-                .stroke(Color("BrandAccent")
-                    .opacity(colorScheme == .dark ? 0.5 : 0.2),
-                lineWidth: 1)
+                .stroke(Color("BrandAccent").opacity(0.5), lineWidth: 1)
         )
         .shadow(
-            color: colorScheme == .dark
-                    ? Color("BrandAccent").opacity(0.15)
-                    : Color.black.opacity(0.05),
-                radius: colorScheme == .dark ? 20 : 8,
-                x: 0,
-                y: 10
+            color: Color("BrandAccent").opacity(colorScheme == .dark ? 0.22 : 0.0),
+            radius: 18,
+            x: 0,
+            y: 0
+        )
+        .shadow(
+            color: Color.black.opacity(colorScheme == .dark ? 0.35 : 0.08),
+            radius: colorScheme == .dark ? 20 : 6,
+            x: 0,
+            y: 8
         )
     }
 }
