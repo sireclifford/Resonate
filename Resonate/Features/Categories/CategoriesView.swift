@@ -21,7 +21,7 @@ struct CategoriesView: View {
     
     var body: some View {
             ScrollView {
-                LazyVGrid(columns: columns, spacing: 16) {
+                LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(viewModel.categories) { category in
                         NavigationLink(value: category) {
                             CategoryCardView(
@@ -42,9 +42,11 @@ struct CategoriesView: View {
                         )
                     }
                 }
-                .padding()
+                .padding(.horizontal, 20)
+                .padding(.top, 12)
+                .padding(.bottom, 24)
             }
             .scrollIndicators(.hidden)
-            .navigationTitle("Topics")
+            .navigationTitle("Themes")
         }
     }
