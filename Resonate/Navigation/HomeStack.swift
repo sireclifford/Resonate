@@ -56,8 +56,10 @@ struct HomeStack: View {
             // Reset navigation safely
             path = NavigationPath()
 
-            // Push
-            path.append(hymn)
+            // Defer push slightly to ensure the Home tab/stack is mounted
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                path.append(hymn)
+            }
         }
 
         environment.notificationHymnID = nil
