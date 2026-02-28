@@ -6,7 +6,10 @@ struct HymnDetailView: View {
     @ObservedObject private var settings: AppSettingsService
     @StateObject private var viewModel: HymnDetailViewModel
     @ObservedObject private var favouritesService: FavouritesService
+    
     @State private var showStory = false
+    @State private var viewStart: Date?
+    @State private var counted = false
     
     let index: HymnIndex
     
@@ -138,11 +141,21 @@ struct HymnDetailView: View {
                viewModel.hymn.id == hotd.id {
                 environment.hymnOfTheDayEngagementService.markOpened(hymnID: viewModel.hymn.id)
             }
+            
+            viewStart = Date()
         }
         .onDisappear {
             if settings.stopPlaybackOnExit {
                 environment.audioPlaybackService.stop()
             }
+            
+            guard let start = viewStart,
+                     Date().timeIntervalSince(start) >= 5,
+                     !counted
+               else { return }
+               
+            environment.usageService.increment(viewModel.hymn.id)
+            environment.recentSearchService.add(viewModel.hymn.id)
         }
     }
 }

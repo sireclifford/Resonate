@@ -17,6 +17,8 @@ final class AppEnvironment: ObservableObject {
     
     let notificationService: NotificationService
     let hymnOfTheDayEngagementService: HymnOfTheDayEngagementService
+    let usageService: UsageService
+    let recentSearchService: RecentSearchService
 
     @Published var notificationHymnID: Int?
     @Published var audioPlaybackService: AudioPlaybackService
@@ -28,6 +30,8 @@ final class AppEnvironment: ObservableObject {
         self.analyticsService = AnalyticsService.shared
         self.hymnService = hymnService
         self.persistenceService = persistenceService
+        self.usageService = UsageService()
+        self.recentSearchService = RecentSearchService()
         
         // Settings first (because audio depends on it)
         self.settingsService = AppSettingsService(analytics: analyticsService)
