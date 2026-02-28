@@ -74,16 +74,18 @@ final class HymnService {
         return index.indices.contains(previousIndex) ? index[previousIndex] : nil
     }
     
-    func hymnOfTheDay() -> HymnIndex? {
+    func hymnOfTheDay(on date: Date = Date()) -> HymnIndex? {
         let hymns = index
         guard !hymns.isEmpty else { return nil }
 
         let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
+        let today = calendar.startOfDay(for: date)
 
-        let epoch = calendar.date(
+        guard let epoch = calendar.date(
             from: DateComponents(year: 2024, month: 1, day: 1)
-        )!
+        ) else {
+            return hymns.first
+        }
 
         let days = calendar.dateComponents(
             [.day],
@@ -91,7 +93,7 @@ final class HymnService {
             to: today
         ).day ?? 0
 
-        let index = days % hymns.count
-        return hymns[index]
+        let safeIndex = abs(days) % hymns.count
+        return hymns[safeIndex]
     }
 }
