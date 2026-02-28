@@ -131,7 +131,6 @@ struct HymnDetailView: View {
         }
         .toolbar(.hidden, for: .tabBar)
         .onAppear {
-            environment.recentlyViewedService.record(id: index.id)
             environment.analyticsService.hymnOpened(
                 id: viewModel.hymn.id,
                 category: viewModel.hymn.category.rawValue
@@ -155,6 +154,8 @@ struct HymnDetailView: View {
                else { return }
                
             environment.usageService.increment(viewModel.hymn.id)
+            environment.recentlyViewedService.record(id: viewModel.hymn.id)
+            counted = true
             environment.recentSearchService.add(viewModel.hymn.id)
         }
     }

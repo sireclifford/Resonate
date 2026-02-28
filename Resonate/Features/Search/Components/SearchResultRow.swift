@@ -3,6 +3,7 @@ import SwiftUI
 struct SearchResultRow: View {
 
     let result: SearchResult
+    let highlightedSnippet: AttributedString
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -10,7 +11,7 @@ struct SearchResultRow: View {
             Text("\(result.hymn.id). \(result.hymn.title)")
                 .font(.josefin(size: 15, weight: .medium))
 
-            Text(result.matchedText)
+            Text(highlightedSnippet)
                 .font(.josefin(size: 13))
                 .foregroundColor(.secondary)
                 .lineLimit(2)

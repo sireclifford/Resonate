@@ -132,7 +132,10 @@ struct SearchResultsView: View {
                     Button {
                         open(result.hymn)
                     } label: {
-                        SearchResultRow(result: result)
+                        SearchResultRow(
+                            result: result,
+                            highlightedSnippet: highlightedText(result.matchedText, query: viewModel.query)
+                        )
                     }
                 }
             }
@@ -145,5 +148,27 @@ struct SearchResultsView: View {
         onSelectHymn(hymn)
         environment.analyticsService.searchResultTapped(id: hymn.id)
         viewModel.reset()
+    }
+    
+    func highlightedText(_ text: String, query: String) -> AttributedString {
+        var attributed = AttributedString(text)
+
+        guard !query.isEmpty else { return attributed }
+
+        let lowercasedText = text.lowercased()
+        let lowercasedQuery = query.lowercased()
+
+        var searchRange = lowercasedText.startIndex..<lowercasedText.endIndex
+
+        while let range = lowercasedText.range(of: lowercasedQuery, options: [], range: searchRange) {
+            if let attributedRange = Range(range, in: attributed) {
+                attributed[attributedRange].foregroundColor = .accentColor
+                attributed[attributedRange].backgroundColor = .accentColor.opacity(0.15)
+            }
+
+            searchRange = range.upperBound..<lowercasedText.endIndex
+        }
+
+        return attributed
     }
 }

@@ -144,8 +144,8 @@ final class AppSettingsService: ObservableObject {
         
         self.dailyReminderTime = defaults.object(forKey: Keys.dailyReminderTime) as? Date ?? {
             var components = DateComponents()
-            components.hour = 8
-            components.minute = 0
+            components.hour = 5
+            components.minute = 25
             return Calendar.current.date(from: components) ?? Date()
         }()
     }

@@ -9,6 +9,7 @@ struct SettingsView: View {
     @State private var showPrivacyPolicy = false
     @State private var showTerms = false
     @State private var showCredits = false
+    @State private var showClearSuccess = false
     @ObservedObject private var settings: AppSettingsService
     
     init(environment: AppEnvironment) {
@@ -40,6 +41,11 @@ struct SettingsView: View {
             )
         )
         .navigationTitle("Settings")
+        .alert("Cleared", isPresented: $showClearSuccess) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Recently viewed hymns have been cleared.")
+        }
         .sheet(isPresented: $showSupportMail) {
             SupportMailView(subject: "Resonate Support Request")
         }
@@ -238,6 +244,7 @@ struct SettingsView: View {
             VStack(spacing: 12) {
                 Button("Clear Recently Viewed") {
                     environment.recentlyViewedService.clear()
+                    showClearSuccess = true
                 }
                 
                 Divider()

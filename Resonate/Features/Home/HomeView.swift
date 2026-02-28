@@ -106,7 +106,7 @@ struct HomeView: View {
                     
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 14) {
-                            ForEach(viewModel.recentlyViewed.prefix(4)) { hymn in
+                            ForEach(viewModel.recentlyViewed) { hymn in
                                 NavigationLink(value: hymn) {
                                     HymnCardView(
                                         index: hymn,
