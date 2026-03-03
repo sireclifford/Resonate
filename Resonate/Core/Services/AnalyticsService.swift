@@ -55,6 +55,13 @@ final class AnalyticsService {
         ])
     }
     
+    func hymnClosed(hymnID: Int, durationSeconds: Int) {
+        log(.hymnClosed, parameters: [
+            .hymnID: hymnID,
+            .durationSeconds: durationSeconds
+        ])
+    }
+    
     func hymnFavourited(id: Int) {
         log(.hymnFavourited, parameters: [
             .hymnID: id
@@ -67,10 +74,13 @@ final class AnalyticsService {
         ])
     }
     
-    func hymnAudioPlayed(id: Int) {
-        log(.hymnAudioPlayed, parameters: [
+    func hymnAudioPlayed(id: Int, positionSeconds: Int? = nil, isResume: Bool? = nil) {
+        var params: [AnalyticsParameter: Any] = [
             .hymnID: id
-        ])
+        ]
+        if let pos = positionSeconds { params[.positionSeconds] = pos }
+        if let resume = isResume { params[.isResume] = resume }
+        log(.hymnAudioPlayed, parameters: params)
     }
     
     func hymnAudioPaused(id: Int) {
@@ -253,3 +263,4 @@ final class AnalyticsService {
         ])
     }
 }
+
