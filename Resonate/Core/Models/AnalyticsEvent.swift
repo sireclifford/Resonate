@@ -2,6 +2,7 @@ enum AnalyticsEvent: String {
     // Hymn
     
     case hymnOpened        = "hymn_opened"
+    case hymnClosed        = "hymn_closed"
     case hymnFavourited    = "hymn_favourited"
     case hymnUnfavourited  = "hymn_unfavourited"
     case hymnAudioPlayed   = "hymn_audio_played"
@@ -68,4 +69,6 @@ enum AnalyticsParameter: String {
     case source = "source"
     case sessionID = "session_id"
     case durationSeconds = "duration_seconds"
+    case positionSeconds = "position_seconds"
+    case isResume = "is_resume"
 }
