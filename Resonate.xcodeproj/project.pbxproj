@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E614629C2F55ED8300176E81 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E614629B2F55ED8300176E81 /* GoogleService-Info.plist */; };
 		E63A1B6A2F4E94FF00AD24ED /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = E63A1B692F4E94FF00AD24ED /* FirebaseAnalytics */; };
 		E63A1B6C2F4E94FF00AD24ED /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = E63A1B6B2F4E94FF00AD24ED /* FirebaseCrashlytics */; };
 		E644D5D02F4A923300ACCDB4 /* YouVersionPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = E644D5CF2F4A923300ACCDB4 /* YouVersionPlatform */; };
@@ -31,10 +30,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		E6138A2C2F3735520069DC98 /* Resonate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Resonate.app; path = "/Users/ghost/Downloads/Resonate-main/build/Debug-iphoneos/Resonate.app"; sourceTree = "<absolute>"; };
-		E6138A392F3735540069DC98 /* ResonateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = ResonateTests.xctest; path = "/Users/ghost/Downloads/Resonate-main/build/Debug-iphoneos/Resonate.app/PlugIns/ResonateTests.xctest"; sourceTree = "<absolute>"; };
-		E6138A432F3735540069DC98 /* ResonateUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = ResonateUITests.xctest; path = "/Users/ghost/Downloads/Resonate-main/build/Debug-iphoneos/ResonateUITests-Runner.app/PlugIns/ResonateUITests.xctest"; sourceTree = "<absolute>"; };
-		E614629B2F55ED8300176E81 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		E6DAD1402F568A0200AD5ED7 /* Resonate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Resonate.app; path = "/Users/ghost/Downloads/Resonate-main/build/Debug-iphoneos/Resonate.app"; sourceTree = "<absolute>"; };
+		E6DAD1412F568A0200AD5ED7 /* ResonateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = ResonateTests.xctest; path = "/Users/ghost/Downloads/Resonate-main/build/Debug-iphoneos/Resonate.app/PlugIns/ResonateTests.xctest"; sourceTree = "<absolute>"; };
+		E6DAD1422F568A0200AD5ED7 /* ResonateUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = ResonateUITests.xctest; path = "/Users/ghost/Downloads/Resonate-main/build/Debug-iphoneos/ResonateUITests-Runner.app/PlugIns/ResonateUITests.xctest"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -102,7 +100,6 @@
 				E6138A2E2F3735520069DC98 /* Resonate */,
 				E6138A3C2F3735540069DC98 /* ResonateTests */,
 				E6138A462F3735540069DC98 /* ResonateUITests */,
-				E614629B2F55ED8300176E81 /* GoogleService-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -131,7 +128,7 @@
 				E63A1B6B2F4E94FF00AD24ED /* FirebaseCrashlytics */,
 			);
 			productName = Resonate;
-			productReference = E6138A2C2F3735520069DC98 /* Resonate.app */;
+			productReference = E6DAD1402F568A0200AD5ED7 /* Resonate.app */;
 			productType = "com.apple.product-type.application";
 		};
 		E6138A382F3735540069DC98 /* ResonateTests */ = {
@@ -154,7 +151,7 @@
 			packageProductDependencies = (
 			);
 			productName = ResonateTests;
-			productReference = E6138A392F3735540069DC98 /* ResonateTests.xctest */;
+			productReference = E6DAD1412F568A0200AD5ED7 /* ResonateTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		E6138A422F3735540069DC98 /* ResonateUITests */ = {
@@ -177,7 +174,7 @@
 			packageProductDependencies = (
 			);
 			productName = ResonateUITests;
-			productReference = E6138A432F3735540069DC98 /* ResonateUITests.xctest */;
+			productReference = E6DAD1422F568A0200AD5ED7 /* ResonateUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -233,7 +230,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E614629C2F55ED8300176E81 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
