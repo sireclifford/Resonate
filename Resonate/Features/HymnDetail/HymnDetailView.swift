@@ -184,6 +184,9 @@ struct HymnDetailView: View {
                 environment.audioPlaybackService.stop()
             }
             
+            let dwellSeconds = viewStart.map { Int(Date().timeIntervalSince($0).rounded()) } ?? 0
+            environment.analyticsService.hymnClosed(hymnID: viewModel.hymn.id, durationSeconds: dwellSeconds)
+            
             guard let start = viewStart,
                      Date().timeIntervalSince(start) >= 10,
                      !counted
