@@ -18,7 +18,8 @@ struct CategoriesStack: View {
                 .navigationDestination(for: HymnIndex.self) { index in
                     HymnDetailView(
                         index: index,
-                        environment: environment
+                        environment: environment,
+                        source: "category"
                     )
                 }
         }

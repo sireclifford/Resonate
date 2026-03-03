@@ -145,6 +145,11 @@ final class AppSettingsService: ObservableObject {
             }
         }
     }
+    
+    var meaningfulSessionCount: Int {
+        get { defaults.integer(forKey: Keys.meaningfulSessionCount) }
+        set { defaults.set(newValue, forKey: Keys.meaningfulSessionCount) }
+    }
 
     init(analytics: AnalyticsService) {
         self.hasLaunchedBeforePublished = defaults.bool(forKey: Keys.hasLaunchedBefore)
@@ -210,6 +215,7 @@ final class AppSettingsService: ObservableObject {
         static let shouldAutoOpenHymnOfDay = "app.shouldAutoOpenHymnOfDay"
         static let skipTodayDailyReminder = "app.skipTodayDailyReminder"
         static let skipTodayDailyReminderSetDate = "app.skipTodayDailyReminderSetDate"
+        static let meaningfulSessionCount = "app.meaningfulSessionCount"
         
     }
 }

@@ -3,6 +3,7 @@ import SwiftUI
 struct HymnDetailView: View {
     
     let environment: AppEnvironment
+    let source: String
     @ObservedObject private var settings: AppSettingsService
     @StateObject private var viewModel: HymnDetailViewModel
     @ObservedObject private var favouritesService: FavouritesService
@@ -11,12 +12,14 @@ struct HymnDetailView: View {
     @State private var viewStart: Date?
     @State private var counted = false
     @State private var showNotificationPrompt = false
+    @State private var storyViewStart: Date?
     
     let index: HymnIndex
     
-    init(index: HymnIndex, environment: AppEnvironment) {
+    init(index: HymnIndex, environment: AppEnvironment, source: String = "direct") {
         self.index = index
         self.environment = environment
+        self.source = source
         _settings = ObservedObject(wrappedValue: environment.settingsService)
         _viewModel = StateObject(
             wrappedValue: HymnDetailViewModel(
@@ -116,15 +119,29 @@ struct HymnDetailView: View {
                 }
             }
         }
-        .sheet(isPresented: $showStory) {
+        .sheet(isPresented: $showStory, onDismiss: {
+            if let start = storyViewStart {
+                let seconds = Int(Date().timeIntervalSince(start).rounded())
+                environment.analyticsService.storyClosed(hymnID: viewModel.hymn.id, durationSeconds: seconds)
+                storyViewStart = nil
+            }
+        }){
             NavigationStack {
                 if let story = environment.hymnStoryService.story(for: viewModel.hymn.id) {
                     HymnStoryView(
                         story: story
                     )
                     .environmentObject(environment)
+                    .onAppear {
+                        storyViewStart = Date()
+                        environment.analyticsService.storyOpened(hymnID: viewModel.hymn.id)
+                    }
                 } else {
                     StoryUnavailableView()
+                        .onAppear {
+                            storyViewStart = Date()
+                            environment.analyticsService.storyUnavailable(hymnID: viewModel.hymn.id)
+                        }
                 }
             }
             .presentationDetents([.medium, .large])
@@ -151,7 +168,8 @@ struct HymnDetailView: View {
         .onAppear {
             environment.analyticsService.hymnOpened(
                 id: viewModel.hymn.id,
-                category: viewModel.hymn.category.rawValue
+                category: viewModel.hymn.category.rawValue,
+                source: source
             )
             
             if let hotd = environment.hymnService.hymnOfTheDay(),
@@ -167,10 +185,11 @@ struct HymnDetailView: View {
             }
             
             guard let start = viewStart,
-                     Date().timeIntervalSince(start) >= 5,
+                     Date().timeIntervalSince(start) >= 10,
                      !counted
                else { return }
                
+            environment.sessionService.markInteraction()
             environment.usageService.increment(viewModel.hymn.id)
             environment.recentlyViewedService.record(id: viewModel.hymn.id)
             counted = true
@@ -178,3 +197,4 @@ struct HymnDetailView: View {
         }
     }
 }
+

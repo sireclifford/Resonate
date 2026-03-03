@@ -84,7 +84,7 @@ struct OnboardingView: View {
 
                 VStack(spacing: 14) {
                     Button {
-                        analytics.log(.onboardingCompleted, parameters: [.source: "onboarding"])
+                        analytics.onboardingCompleted()
                         UIImpactFeedbackGenerator(style: .soft).impactOccurred()
                         onBeginWorship()
                     } label: {
@@ -99,7 +99,7 @@ struct OnboardingView: View {
                     }
 
                     Button {
-                        analytics.log(.onboardingNotificationCTATapped, parameters: [.source: "onboarding"])
+                        analytics.onboardingNotificationCTATapped()
                         showNotificationExplainer = true
                     } label: {
                         Text("Receive a Daily Hymn")
@@ -112,7 +112,7 @@ struct OnboardingView: View {
                     }
 
                     Button {
-                        analytics.log(.onboardingSkipped, parameters: [.source: "onboarding"])
+                        analytics.onboardingSkipped()
                         onDismiss()
                     } label: {
                         Text("Not now")
@@ -130,16 +130,13 @@ struct OnboardingView: View {
             .animation(.easeOut(duration: 0.35), value: hasAppeared)
         }
         .onAppear {
-            analytics.log(
-                .onboardingShown,
-                parameters: [.source: "onboarding"]
-            )
+            analytics.onboardingShown()
             hasAppeared = true
         }
         .sheet(isPresented: $showNotificationExplainer) {
             NotificationExplainerSheet(
                 onEnable: {
-                    analytics.log(.notificationPromptAccepted, parameters: [.source: "onboarding"])
+                    analytics.notificationPromptAccepted()
                     
                     
                     // Reflect immediately in Settings
@@ -155,10 +152,7 @@ struct OnboardingView: View {
                     showTimePicker = true
                 },
                 onSkip: {
-                    analytics.log(
-                        .notificationPromptDeclined,
-                        parameters: [.source: "onboarding"]
-                    )
+                    analytics.notificationPromptDeclined()
                
                     // User chose not to enable reminders; proceed normally
                     shouldBeginWorshipAfterTimePicker = false

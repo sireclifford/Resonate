@@ -44,6 +44,13 @@ enum AnalyticsEvent: String {
     case notificationPromptAccepted = "notification_prompt_accepted"
     case notificationPromptDeclined = "notification_prompt_declined"
     case onboardingNotificationCTATapped = "onboarding_notification_cta_tapped"
+    
+    case storyOpened         = "story_opened"
+    case storyUnavailable    = "story_unavailable"
+    case storyClosed         = "story_closed"
+    
+    case sessionStarted = "session_started"
+    case sessionCompleted = "session_completed"
 }
 
 enum AnalyticsParameter: String {
@@ -59,4 +66,6 @@ enum AnalyticsParameter: String {
     case enabled = "enabled"
     case resultCount = "result_count"
     case source = "source"
+    case sessionID = "session_id"
+    case durationSeconds = "duration_seconds"
 }

@@ -7,6 +7,7 @@ final class AppEnvironment: ObservableObject {
     let persistenceService: PersistenceService
     let favouritesService: FavouritesService
     let tuneService: TuneService
+    let sessionService: SessionService
     
     let categoryViewModel: CategoryViewModel
     let searchViewModel: SearchViewModel
@@ -19,22 +20,28 @@ final class AppEnvironment: ObservableObject {
     let hymnOfTheDayEngagementService: HymnOfTheDayEngagementService
     let usageService: UsageService
     let recentSearchService: RecentSearchService
-
+    
     @Published var notificationHymnID: Int?
     @Published var audioPlaybackService: AudioPlaybackService
+    
+    var pendingSessionSource: String? = nil
     
     init(
         hymnService: HymnService = HymnService(),
         persistenceService: PersistenceService = UserDefaultsStore()
     ) {
         self.analyticsService = AnalyticsService.shared
+        self.settingsService = AppSettingsService(analytics: analyticsService)
+        self.sessionService = SessionService(analytics: analyticsService,
+                                             settingsService: settingsService)
+        analyticsService.onMeaningfulInteraction = { [weak sessionService] in
+            sessionService?.markInteraction()
+        }
+        
         self.hymnService = hymnService
         self.persistenceService = persistenceService
         self.usageService = UsageService()
         self.recentSearchService = RecentSearchService()
-        
-        // Settings first (because audio depends on it)
-        self.settingsService = AppSettingsService(analytics: analyticsService)
         
         self.favouritesService = FavouritesService(persistence: persistenceService, settings: settingsService,
                                                    analyticsService: analyticsService
@@ -56,9 +63,11 @@ final class AppEnvironment: ObservableObject {
         
         self.notificationService = NotificationService()
         self.hymnOfTheDayEngagementService = HymnOfTheDayEngagementService(persistence: persistenceService)
-
+        
         self.notificationService.onNotificationTapped = { [weak self] hymnID in
             self?.notificationHymnID = hymnID
+            self?.pendingSessionSource = "push_notification"
+            self?.analyticsService.reminderNotificationTapped(hymnID: hymnID)
         }
     }
     
