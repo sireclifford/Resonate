@@ -1,0 +1,44 @@
+import SwiftUI
+
+struct CategoryDetailView: View {
+
+    let category: HymnCategory
+    let hymns: [HymnIndex]
+    let environment: AppEnvironment
+    @ObservedObject var favouritesService: FavouritesService
+
+    private let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Hymns in \(category.title)")
+                .font(.josefin(size: 18, weight: .semibold))
+        }
+        .padding(.horizontal)
+        
+        ScrollView {
+            LazyVGrid(columns: columns, spacing: 16) {
+                ForEach(hymns) { hymn in
+                    NavigationLink(value: hymn) {
+                        HymnCardView(
+                            index: hymn,
+                            isFavourite: favouritesService.isFavourite(id: hymn.id),
+                            onFavouriteToggle: {
+                                favouritesService.toggle(id: hymn.id)
+                            }
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding()
+        }
+        .scrollIndicators(.hidden)
+        .navigationTitle("Topics")
+        .toolbar(.hidden, for: .tabBar)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}

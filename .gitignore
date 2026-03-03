@@ -1,0 +1,7 @@
+Resonate/Resources/Tunes/
+**/Tunes/
+Resonate/GoogleService-Info.plist
+GoogleService-Info.plist
+*.plist
+*.json
+xcuserdata/
