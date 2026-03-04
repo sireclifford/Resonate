@@ -39,10 +39,16 @@ struct CategoriesView: View {
         if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return base
         } else {
-            let query = searchText.lowercased()
-            return base.filter {
-                $0.title.lowercased().contains(query)
-                || $0.category.rawValue.lowercased().contains(query)
+            let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+            let queryLower = trimmed.lowercased()
+            return base.filter { hymn in
+                // Text matches: title or category
+                let textMatch = hymn.title.lowercased().contains(queryLower)
+                    || hymn.category.rawValue.lowercased().contains(queryLower)
+                // Numeric matches: exact or partial id match
+                let idString = String(hymn.id)
+                let numericMatch = idString.contains(trimmed)
+                return textMatch || numericMatch
             }
         }
     }
@@ -107,7 +113,7 @@ struct CategoriesView: View {
                     HStack(spacing: 10) {
                         Image(systemName: "magnifyingglass")
                             .foregroundStyle(.secondary)
-                        TextField("Search hymns", text: $searchText)
+                        TextField(selectedCategory == nil ? "Search hymns" : "Search in \(selectedCategory!.title)", text: $searchText)
                             .textInputAutocapitalization(.never)
                             .disableAutocorrection(true)
                         
@@ -321,13 +327,43 @@ private struct ChipView: View {
 
 private struct HymnRowView: View {
     let hymn: HymnIndex
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(hymn.title)
-                .font(.body.weight(.medium))
-            Text(hymn.category.title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+        HStack(spacing: 12) {
+            // Circular hymn number badge
+            ZStack {
+                if colorScheme == .dark {
+                    Circle()
+                        .fill(.thinMaterial)
+                    Circle()
+                        .stroke(Color.white.opacity(0.18), lineWidth: 1)
+                    Text("\(hymn.id)")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color.white.opacity(0.92))
+                } else {
+                    Circle()
+                        .fill(Color(.secondarySystemBackground))
+                    Circle()
+                        .stroke(Color.primary.opacity(0.12), lineWidth: 1)
+                    Text("\(hymn.id)")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.primary)
+                }
+            }
+            .frame(width: 34, height: 34)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(hymn.title)
+                    .font(.body.weight(.medium))
+                    .lineLimit(1)
+                Text(hymn.category.title)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+
+            Spacer(minLength: 0)
         }
         .padding(.vertical, 6)
     }
