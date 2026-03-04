@@ -42,6 +42,10 @@ enum AnalyticsEvent: String {
     
     case sessionStarted = "session_started"
     case sessionCompleted = "session_completed"
+    
+    case worshipFlowStarted = "worship_flow_started"
+    case worshipFlowCompleted = "worship_flow_completed"
+    case worshipSlideViewed = "worship_slide_viewed"
 }
 
 enum AnalyticsParameter: String {
@@ -65,4 +69,6 @@ enum AnalyticsParameter: String {
     case previousQuery = "previous_query"
     case layout        = "layout"
     case hymnTitle     = "hymn_title"
+    case slide = "slide"
+    case index = "index"
 }

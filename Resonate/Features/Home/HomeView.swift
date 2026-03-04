@@ -35,6 +35,8 @@ struct HomeView: View {
         environment.settingsService.meaningfulSessionCount < 3
     }
     
+    @State private var showWorshipFlow = false
+    
     var body: some View {
         ScrollView {
             content
@@ -96,6 +98,19 @@ struct HomeView: View {
                         HymnOfTheDayHeader(index: hymn)
                             .id(hymn.id)
                             .padding(.vertical, 4)
+                            .onTapGesture { showWorshipFlow = true }
+                    }
+                }
+                .fullScreenCover(isPresented: $showWorshipFlow) {
+                    if let hymn = viewModel.hymnOfTheDay {
+                        WorshipFlowContainer(
+                            hymnID: hymn.id,
+                            environment: environment
+                        )
+                    } else {
+                        Text("Preparing worship…")
+                            .font(.headline)
+                            .padding()
                     }
                 }
             }
