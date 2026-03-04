@@ -5,10 +5,13 @@ struct HymnDetail: Identifiable, Codable, Hashable {
     let id: Int
     let verses: [[String]]
     let chorus: [String]?
+    let scriptureRef: String?
+    let highlight: String?
+    let storyHint: String?
     var tuneFileName: String {
         String(format: "%03d.mid", id)
     }
-    var reflection: String? = nil
+    let reflection: String?
 }
 
 //Lightweight
