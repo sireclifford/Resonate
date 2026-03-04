@@ -1,6 +1,4 @@
 enum AnalyticsEvent: String {
-    // Hymn
-    
     case hymnOpened        = "hymn_opened"
     case hymnClosed        = "hymn_closed"
     case hymnFavourited    = "hymn_favourited"
@@ -9,23 +7,17 @@ enum AnalyticsEvent: String {
     case hymnAudioPaused   = "hymn_audio_paused"
     case hymnAudioCompleted = "hymn_audio_completed"
     
-    // Search
-    
     case searchPerformed   = "search_performed"
     case searchResultTapped = "search_result_tapped"
     case searchEmptyResult = "search_empty_result"
-    
-    // Navigation
+    case searchCleared     = "search_cleared"
     
     case tabSwitched       = "tab_switched"
     case categoryOpened    = "category_opened"
-    
-    // Mini Player
+    case resultLayoutChanged = "result_layout_changed"
     
     case miniPlayerTapped  = "miniplayer_tapped"
     case miniPlayerToggled  = "miniplayer_toggle"
-    
-    // Settings
     
     case themeChanged      = "theme_changed"
     case fontFamilyChanged = "font_family_changed"
@@ -35,12 +27,10 @@ enum AnalyticsEvent: String {
     case hapticsToggled = "haptics_toggled"
     case stopPlaybackToggled = "stop_playback_toggled"
     
-    //Onboarding
     case onboardingShown = "onboarding_shown"
     case onboardingCompleted = "onboarding_completed"
     case onboardingSkipped = "onboarding_skipped"
     
-    //Notification
     case notificationPromptShown = "notification_prompt_shown"
     case notificationPromptAccepted = "notification_prompt_accepted"
     case notificationPromptDeclined = "notification_prompt_declined"
@@ -71,4 +61,8 @@ enum AnalyticsParameter: String {
     case durationSeconds = "duration_seconds"
     case positionSeconds = "position_seconds"
     case isResume = "is_resume"
+    case destination   = "destination"
+    case previousQuery = "previous_query"
+    case layout        = "layout"
+    case hymnTitle     = "hymn_title"
 }

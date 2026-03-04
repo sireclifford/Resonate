@@ -15,6 +15,7 @@ struct CategoriesView: View {
     @State private var isGrid: Bool = false
     @State private var searchText: String = ""
     @State private var selectedCategory: HymnCategory? = nil
+    @State private var lastSearchText: String = ""
     
     @Environment(\.colorScheme) private var colorScheme
     
@@ -33,8 +34,8 @@ struct CategoriesView: View {
     
     private var filteredHymns: [HymnIndex] {
         let base = selectedCategory != nil
-            ? allHymns.filter { $0.category == selectedCategory }
-            : allHymns
+        ? allHymns.filter { $0.category == selectedCategory }
+        : allHymns
         
         if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return base
@@ -44,7 +45,7 @@ struct CategoriesView: View {
             return base.filter { hymn in
                 // Text matches: title or category
                 let textMatch = hymn.title.lowercased().contains(queryLower)
-                    || hymn.category.rawValue.lowercased().contains(queryLower)
+                || hymn.category.rawValue.lowercased().contains(queryLower)
                 // Numeric matches: exact or partial id match
                 let idString = String(hymn.id)
                 let numericMatch = idString.contains(trimmed)
@@ -70,7 +71,7 @@ struct CategoriesView: View {
             .padding(.horizontal, 16)
             .padding(.top, 16)
             .onChange(of: segment) { _, newValue in
-                environment.analyticsService.tabSwitched(to: newValue == .themes ? "browse_themes" : "browse_all")
+                environment.analyticsService.log(.tabSwitched, parameters: [.destination: newValue == .themes ? "browse_themes" : "browse_all", .source: "categories"])
             }
             
             Divider().opacity(0.5)
@@ -93,7 +94,8 @@ struct CategoriesView: View {
                                     environment.analyticsService.log(
                                         .categoryOpened,
                                         parameters: [
-                                            .category: category.title
+                                            .category: category.title,
+                                            .source: "categories"
                                         ]
                                     )
                                 }
@@ -109,6 +111,7 @@ struct CategoriesView: View {
             } else {
                 // ALL HYMNS — FILTERABLE LIST/GRID
                 VStack(spacing: 12) {
+                    let trimmedPreviousQuery = lastSearchText.trimmingCharacters(in: .whitespacesAndNewlines)
                     // Search
                     HStack(spacing: 10) {
                         Image(systemName: "magnifyingglass")
@@ -116,10 +119,20 @@ struct CategoriesView: View {
                         TextField(selectedCategory == nil ? "Search hymns" : "Search in \(selectedCategory!.title)", text: $searchText)
                             .textInputAutocapitalization(.never)
                             .disableAutocorrection(true)
+                            .onChange(of: searchText) { oldValue, newValue in
+                                lastSearchText = oldValue
+                            }
                         
                         if !searchText.isEmpty {
                             Button {
                                 searchText = ""
+                                environment.analyticsService.log(
+                                    .searchCleared,
+                                    parameters: [
+                                        .previousQuery: trimmedPreviousQuery,
+                                        .source: "categories"
+                                    ]
+                                )
                             } label: {
                                 Image(systemName: "xmark.circle.fill")
                                     .foregroundStyle(.secondary)
@@ -134,7 +147,14 @@ struct CategoriesView: View {
                     .padding(.horizontal, 16)
                     .padding(.top, 8)
                     .onSubmit {
-                        environment.analyticsService.searchPerformed(resultCount: filteredHymns.count)
+                        environment.analyticsService.log(
+                            .searchPerformed,
+                            parameters: [
+                                .resultCount: filteredHymns.count,
+                                .searchQuery: searchText,
+                                .source: "categories"
+                            ]
+                        )
                     }
                     
                     // Category chips (single-select for simplicity)
@@ -142,12 +162,24 @@ struct CategoriesView: View {
                         HStack(spacing: 10) {
                             ChipView(title: "All", selected: selectedCategory == nil) {
                                 selectedCategory = nil
-                                environment.analyticsService.categoryOpened("All")
+                                environment.analyticsService.log(
+                                    .categoryOpened,
+                                    parameters: [
+                                        .category: "All",
+                                        .source: "categories"
+                                    ]
+                                )
                             }
                             ForEach(viewModel.categories) { category in
                                 ChipView(title: category.title, selected: selectedCategory == category) {
                                     selectedCategory = category
-                                    environment.analyticsService.categoryOpened(category.title)
+                                    environment.analyticsService.log(
+                                        .categoryOpened,
+                                        parameters: [
+                                            .category: category.title,
+                                            .source: "categories"
+                                        ]
+                                    )
                                 }
                             }
                         }
@@ -156,13 +188,20 @@ struct CategoriesView: View {
                     
                     // List/Grid toggle
                     HStack {
-                        Text(selectedCategory?.title ?? "All Hymns")
+                        Text("\(selectedCategory?.title ?? "All Hymns") (\(filteredHymns.count))")
                             .font(.headline)
                         Spacer()
                         Button {
                             withAnimation(.easeInOut(duration: 0.2)) {
                                 isGrid.toggle()
                             }
+                            environment.analyticsService.log(
+                                .resultLayoutChanged,
+                                parameters: [
+                                    .layout: isGrid ? "grid" : "list",
+                                    .source: "categories"
+                                ]
+                            )
                         } label: {
                             Image(systemName: isGrid ? "list.bullet" : "square.grid.2x2")
                                 .font(.system(size: 16, weight: .semibold))
@@ -181,6 +220,18 @@ struct CategoriesView: View {
                                             HymnTileView(hymn: hymn)
                                         }
                                         .buttonStyle(.plain)
+                                        .simultaneousGesture(
+                                            TapGesture().onEnded {
+                                                environment.analyticsService.log(
+                                                    .hymnOpened,
+                                                    parameters: [
+                                                        .hymnID: String(hymn.id),
+                                                        .hymnTitle: hymn.title,
+                                                        .source: "categories"
+                                                    ]
+                                                )
+                                            }
+                                        )
                                     }
                                 }
                                 .padding(.horizontal, 16)
@@ -193,6 +244,18 @@ struct CategoriesView: View {
                                     NavigationLink(value: hymn) {
                                         HymnRowView(hymn: hymn)
                                     }
+                                    .simultaneousGesture(
+                                        TapGesture().onEnded {
+                                            environment.analyticsService.log(
+                                                .hymnOpened,
+                                                parameters: [
+                                                    .hymnID: String(hymn.id),
+                                                    .hymnTitle: hymn.title,
+                                                    .source: "categories"
+                                                ]
+                                            )
+                                        }
+                                    )
                                 }
                             }
                             .listStyle(.plain)
@@ -249,12 +312,12 @@ struct CategoriesView: View {
     
     private func symbol(for category: HymnCategory) -> String {
         let title = category.title.lowercased()
-
+        
         if title.contains("praise") || title.contains("adoration") {
             return "hands.clap"
         }
-            else if title.contains("trinity") {
-                return "bird.fill"
+        else if title.contains("trinity") {
+            return "bird.fill"
         } else if title.contains("worship") || title.contains("devotion") {
             return "sparkles"
         } else if title.contains("baptism") {
@@ -328,7 +391,7 @@ private struct ChipView: View {
 private struct HymnRowView: View {
     let hymn: HymnIndex
     @Environment(\.colorScheme) private var colorScheme
-
+    
     var body: some View {
         HStack(spacing: 12) {
             // Circular hymn number badge
@@ -352,7 +415,7 @@ private struct HymnRowView: View {
                 }
             }
             .frame(width: 34, height: 34)
-
+            
             VStack(alignment: .leading, spacing: 4) {
                 Text(hymn.title)
                     .font(.body.weight(.medium))
@@ -362,7 +425,7 @@ private struct HymnRowView: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
-
+            
             Spacer(minLength: 0)
         }
         .padding(.vertical, 6)
@@ -381,13 +444,13 @@ private struct HymnTileView: View {
                         .font(.system(size: 28, weight: .semibold))
                         .foregroundStyle(Color.accentColor.opacity(0.8))
                 )
-
+            
             VStack(alignment: .leading, spacing: 4) {
                 Text(hymn.title)
                     .font(.subheadline.weight(.semibold))
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
-
+                
                 Text(hymn.category.title)
                     .font(.caption)
                     .foregroundStyle(.secondary)
