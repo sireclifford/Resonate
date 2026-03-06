@@ -155,25 +155,28 @@ struct USFMBookMapper {
             "ACT": "Acts",
             "ROM": "Romans",
             
-            "CO1": "1 Corinthians",
-            "CO2": "2 Corinthians",
+            "1CO": "1 Corinthians",
+            "2CO": "2 Corinthians",
             "GAL": "Galatians",
             "EPH": "Ephesians",
             "PHP": "Philippians",
             "COL": "Colossians",
             
-            "TH1": "1 Thessalonians",
-            "TH2": "2 Thessalonians",
+            "1TH": "1 Thessalonians",
+            "2TH": "2 Thessalonians",
+            "1TI": " 1 Timothy",
+            "2TI": " 2 Timothy",
             "TIT": "Titus",
+            "PHM": "Philemon",
             "HEB": "Hebrews",
             "JAS": "James",
             
-            "PE1": "1 Peter",
-            "PE2": "2 Peter",
+            "1PE": "1 Peter",
+            "2PE": "2 Peter",
             
-            "JN1": "1 John",
-            "JN2": "2 John",
-            "JN3": "3 John",
+            "1JN": "1 John",
+            "2JN": "2 John",
+            "3JN": "3 John",
             
             "JUD": "Jude",
             "REV": "Revelation"
