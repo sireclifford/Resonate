@@ -11,9 +11,11 @@ struct HomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.colorScheme) private var colorScheme
     @State private var midnightTimer: Timer?
+    @State private var greetingTimer: Timer?
+    @State private var greetingTick = false
 
     @State private var isSearchPresented = false
-    @State private var pendingAutoOpenHymnOfDay = false
+    @State private var pendingAutoOpenHymnOfTheDay = false
 
     init(environment: AppEnvironment, onSelectHymn: @escaping (HymnIndex) -> Void, onSeeAll: @escaping () -> Void) {
 
@@ -36,6 +38,114 @@ struct HomeView: View {
     }
     
     @State private var showWorshipFlow = false
+    
+    private var greeting: String {
+        // Boundaries: Night 21:00–6:00, Morning 6:00–12:00, Afternoon 12:00–18:00, Evening 18:00–21:00
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 6..<12:
+            return "Good Morning"
+        case 12..<18:
+            return "Good Afternoon"
+        case 18..<21:
+            return "Good Evening"
+        default:
+            return "Good Night"
+        }
+    }
+    
+    private var isHymnOfDayNotificationsOn: Bool {
+        settingsService.dailyReminderEnabled
+    }
+
+    private var greetingIconName: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 6..<12:
+            return "sunrise.fill"     // Morning
+        case 12..<18:
+            return "sun.max.fill"     // Afternoon
+        case 18..<21:
+            return "sunset.fill"      // Evening
+        default:
+            return "moon.stars.fill"  // Night
+        }
+    }
+
+    private var greetingGradient: LinearGradient {
+        if colorScheme == .dark {
+            switch greetingIconName {
+            case "sunrise.fill":
+                return LinearGradient(colors: [Color.orange, Color.pink], startPoint: .topLeading, endPoint: .bottomTrailing)
+            case "sun.max.fill":
+                return LinearGradient(colors: [Color.yellow, Color.orange], startPoint: .topLeading, endPoint: .bottomTrailing)
+            case "sunset.fill":
+                return LinearGradient(colors: [Color.pink, Color.purple], startPoint: .topLeading, endPoint: .bottomTrailing)
+            default:
+                return LinearGradient(colors: [Color.indigo, Color.blue], startPoint: .topLeading, endPoint: .bottomTrailing)
+            }
+        } else {
+            switch greetingIconName {
+            case "sunrise.fill":
+                return LinearGradient(colors: [Color.orange.opacity(0.9), Color.pink.opacity(0.9)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            case "sun.max.fill":
+                return LinearGradient(colors: [Color.yellow.opacity(0.9), Color.orange.opacity(0.9)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            case "sunset.fill":
+                return LinearGradient(colors: [Color.pink.opacity(0.9), Color.purple.opacity(0.9)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            default:
+                return LinearGradient(colors: [Color.indigo.opacity(0.9), Color.blue.opacity(0.9)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            }
+        }
+    }
+
+    @State private var greetingIconScale: CGFloat = 1.0
+
+    @ViewBuilder
+    private func GreetingIcon() -> some View {
+        ZStack {
+            Circle()
+                .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color.primary.opacity(0.06))
+                .frame(width: 36, height: 36)
+                .overlay(
+                    Circle().stroke(
+                        colorScheme == .dark ? Color.white.opacity(0.18) : Color.primary.opacity(0.08),
+                        lineWidth: 1
+                    )
+                )
+                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.25 : 0.10), radius: 6, y: 3)
+
+            Image(systemName: greetingIconName)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(greetingGradient)
+                .symbolRenderingMode(.palette)
+                .scaleEffect(greetingIconScale)
+        }
+        .onAppear {
+            // Force an obvious breathing amplitude and speed
+            greetingIconScale = 1.0
+            DispatchQueue.main.async {
+                withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
+                    greetingIconScale = 1.30
+                }
+            }
+        }
+        .onChange(of: greetingTick) { _, _ in
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                greetingIconScale = 1.45
+            }
+            // Light haptic to reinforce boundary change
+            #if os(iOS)
+            let generator = UIImpactFeedbackGenerator(style: .light)
+            generator.prepare()
+            generator.impactOccurred()
+            #endif
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
+                    greetingIconScale = 1.30
+                }
+            }
+        }
+    }
     
     var body: some View {
         ScrollView {
@@ -71,35 +181,183 @@ struct HomeView: View {
         }
         .onAppear {
             scheduleMidnightRefresh()
+            scheduleGreetingRefresh()
             viewModel.refreshHymnOfTheDay()
             attemptAutoOpenHymnOfTheDayIfNeeded()
         }
         .onDisappear {
             midnightTimer?.invalidate()
+            greetingTimer?.invalidate()
         }
     }
 
     private var content: some View {
         VStack(alignment: .leading, spacing: 32) {
+            GreetingRow
+            SearchSection
+            DailyHymnHero
+            ContinueAndStartHereSection
+            ThemesSection
+        }
+        .padding()
+        .animation(.easeInOut(duration: 0.6), value: viewModel.hymnOfTheDay?.id)
+    }
 
-            // SEARCH
-            GlobalSearchBar(
-                viewModel: environment.searchViewModel,
-                onActivate: {
-                    isSearchPresented = true
-                }
-            )
+    private var GreetingRow: some View {
+        HStack(spacing: 10) {
+            GreetingIcon()
 
-            // DAILY HYMN (Hero)
+            Text(greeting + ",")
+                .id(greetingTick)
+                .font(.title2.weight(.bold))
+            Text("Friend")
+                .font(.title2.weight(.bold))
+                .foregroundStyle(.primary)
+            Spacer()
+            Image(systemName: isHymnOfDayNotificationsOn ? "bell.fill" : "bell.slash.fill")
+                .font(.headline)
+                .foregroundStyle(isHymnOfDayNotificationsOn ? .accent : .secondary)
+                .accessibilityLabel(isHymnOfDayNotificationsOn ? "Notifications On" : "Notifications Off")
+        }
+    }
+
+    private var SearchSection: some View {
+        GlobalSearchBar(
+            viewModel: environment.searchViewModel,
+            onActivate: {
+                isSearchPresented = true
+            }
+        )
+    }
+
+    private var DailyHymnHero: some View {
+        Group {
             if let hymn = viewModel.hymnOfTheDay {
                 VStack(alignment: .leading, spacing: 12) {
+                    ZStack(alignment: .bottomLeading) {
+                        let cardShape = RoundedRectangle(cornerRadius: 26, style: .continuous)
+                        let palette = hotdGradientColors(for: hymn.id)
 
-                    NavigationLink(value: hymn) {
-                        HymnOfTheDayHeader(index: hymn)
-                            .id(hymn.id)
-                            .padding(.vertical, 4)
-                            .onTapGesture { showWorshipFlow = true }
+                        DailyHymnCardBackground(cardShape: cardShape, palette: palette, colorScheme: colorScheme)
+
+                        VStack {}
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 135)
+                            .background(
+                                LinearGradient(
+                                    colors: colorScheme == .dark
+                                        ? [Color.black.opacity(0.70), Color.black.opacity(0.10)]
+                                        : [Color.white.opacity(0.85), Color.white.opacity(0.20)],
+                                    startPoint: .bottom,
+                                    endPoint: .top
+                                )
+                            )
+                            .clipShape(cardShape)
+                            .allowsHitTesting(false)
+
+                        HStack(alignment: .center, spacing: 12) {
+                            // Left label: Hymn of the Day
+                            Text("Hymn of the Day")
+                                .font(.footnote.weight(.semibold))
+                                .textCase(.uppercase)
+                                .tracking(0.8)
+                                .foregroundStyle(colorScheme == .dark ? .white.opacity(0.82) : .secondary)
+
+                            Spacer()
+
+                            // Right pill: Today
+                            HStack(spacing: 6) {
+                                Image(systemName: "sparkles")
+                                    .font(.system(size: 12, weight: .semibold))
+                                Text("Today")
+                                    .font(.caption.weight(.semibold))
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 7)
+                            .background(.thinMaterial)
+                            .overlay(
+                                Capsule().stroke(
+                                    colorScheme == .dark ? Color.white.opacity(0.16) : Color.black.opacity(0.08),
+                                    lineWidth: 1
+                                )
+                            )
+                            .clipShape(Capsule())
+                            .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.92) : .primary)
+                        }
+                        .padding(14)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        .allowsHitTesting(false)
+
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("#\(hymn.id) • \(hymn.title)")
+                                .font(.title3.weight(.semibold))
+                                .lineSpacing(2)
+                                .foregroundStyle(colorScheme == .dark ? .white.opacity(0.95) : .primary)
+                                .lineLimit(2)
+
+                            Text("A moment of quiet worship")
+                                .font(.system(size: 18, weight: .semibold, design: .serif))
+                                .foregroundStyle(colorScheme == .dark ? .white.opacity(0.9) : .primary.opacity(0.9))
+                                .lineSpacing(2)
+                                .lineLimit(2)
+                                .padding(.top, 2)
+
+                            Group {
+                                if !isHymnOfDayNotificationsOn {
+                                    Button {
+                                        settingsService.shouldAutoOpenHymnOfDay = true
+                                    } label: {
+                                        HStack(spacing: 8) {
+                                            Image(systemName: "paperplane.fill")
+                                                .font(.system(size: 14, weight: .semibold))
+                                            Text("Send Me This Daily")
+                                                .font(.subheadline.weight(.semibold))
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 12)
+                                        .background(.thinMaterial)
+                                        .overlay(
+                                            Capsule().stroke(
+                                                colorScheme == .dark ? Color.white.opacity(0.18) : Color.primary.opacity(0.10),
+                                                lineWidth: 1
+                                            )
+                                        )
+                                        .clipShape(Capsule())
+                                        .foregroundStyle(colorScheme == .dark ? Color.white : Color.primary)
+                                        .shadow(color: Color.black.opacity(0.18), radius: 10, y: 6)
+                                    }
+                                    .buttonStyle(.plain)
+                                } else {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "bell.badge.waveform")
+                                            .font(.system(size: 14, weight: .semibold))
+                                        Text("Daily reminder is on")
+                                            .font(.subheadline.weight(.semibold))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 12)
+                                    .background(.thinMaterial)
+                                    .overlay(
+                                        Capsule().stroke(
+                                            colorScheme == .dark ? Color.white.opacity(0.16) : Color.primary.opacity(0.10),
+                                            lineWidth: 1
+                                        )
+                                    )
+                                    .clipShape(Capsule())
+                                    .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.92) : Color.primary)
+                                    .shadow(color: Color.black.opacity(0.10), radius: 8, y: 5)
+                                    .accessibilityElement(children: .combine)
+                                    .accessibilityLabel("Daily hymn reminder is enabled")
+                                }
+                            }
+                        }
+                        .padding(20)
                     }
+                    .frame(maxWidth: .infinity, minHeight: 220)
+                    .contentShape(Rectangle())
+                    .onTapGesture { showWorshipFlow = true }
                 }
                 .fullScreenCover(isPresented: $showWorshipFlow) {
                     if let hymn = viewModel.hymnOfTheDay {
@@ -114,155 +372,273 @@ struct HomeView: View {
                     }
                 }
             }
+        }
+    }
 
-            // CONTINUE + START HERE
-            VStack(alignment: .leading, spacing: 18) {
+    private struct DailyHymnCardBackground: View {
+        let cardShape: RoundedRectangle
+        let palette: (Color, Color)
+        let colorScheme: ColorScheme
 
-                // Continue (only when we have recently viewed hymns)
-                if !viewModel.recentlyViewed.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Continue")
-                            .font(.title3.weight(.semibold))
+        private var baseFillGradient: some ShapeStyle {
+            LinearGradient(
+                colors: [
+                    palette.0.opacity(colorScheme == .dark ? 0.90 : 0.55),
+                    palette.1.opacity(colorScheme == .dark ? 0.75 : 0.35)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
 
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 14) {
-                                ForEach(viewModel.recentlyViewed) { hymn in
-                                    NavigationLink(value: hymn) {
-                                        HymnCardView(
-                                            index: hymn,
-                                            isFavourite: favouritesService.isFavourite(id: hymn.id),
-                                            onFavouriteToggle: {
-                                                favouritesService.toggle(id: hymn.id)
-                                            }
-                                        )
-                                        .frame(width: 190)
-                                    }
-                                    .buttonStyle(.plain)
-                                }
-                            }
-                        }
-                    }
+        private var topHighlightFill: some ShapeStyle {
+            RadialGradient(
+                colors: [
+                    Color.white.opacity(colorScheme == .dark ? 0.10 : 0.16),
+                    Color.clear
+                ],
+                center: .topLeading,
+                startRadius: 10,
+                endRadius: 220
+            )
+        }
+
+        private var bottomVignetteFill: some ShapeStyle {
+            RadialGradient(
+                colors: [
+                    Color.black.opacity(colorScheme == .dark ? 0.55 : 0.20),
+                    Color.clear
+                ],
+                center: .bottom,
+                startRadius: 40,
+                endRadius: 320
+            )
+        }
+
+        private var strokeGradient: LinearGradient {
+            LinearGradient(
+                colors: [
+                    Color.white.opacity(colorScheme == .dark ? 0.22 : 0.18),
+                    Color.white.opacity(0.00)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+
+        var body: some View {
+            // Build base with shadows in a simple step
+            let base = cardShape
+                .fill(baseFillGradient)
+                .shadow(
+                    color: Color.black.opacity(colorScheme == .dark ? 0.45 : 0.10),
+                    radius: 18,
+                    y: 10
+                )
+                .shadow(
+                    color: Color.black.opacity(colorScheme == .dark ? 0.22 : 0.06),
+                    radius: 6,
+                    y: 3
+                )
+
+            // Precompose each overlay to simplify type-checking
+            let topHighlight = cardShape
+                .fill(topHighlightFill)
+                .blendMode(.overlay)
+                .allowsHitTesting(false)
+
+            let bottomVignette = cardShape
+                .fill(bottomVignetteFill)
+                .blendMode(.multiply)
+                .allowsHitTesting(false)
+
+            let darkGlass: AnyView = {
+                if colorScheme == .dark {
+                    return AnyView(
+                        cardShape
+                            .fill(.ultraThinMaterial)
+                            .opacity(0.35)
+                            .allowsHitTesting(false)
+                    )
+                } else {
+                    return AnyView(EmptyView())
                 }
-                // Start Here (always available)
+            }()
+
+            let primaryStroke = cardShape
+                .stroke(strokeGradient, lineWidth: 1)
+                .allowsHitTesting(false)
+
+            let secondaryStroke = cardShape
+                .stroke(
+                    colorScheme == .dark
+                    ? Color.white.opacity(0.10)
+                    : Color.black.opacity(0.06),
+                    lineWidth: 1
+                )
+                .allowsHitTesting(false)
+
+            let watermark = Image(systemName: "music.note")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 90)
+                .foregroundStyle(
+                    colorScheme == .dark
+                    ? Color.white.opacity(0.07)
+                    : Color.black.opacity(0.06)
+                )
+                .offset(x: 48, y: -10)
+
+            return base
+                .overlay(topHighlight)
+                .overlay(bottomVignette)
+                .overlay(darkGlass)
+                .overlay(primaryStroke)
+                .overlay(secondaryStroke)
+                .overlay(watermark, alignment: .topTrailing)
+        }
+    }
+
+    private var ContinueAndStartHereSection: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            if !viewModel.recentlyViewed.isEmpty {
                 VStack(alignment: .leading, spacing: 12) {
-                    if isEarlyUser {
-                        Text("New Here?")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Text("Start Here")
+                    Text("Continue")
                         .font(.title3.weight(.semibold))
-                    VStack(spacing: 12) {
 
-                        Button {
-                            // TODO: Replace with a curated “Most Loved” list.
-                            onSeeAll()
-                        } label: {
-                            startHereCard(
-                                title: "Most Loved Hymns",
-                                subtitle: "Beloved by the community",
-                                systemImage: "heart.fill"
-                            )
-                        }
-                        .buttonStyle(.plain)
-
-                        Button {
-                            // TODO: Replace with an Editor’s Picks curated list.
-                            onSeeAll()
-                        } label: {
-                            startHereCard(
-                                title: "Editor’s Picks",
-                                subtitle: "A gentle place to begin",
-                                systemImage: "star.fill"
-                            )
-                        }
-                        .buttonStyle(.plain)
-
-                        if let hymn = viewModel.hymnOfTheDay {
-                            Button {
-                                DispatchQueue.main.async {
-                                    onSelectHymn(hymn)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 14) {
+                            ForEach(viewModel.recentlyViewed) { hymn in
+                                NavigationLink(value: hymn) {
+                                    HymnCardView(
+                                        index: hymn,
+                                        isFavourite: favouritesService.isFavourite(id: hymn.id),
+                                        onFavouriteToggle: {
+                                            favouritesService.toggle(id: hymn.id)
+                                        }
+                                    )
+                                    .frame(width: 190)
                                 }
-                            } label: {
-                                startHereCard(
-                                    title: "Featured Reflection Hymn",
-                                    subtitle: "Today’s hymn for quiet worship",
-                                    systemImage: "sparkles"
-                                )
+                                .buttonStyle(.plain)
                             }
-                            .buttonStyle(.plain)
                         }
                     }
                 }
             }
 
-            // MARK: THEMES (Curated + Horizontal)
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 12) {
+                if isEarlyUser {
+                    Text("New Here?")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
 
-                HStack {
-                    Text("Themes")
-                        .font(.title3.weight(.semibold))
-
-                    Spacer()
-                    Button("See All") {
+                Text("Start Here")
+                    .font(.title3.weight(.semibold))
+                VStack(spacing: 12) {
+                    Button {
                         onSeeAll()
+                    } label: {
+                        startHereCard(
+                            title: "Most Loved Hymns",
+                            subtitle: "Beloved by the community",
+                            systemImage: "heart.fill"
+                        )
                     }
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                }
+                    .buttonStyle(.plain)
 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 16) {
-                        ForEach(environment.categoryViewModel.categories.prefix(6)) { category in
-                            NavigationLink(value: category) {
-                                VStack {
-                                    Spacer()
-                                    HStack {
-                                        Text(category.title)
-                                            .font(.headline.weight(.semibold))
-                                            .foregroundStyle(.white)
-                                            .multilineTextAlignment(.leading)
-                                            .lineLimit(2)
+                    Button {
+                        onSeeAll()
+                    } label: {
+                        startHereCard(
+                            title: "Editor’s Picks",
+                            subtitle: "A gentle place to begin",
+                            systemImage: "star.fill"
+                        )
+                    }
+                    .buttonStyle(.plain)
 
-                                        Spacer()
-                                    }
-                                }
-                                .padding(24)
-                                .frame(width: 190, height: 150, alignment: .topLeading)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 24)
-                                        .fill(
-                                            LinearGradient(
-                                                colors: gradientColors(for: category),
-                                                startPoint: .topLeading,
-                                                endPoint: .bottomTrailing
-                                            )
-                                        )
-                                )
-                                .overlay(
-                                    ZStack {
-                                        Image(systemName: symbol(for: category))
-                                            .font(.system(size: 90, weight: .regular))
-                                            .foregroundStyle(Color.white.opacity(colorScheme == .dark ? 0.06 : 0.12))
-                                    }
-                                )
-                                .shadow(
-                                    color: Color.black.opacity(0.12),
-                                    radius: 14,
-                                    y: 8
-                                )
+                    if let hymn = viewModel.hymnOfTheDay {
+                        Button {
+                            DispatchQueue.main.async {
+                                onSelectHymn(hymn)
                             }
-                            .buttonStyle(.plain)
+                        } label: {
+                            startHereCard(
+                                title: "Featured Reflection Hymn",
+                                subtitle: "Today’s hymn for quiet worship",
+                                systemImage: "sparkles"
+                            )
                         }
+                        .buttonStyle(.plain)
                     }
-                    .padding(.horizontal, 4)
                 }
-                .scrollContentBackground(.hidden)
             }
         }
-        .padding()
-        .animation(.easeInOut(duration: 0.6), value: viewModel.hymnOfTheDay?.id)
+    }
+
+    private var ThemesSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Text("Themes")
+                    .font(.title3.weight(.semibold))
+
+                Spacer()
+                Button("See All") {
+                    onSeeAll()
+                }
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            }
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 16) {
+                    ForEach(environment.categoryViewModel.categories.prefix(6)) { category in
+                        NavigationLink(value: category) {
+                            VStack {
+                                Spacer()
+                                HStack {
+                                    Text(category.title)
+                                        .font(.headline.weight(.semibold))
+                                        .foregroundStyle(.white)
+                                        .multilineTextAlignment(.leading)
+                                        .lineLimit(2)
+
+                                    Spacer()
+                                }
+                            }
+                            .padding(24)
+                            .frame(width: 190, height: 150, alignment: .topLeading)
+                            .background(
+                                RoundedRectangle(cornerRadius: 24)
+                                    .fill(
+                                        LinearGradient(
+                                            colors: gradientColors(for: category),
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                            )
+                            .overlay(
+                                ZStack {
+                                    Image(systemName: symbol(for: category))
+                                        .font(.system(size: 90, weight: .regular))
+                                        .foregroundStyle(Color.white.opacity(colorScheme == .dark ? 0.06 : 0.12))
+                                }
+                            )
+                            .shadow(
+                                color: Color.black.opacity(0.12),
+                                radius: 14,
+                                y: 8
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 4)
+            }
+            .scrollContentBackground(.hidden)
+        }
     }
 
     // Light Mode: premium solid card. Dark Mode: glass card.
@@ -424,14 +800,14 @@ struct HomeView: View {
         // If the trigger flipped, consume it immediately and mark pending
         if settingsService.shouldAutoOpenHymnOfDay {
             settingsService.shouldAutoOpenHymnOfDay = false
-            pendingAutoOpenHymnOfDay = true
+            pendingAutoOpenHymnOfTheDay = true
             viewModel.refreshHymnOfTheDay()
         }
 
-        guard pendingAutoOpenHymnOfDay else { return }
+        guard pendingAutoOpenHymnOfTheDay else { return }
         guard let hymn = viewModel.hymnOfTheDay else { return }
 
-        pendingAutoOpenHymnOfDay = false
+        pendingAutoOpenHymnOfTheDay = false
 
         environment.analyticsService.reminderHymnOpened(hymnID: hymn.id)
 
@@ -461,6 +837,52 @@ struct HomeView: View {
                 }
                 scheduleMidnightRefresh()
             }
+        }
+    }
+    
+    private func scheduleGreetingRefresh() {
+        greetingTimer?.invalidate()
+
+        let calendar = Calendar.current
+        let now = Date()
+
+        // Define daily boundaries at 06:00, 12:00, 18:00, 21:00
+        let boundaryComponents: [DateComponents] = [
+            DateComponents(hour: 6, minute: 0, second: 0),
+            DateComponents(hour: 12, minute: 0, second: 0),
+            DateComponents(hour: 18, minute: 0, second: 0),
+            DateComponents(hour: 21, minute: 0, second: 0)
+        ]
+
+        // Find the next boundary after 'now'
+        let nextBoundary = boundaryComponents
+            .compactMap { calendar.nextDate(after: now, matching: $0, matchingPolicy: .nextTime) }
+            .min(by: { $0 < $1 })
+
+        guard let fireDate = nextBoundary else { return }
+        let interval = fireDate.timeIntervalSince(now)
+
+        greetingTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
+            DispatchQueue.main.async {
+                greetingTick.toggle()
+                scheduleGreetingRefresh()
+            }
+        }
+    }
+
+    private func hotdGradientColors(for hymnID: Int) -> (Color, Color) {
+        // Purposefully "premium" hues (muted in light mode, deeper in dark mode)
+        switch abs(hymnID) % 5 {
+        case 0:
+            return (Color(red: 0.35, green: 0.50, blue: 0.88), Color(red: 0.20, green: 0.30, blue: 0.60)) // blue
+        case 1:
+            return (Color(red: 0.15, green: 0.62, blue: 0.46), Color(red: 0.10, green: 0.40, blue: 0.30)) // green
+        case 2:
+            return (Color(red: 0.78, green: 0.52, blue: 0.22), Color(red: 0.45, green: 0.28, blue: 0.10)) // gold
+        case 3:
+            return (Color(red: 0.55, green: 0.38, blue: 0.70), Color(red: 0.28, green: 0.18, blue: 0.42)) // purple
+        default:
+            return (Color(red: 0.28, green: 0.30, blue: 0.34), Color(red: 0.14, green: 0.15, blue: 0.18)) // graphite
         }
     }
 
