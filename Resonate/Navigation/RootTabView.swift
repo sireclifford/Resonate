@@ -24,7 +24,7 @@ struct RootTabView: View {
             TabView(selection: $selectedTab) {
                 HomeStack(environment: environment, selectedTab: $selectedTab)
                     .tag(0)
-                    .tabItem { Label("Home", systemImage: "house") }
+                    .tabItem { Label("Home", systemImage: "music.note.house.fill") }
                 
                 FavouritesStack(environment: environment)
                     .tag(1)
