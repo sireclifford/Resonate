@@ -10,6 +10,17 @@ final class AppSettingsService: ObservableObject {
     
     @Published var hasLaunchedBeforePublished: Bool
     
+    @Published var sabbathReminderEnabled: Bool {
+        didSet {
+            defaults.set(sabbathReminderEnabled, forKey: Keys.sabbathReminderEnabled)
+        }
+    }
+    @Published var sabbathReminderTime: Date {
+        didSet {
+            defaults.set(sabbathReminderTime, forKey: Keys.sabbathReminderTime)
+        }
+    }
+    
     @Published var dailyReminderEnabled: Bool {
         didSet {
             UserDefaults.standard.set(dailyReminderEnabled, forKey: Keys.dailyReminderEnabled)
@@ -185,8 +196,17 @@ final class AppSettingsService: ObservableObject {
             rawValue: defaults.string(forKey: Keys.theme) ?? "system"
         ) ?? .system
         
+        self.sabbathReminderEnabled = defaults.object(forKey: Keys.sabbathReminderEnabled) as? Bool ?? false
+
+        self.sabbathReminderTime = defaults.object(forKey: Keys.sabbathReminderTime) as? Date ?? {
+            var components = DateComponents()
+            components.hour = 18
+            components.minute = 0
+            return Calendar.current.date(from: components) ?? Date()
+        }()
+
         self.dailyReminderEnabled = defaults.object(forKey: Keys.dailyReminderEnabled) as? Bool ?? false
-        
+
         self.dailyReminderTime = defaults.object(forKey: Keys.dailyReminderTime) as? Date ?? {
             var components = DateComponents()
             components.hour = 8
@@ -208,6 +228,8 @@ final class AppSettingsService: ObservableObject {
         static let theme = "settings.theme"
         static let selectedVersionId = "settings.selectedVersionId"
         
+        static let sabbathReminderTime = "sabbathReminderTime"
+        static let sabbathReminderEnabled = "sabbathReminderEnabled"
         static let dailyReminderTime = "dailyReminderTime"
         static let dailyReminderEnabled = "dailyReminderEnabled"
         

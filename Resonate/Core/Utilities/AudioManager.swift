@@ -19,7 +19,7 @@ final class AudioManager: NSObject, ObservableObject {
         let fileName = String(format: "%03d", hymn.id)
         
         guard let url = Bundle.main.url(forResource: fileName, withExtension: "mp3") else {
-            print("Audio file not found")
+//            print("Audio file not found")
             return
         }
         
@@ -36,7 +36,7 @@ final class AudioManager: NSObject, ObservableObject {
             isPlaying = true
             
         } catch {
-            print("Playback failed: \(error)")
+//            print("Playback failed: \(error)")
         }
     }
     

@@ -38,6 +38,8 @@ struct HomeView: View {
     }
     
     @State private var showWorshipFlow = false
+    @State private var worshipStart: Date?
+    @State private var worshipCounted = false
     
     private var greeting: String {
         // Boundaries: Night 21:00–6:00, Morning 6:00–12:00, Afternoon 12:00–18:00, Evening 18:00–21:00
@@ -305,7 +307,33 @@ struct HomeView: View {
                             Group {
                                 if !isHymnOfDayNotificationsOn {
                                     Button {
-                                        settingsService.shouldAutoOpenHymnOfDay = true
+                                        Task {
+                                            await environment.reminderSettingsViewModel.requestPermissionAndEnableHOTD()
+
+                                            let formatter = DateFormatter()
+                                            formatter.timeStyle = .short
+                                            formatter.dateStyle = .none
+                                            let timeString = formatter.string(from: environment.reminderSettingsViewModel.hotdTime)
+
+                                            if environment.reminderSettingsViewModel.hotdEnabled {
+//                                                settingsService.shouldAutoOpenHymnOfDay = true
+                                                environment.toastCenter.show(
+                                                    .success(
+                                                        "Daily reminder enabled",
+                                                        subtitle: "You’ll be reminded at \(timeString)"
+                                                    ),
+                                                    position: .bottom
+                                                )
+                                            } else {
+                                                environment.toastCenter.show(
+                                                    .error(
+                                                        "Notifications not enabled",
+                                                        subtitle: "Please allow notifications to receive daily reminders."
+                                                    ),
+                                                    position: .bottom
+                                                )
+                                            }
+                                        }
                                     } label: {
                                         HStack(spacing: 8) {
                                             Image(systemName: "paperplane.fill")
@@ -365,6 +393,21 @@ struct HomeView: View {
                             hymnID: hymn.id,
                             environment: environment
                         )
+                        .onAppear {
+                            worshipStart = Date()
+                            worshipCounted = false
+                        }
+                        .onDisappear {
+                            if let start = worshipStart {
+                                let dwell = Date().timeIntervalSince(start)
+                                if dwell >= 10, !worshipCounted {
+                                    environment.hymnOfTheDayEngagementService.markOpened(hymnID: hymn.id)
+                                    worshipCounted = true
+                                }
+                            }
+                            worshipStart = nil
+//                            print("Opened today at home:", environment.hymnOfTheDayEngagementService.hasOpenedToday(hymnID: hymn.id))
+                        }
                     } else {
                         Text("Preparing worship…")
                             .font(.headline)
@@ -810,6 +853,11 @@ struct HomeView: View {
         pendingAutoOpenHymnOfTheDay = false
 
         environment.analyticsService.reminderHymnOpened(hymnID: hymn.id)
+
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        formatter.dateStyle = .none
+        let timeString = formatter.string(from: environment.reminderSettingsViewModel.hotdTime)
 
         DispatchQueue.main.async {
             onSelectHymn(hymn)

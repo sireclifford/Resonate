@@ -1,6 +1,7 @@
 import Foundation
-
-final class HymnService {
+import Combine
+import CryptoKit
+final class HymnService: ObservableObject {
     
     private struct WorshipMetadata {
         let scriptureRef: String
@@ -31,10 +32,12 @@ final class HymnService {
     ]
     
     private(set) var index: [HymnIndex] = []
+    @Published private(set) var currentHymnOfTheDay: HymnIndex?
     private var detailStorage: [Int: HymnDetail] = [:]
     
     init() {
         loadHymns()
+        refreshHymnOfTheDay()
     }
     
     private struct HymnDTO: Codable {
@@ -108,26 +111,34 @@ final class HymnService {
         return index.indices.contains(previousIndex) ? index[previousIndex] : nil
     }
     
+    func refreshHymnOfTheDay(on date: Date = Date()) {
+        currentHymnOfTheDay = hymnOfTheDay(on: date)
+    }
+
+    func onAppBecameActive() {
+        refreshHymnOfTheDay()
+    }
+
     func hymnOfTheDay(on date: Date = Date()) -> HymnIndex? {
         let hymns = index
         guard !hymns.isEmpty else { return nil }
 
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: date)
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "yyyy-MM-dd"
 
-        guard let epoch = calendar.date(
-            from: DateComponents(year: 2024, month: 1, day: 1)
-        ) else {
-            return hymns.first
+        let dateKey = formatter.string(from: date)
+
+        let hash = SHA256.hash(data: Data(dateKey.utf8))
+
+        // Convert first 8 bytes of the hash into a UInt64
+        let value = hash.prefix(8).reduce(UInt64(0)) { partial, byte in
+            (partial << 8) | UInt64(byte)
         }
 
-        let days = calendar.dateComponents(
-            [.day],
-            from: epoch,
-            to: today
-        ).day ?? 0
+        let indexPosition = Int(value % UInt64(hymns.count))
 
-        let safeIndex = abs(days) % hymns.count
-        return hymns[safeIndex]
+        return hymns[indexPosition]
     }
 }

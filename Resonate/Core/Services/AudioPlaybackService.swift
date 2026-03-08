@@ -16,7 +16,7 @@ final class AudioPlaybackService: NSObject, ObservableObject {
     }
     
     func togglePlayback(for id: Int, tuneService: TuneService) {
-        print("IS PLAYING:", isPlaying)
+//        print("IS PLAYING:", isPlaying)
         // Same hymn already loaded
         if currentHymnID == id {
             
@@ -34,7 +34,7 @@ final class AudioPlaybackService: NSObject, ObservableObject {
         stop()
         
         guard let url = tuneService.tuneURL(for: id) else {
-            print("❌ Missing audio file")
+//            print("❌ Missing audio file")
             return
         }
         
@@ -56,17 +56,17 @@ final class AudioPlaybackService: NSObject, ObservableObject {
             if settings.enableHaptics {
                 Haptics.light()
             }
-            print("▶️ Playing audio:", url.lastPathComponent)
+//            print("▶️ Playing audio:", url.lastPathComponent)
             
         } catch {
-            print("❌ Audio error:", error)
+//            print("❌ Audio error:", error)
         }
-        print("Setting currentHymnID to:", id)
+//        print("Setting currentHymnID to:", id)
         currentHymnID = id
     }
     
     func stop() {
-        print("STOP CALLED — STACK TRACE:")
+//        print("STOP CALLED — STACK TRACE:")
         Thread.callStackSymbols.forEach { print($0) }
         player?.stop()
            player = nil

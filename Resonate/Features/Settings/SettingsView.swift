@@ -201,24 +201,80 @@ struct SettingsView: View {
     
     private var notificationsSection: some View {
         SettingsSectionCard(title: "Notifications", icon: "bell.badge.waveform") {
-            VStack(spacing: 8) {
-                Toggle("Daily Hymn Reminder",
-                       isOn: $settings.dailyReminderEnabled)
-                
-                DatePicker(
-                    "Reminder Time",
-                    selection: $settings.dailyReminderTime,
-                    displayedComponents: .hourAndMinute
-                )
-                .disabled(!settings.dailyReminderEnabled)
+            VStack(spacing: 12) {
+                Toggle("Daily Hymn Reminder", isOn: Binding(
+                    get: { environment.reminderSettingsViewModel.hotdEnabled },
+                    set: { newValue in
+                        if newValue {
+                            Task {
+                                await environment.reminderSettingsViewModel.requestPermissionAndEnableHOTD()
+                            }
+                        } else {
+                            Task {
+                                await environment.reminderSettingsViewModel.disableHOTD()
+                            }
+                        }
+                    }
+                ))
+
+                if environment.reminderSettingsViewModel.hotdEnabled {
+                    DatePicker(
+                        "Reminder Time",
+                        selection: Binding(
+                            get: { environment.reminderSettingsViewModel.hotdTime },
+                            set: { newValue in
+                                environment.reminderSettingsViewModel.hotdTime = newValue
+                            }
+                        ),
+                        displayedComponents: .hourAndMinute
+                    )
+                }
+                #if DEBUG
+                HStack {
+                    Text("Notification Permission")
+                    Spacer()
+                    Text(permissionLabel(environment.reminderSettingsViewModel.authorizationStatus))
+                        .foregroundStyle(.secondary)
+                        .font(.subheadline)
+                }
+
+                if environment.reminderSettingsViewModel.isSyncing {
+                    ProgressView()
+                }
+                #endif
+            }
+            VStack(spacing: 12) {
+                Toggle("Sabbath Reminder", isOn: Binding(
+                    get: { environment.reminderSettingsViewModel.sabbathEnabled },
+                    set: { newValue in
+                        if newValue {
+                            Task {
+                                await environment.reminderSettingsViewModel.requestPermissionAndEnableSabbath()
+                            }
+                        } else {
+                            Task {
+                                await environment.reminderSettingsViewModel.disableSabbath()
+                            }
+                        }
+                    }
+                ))
+
+                if environment.reminderSettingsViewModel.sabbathEnabled {
+                    DatePicker(
+                        "Sabbath Reminder Time",
+                        selection: Binding(
+                            get: { environment.reminderSettingsViewModel.sabbathTime },
+                            set: { newValue in
+                                environment.reminderSettingsViewModel.sabbathTime = newValue
+                            }
+                        ),
+                        displayedComponents: .hourAndMinute
+                    )
+                }
             }
         }
-        .onChange(of: settings.dailyReminderEnabled) { _, enabled in
-            if enabled {
-                environment.notificationService.requestPermission()
-            } else {
-                environment.notificationService.cancelReminder()
-            }
+        .task {
+            await environment.reminderSettingsViewModel.load()
         }
     }
     
@@ -291,11 +347,30 @@ struct SettingsView: View {
                     Button { showCredits = true } label: {
                         settingsRow(title: "Credits")
                     }
+                    
+//                    #if DEBUG
+                    NavigationLink {
+                        NotificationDebugView()
+                            .environmentObject(environment)
+                    } label: {
+                        settingsRow(title: "Notification Debug")
+                    }
+//                    #endif
                 }
             }
         }
     }
     
+    private func permissionLabel(_ status: NotificationAuthorizationStatus) -> String {
+        switch status {
+        case .notDetermined: return "Not Determined"
+        case .denied: return "Denied"
+        case .authorized: return "Authorized"
+        case .provisional: return "Provisional"
+        case .ephemeral: return "Ephemeral"
+        }
+    }
+
     private func settingsRow(title: String) -> some View {
         HStack {
             Text(title)

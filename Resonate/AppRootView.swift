@@ -41,7 +41,9 @@ struct AppRootView: View {
                 }
             }
 
-            rescheduleDailyReminderIfNeeded()
+            Task {
+                await environment.onAppBecameActive()
+            }
         }
         .onChange(of: environment.settingsService.hasLaunchedBeforePublished) { _, newValue in
             showOnboarding = !newValue
@@ -49,51 +51,22 @@ struct AppRootView: View {
                 environment.analyticsService.onboardingShown()
             }
         }
-        .onChange(of: environment.settingsService.dailyReminderEnabled) { _, _ in
-            rescheduleDailyReminderIfNeeded()
-        }
-        .onChange(of: environment.settingsService.dailyReminderTime) { _, _ in
-            rescheduleDailyReminderIfNeeded()
-        }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:
                 let source = environment.pendingSessionSource ?? "direct"
                 environment.sessionService.startSession(source: source)
                 environment.pendingSessionSource = nil
+
+                Task {
+                    await environment.onAppBecameActive()
+                }
             case .background:
                 environment.sessionService.endSession()
             default:
                 break
             }
         }
-    }
-
-    private func rescheduleDailyReminderIfNeeded() {
-        let startFromTomorrow = environment.settingsService.skipTodayDailyReminder
-        // Always cancel first to avoid duplicates.
-        environment.notificationService.cancelReminder()
-
-        guard environment.settingsService.dailyReminderEnabled,
-              let hymn = environment.hymnService.hymnOfTheDay() else {
-            return
-        }
-
-        environment.notificationService.scheduleSmartDailyReminder(
-            reminderTime: environment.settingsService.dailyReminderTime,
-            hymn: hymn,
-            engagementService: environment.hymnOfTheDayEngagementService,
-            startFromTomorrow: startFromTomorrow
-        )
-        
-        let hour = Calendar.current.component(.hour, from: environment.settingsService.dailyReminderTime)
-        let bucket: String
-        switch hour {
-        case 5..<12: bucket = "morning"
-        case 12..<18: bucket = "afternoon"
-        case 18..<23: bucket = "evening"
-        default: bucket = "night"
-        }
-        environment.analyticsService.reminderScheduled(timeBucket: bucket)
+        .toastOverlay(using: environment.toastCenter)
     }
 }

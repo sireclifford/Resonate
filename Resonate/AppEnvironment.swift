@@ -1,3 +1,4 @@
+import Foundation
 import Combine
 import YouVersionPlatform
 
@@ -15,11 +16,29 @@ final class AppEnvironment: ObservableObject {
     let settingsService: AppSettingsService
     let hymnStoryService: HymnStoryService
     let analyticsService: AnalyticsService
+
+    // New notification architecture
+    let dateProvider: DateProviding
+    let authorizationManager: NotificationAuthorizationManaging
+    let notificationClient: NotificationCenterClient
+    let requestFactory: NotificationRequestFactory
+    
+    let reminderStateStore: ReminderStateStore
+    let hotdContentBuilder: ReminderContentBuilding
+    
+    let hotdPolicy: ReminderPolicyEvaluating
+    let reminderScheduler: ReminderScheduling
+    let sabbathContentBuilder: ReminderContentBuilding
+    let sabbathPolicy: ReminderPolicyEvaluating
+    
+    let reminderSettingsViewModel: ReminderSettingsViewModel
     
     let notificationService: NotificationService
     let hymnOfTheDayEngagementService: HymnOfTheDayEngagementService
     let usageService: UsageService
     let recentSearchService: RecentSearchService
+    
+    let toastCenter: ToastCenter
     
     @Published var notificationHymnID: Int?
     @Published var audioPlaybackService: AudioPlaybackService
@@ -63,12 +82,51 @@ final class AppEnvironment: ObservableObject {
         
         self.notificationService = NotificationService()
         self.hymnOfTheDayEngagementService = HymnOfTheDayEngagementService(persistence: persistenceService)
+
+        // New notification architecture
+        self.dateProvider = SystemDateProvider()
+        self.authorizationManager = NotificationAuthorizationManager()
+        self.notificationClient = UserNotificationCenterClient()
+        self.requestFactory = NotificationRequestFactory()
+        self.reminderStateStore = UserDefaultsReminderStateStore()
+        self.hotdContentBuilder = HOTDContentBuilder()
+        self.hotdPolicy = HOTDReminderPolicy(
+            dateProvider: dateProvider,
+            contentBuilder: hotdContentBuilder
+        )
+        self.sabbathContentBuilder = SabbathContentBuilder()
+        self.sabbathPolicy = SabbathReminderPolicy(
+            dateProvider: dateProvider,
+            contentBuilder: sabbathContentBuilder
+        )
+        self.reminderScheduler = ReminderScheduler(
+            client: notificationClient,
+            requestFactory: requestFactory,
+            stateStore: reminderStateStore,
+            hotdPolicy: hotdPolicy,
+            sabbathPolicy: sabbathPolicy,
+            dateProvider: dateProvider
+        )
+        self.reminderSettingsViewModel = ReminderSettingsViewModel(
+            settings: settingsService,
+            hymnService: hymnService,
+            engagementService: hymnOfTheDayEngagementService,
+            authorizationManager: authorizationManager,
+            scheduler: reminderScheduler,
+            dateProvider: dateProvider
+        )
+        self.toastCenter = ToastCenter()
         
         self.notificationService.onNotificationTapped = { [weak self] hymnID in
             self?.notificationHymnID = hymnID
             self?.pendingSessionSource = "push_notification"
             self?.analyticsService.reminderNotificationTapped(hymnID: hymnID)
         }
+    }
+    
+    @MainActor
+    func onAppBecameActive() async {
+        await reminderSettingsViewModel.onAppBecameActive()
     }
     
 }

@@ -13,7 +13,7 @@ final class HymnStoryService {
               let data = try? Data(contentsOf: url),
               let decoded = try? JSONDecoder().decode([HymnStory].self, from: data)
         else {
-            print("❌ Failed to load hymn stories")
+//            print("❌ Failed to load hymn stories")
             return
         }
         

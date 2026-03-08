@@ -9,7 +9,7 @@ final class NotificationService: NSObject, ObservableObject, UNUserNotificationC
     
     override init() {
         super.init()
-        print("NotificationService initialized")
+//        print("NotificationService initialized")
         UNUserNotificationCenter.current().delegate = self
     }
     
@@ -18,7 +18,7 @@ final class NotificationService: NSObject, ObservableObject, UNUserNotificationC
             options: [.alert, .sound, .badge]
         ) { granted, error in
             if let error = error {
-                print("Notification permission error:", error)
+//                print("Notification permission error:", error)
             }
         }
     }
@@ -38,7 +38,7 @@ final class NotificationService: NSObject, ObservableObject, UNUserNotificationC
 
         // If user already opened today's Hymn of the Day → suppress
         if engagementService.hasOpenedToday(hymnID: hymn.id) {
-            print("Hymn of the Day already opened — suppressing reminder")
+//            print("Hymn of the Day already opened — suppressing reminder")
             return
         }
         
@@ -101,9 +101,9 @@ final class NotificationService: NSObject, ObservableObject, UNUserNotificationC
 
         center.add(request) { error in
             if let error = error {
-                print("Notification scheduling error:", error)
+//                print("Notification scheduling error:", error)
             } else {
-                print("Scheduled reminder for:", nextTriggerDate)
+//                print("Scheduled reminder for:", nextTriggerDate)
             }
         }
     }
