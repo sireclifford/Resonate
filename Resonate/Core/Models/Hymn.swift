@@ -26,6 +26,7 @@ struct HymnIndex: Identifiable, Codable, Hashable {
 enum WorshipSlide: Hashable {
     case intro
     case verse(verseIndex: Int)
+    case chorus
     case highlight(text: String)
     case reflection
     case complete

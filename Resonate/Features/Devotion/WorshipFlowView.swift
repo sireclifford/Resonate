@@ -4,26 +4,42 @@ struct WorshipFlowContainer: View {
     let hymnID: Int
     let environment: AppEnvironment
 
-    var body: some View {
+    private var slides: [WorshipSlide] {
         let viewModel = DevotionViewModel(hymnID: hymnID, hymnService: environment.hymnService)
 
-        // Build slides using whatever is available synchronously from the view model.
-        let highlightText: String = viewModel.detail?.chorus?.first
+        let highlightText: String = viewModel.detail?.highlight
+            ?? viewModel.detail?.chorus?.first
             ?? viewModel.detail?.verses.first?.first
             ?? viewModel.title
 
-        let slides: [WorshipSlide] = [
-            .intro,
-            .verse(verseIndex: 0),
-            .highlight(text: highlightText),
-            .reflection,
-            .complete
-        ]
+        var slides: [WorshipSlide] = [.intro]
+
+        let hasChorus = !(viewModel.detail?.chorus?.isEmpty ?? true)
+
+        for verseIndex in 0..<max(viewModel.verseCount, 1) {
+            slides.append(.verse(verseIndex: verseIndex))
+
+            if hasChorus {
+                slides.append(.chorus)
+            }
+        }
+
+        slides.append(.highlight(text: highlightText))
+        slides.append(.reflection)
+        slides.append(.complete)
+
+        return slides
+    }
+
+    var body: some View {
+        let viewModel = DevotionViewModel(hymnID: hymnID, hymnService: environment.hymnService)
 
         WorshipFlowView(
             viewModel: viewModel,
             slides: slides,
-            analytics: environment.analyticsService
+            analytics: environment.analyticsService,
+            audioService: environment.audioPlaybackService,
+            tuneService: environment.tuneService
         )
     }
 }
@@ -33,15 +49,23 @@ struct WorshipFlowView: View {
     @ObservedObject var viewModel: DevotionViewModel
     let slides: [WorshipSlide]
     let analytics: AnalyticsService
+    let audioService: AudioPlaybackService
+    let tuneService: TuneService
     
     @Environment(\.dismiss) private var dismiss
     @State private var index: Int = 0
+    @State private var isMuted: Bool = false
+    @State private var isClosing: Bool = false
 
     
     var body: some View {
         ZStack {
-            // Background
-            Color.black.ignoresSafeArea()
+            LinearGradient(
+                colors: [.black, .black.opacity(0.92), .gray.opacity(0.2)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
             
             // Content
             TabView(selection: $index) {
@@ -51,10 +75,16 @@ struct WorshipFlowView: View {
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
+            .animation(.easeInOut(duration: 0.25), value: index)
             .onAppear {
                 analytics.log(
                 .worshipFlowStarted,
                 parameters: [.hymnID: viewModel.index?.id ?? viewModel.hymnID])
+
+                isMuted = false
+                isClosing = false
+                audioService.play(for: viewModel.hymnID, tuneService: tuneService)
+
                 logSlideView()
             }
             .onChange(of: index) { oldValue, newValue in
@@ -67,7 +97,7 @@ struct WorshipFlowView: View {
                 
                 HStack {
                     Button {
-                        dismiss()
+                        closeFlow()
                     } label: {
                         Image(systemName: "xmark")
                             .font(.system(size: 16, weight: .semibold))
@@ -76,13 +106,13 @@ struct WorshipFlowView: View {
                             .background(.white.opacity(0.12))
                             .clipShape(Circle())
                     }
-                    
+
                     Spacer()
-                    
+
                     Button {
-                        // optional: menu (share/report/etc)
+                        toggleMute()
                     } label: {
-                        Image(systemName: "ellipsis")
+                        Image(systemName: isMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundStyle(.white)
                             .padding(10)
@@ -94,29 +124,40 @@ struct WorshipFlowView: View {
                 
                 Spacer()
             }
-            .padding(.top, 6)
+            .padding(.top, 10)
+            .zIndex(2)
             
-            // Tap zones (left/right) like Stories
-            HStack(spacing: 0) {
+            // Narrow edge tap zones so center content remains fully interactive.
+            HStack {
                 Color.clear
+                    .frame(width: 72)
                     .contentShape(Rectangle())
                     .onTapGesture { previous() }
-                
+
+                Spacer()
+
                 Color.clear
+                    .frame(width: 72)
                     .contentShape(Rectangle())
                     .onTapGesture { next() }
             }
             .ignoresSafeArea()
+            .zIndex(0)
         }
         // Swipe down to dismiss (optional)
         .gesture(
             DragGesture(minimumDistance: 16)
                 .onEnded { value in
                     if value.translation.height > 80 {
-                        dismiss()
+                        closeFlow()
                     }
                 }
         )
+        .onDisappear {
+            if !isClosing {
+                audioService.stop()
+            }
+        }
     }
     
     private func previous() {
@@ -132,7 +173,29 @@ struct WorshipFlowView: View {
             analytics.log(
             .worshipFlowCompleted,
             parameters: [.hymnID: viewModel.index?.id ?? viewModel.hymnID])
+            closeFlow()
+        }
+    }
+    
+    private func closeFlow() {
+        guard !isClosing else { return }
+        isClosing = true
+
+        let fadeDuration: TimeInterval = 1.0
+        audioService.fadeOutAndStop(duration: fadeDuration)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + fadeDuration) {
             dismiss()
+        }
+    }
+    
+    private func toggleMute() {
+        if isMuted {
+            audioService.resume()
+            isMuted = false
+        } else {
+            audioService.pause()
+            isMuted = true
         }
     }
     
@@ -149,6 +212,7 @@ struct WorshipFlowView: View {
         switch slide {
         case .intro: return "intro"
         case .verse(let v): return "verse_\(v)"
+        case .chorus: return "chorus"
         case .highlight: return "highlight"
         case .reflection: return "reflection"
         case .complete: return "complete"
@@ -164,6 +228,9 @@ struct WorshipFlowView: View {
         case .verse(let verseIndex):
             VerseSlide(viewModel: viewModel, verseIndex: verseIndex)
 
+        case .chorus:
+            ChorusSlide(viewModel: viewModel)
+
         case .highlight(let text):
             HighlightSlide(hymn: viewModel.index ?? HymnIndex(id: viewModel.hymnID, title: viewModel.title, category: .uncategorized, language: .english, verseCount: viewModel.verseCount), highlight: text)
 
@@ -177,3 +244,4 @@ struct WorshipFlowView: View {
         }
     }
 }
+ 

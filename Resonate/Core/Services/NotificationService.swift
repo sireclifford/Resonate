@@ -100,7 +100,7 @@ final class NotificationService: NSObject, ObservableObject, UNUserNotificationC
         )
 
         center.add(request) { error in
-            if let error = error {
+            if let  error = error {
 //                print("Notification scheduling error:", error)
             } else {
 //                print("Scheduled reminder for:", nextTriggerDate)

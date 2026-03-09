@@ -16,62 +16,95 @@ final class AudioPlaybackService: NSObject, ObservableObject {
     }
     
     func togglePlayback(for id: Int, tuneService: TuneService) {
-//        print("IS PLAYING:", isPlaying)
-        // Same hymn already loaded
         if currentHymnID == id {
-            
             if isPlaying {
-                player?.pause()
-                isPlaying = false
+                pause()
             } else {
+                resume()
+            }
+            return
+        }
+
+        play(for: id, tuneService: tuneService)
+    }
+
+    func play(for id: Int, tuneService: TuneService) {
+        if currentHymnID == id, player != nil {
+            if !isPlaying {
+                player?.setVolume(0.18, fadeDuration: 1.2)
                 player?.play()
                 isPlaying = true
             }
-            
             return
         }
-        
+
         stop()
-        
+
         guard let url = tuneService.tuneURL(for: id) else {
-//            print("❌ Missing audio file")
             return
         }
-        
+
         do {
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.playback)
             try session.setActive(true)
-            
+
             player = try AVAudioPlayer(contentsOf: url)
             player?.delegate = self
+            player?.numberOfLoops = -1
+            player?.volume = 0.0
             player?.prepareToPlay()
             player?.play()
-            
+            player?.setVolume(0.18, fadeDuration: 1.8)
+
             currentHymnID = id
             isPlaying = true
-            
+
             analyticsService.hymnAudioPlayed(id: id)
-            
+
             if settings.enableHaptics {
                 Haptics.light()
             }
-//            print("▶️ Playing audio:", url.lastPathComponent)
-            
         } catch {
-//            print("❌ Audio error:", error)
         }
-//        print("Setting currentHymnID to:", id)
-        currentHymnID = id
+    }
+
+    func fadeOutAndStop(duration: TimeInterval = 1.6) {
+        guard let player else {
+            stop()
+            return
+        }
+
+        player.setVolume(0.0, fadeDuration: duration)
+        isPlaying = false
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
+            guard let self else { return }
+            self.stop()
+        }
+    }
+
+    func pause() {
+        guard let player else { return }
+        player.setVolume(0.0, fadeDuration: 0.8)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
+            guard let self else { return }
+            self.player?.pause()
+            self.isPlaying = false
+        }
+    }
+
+    func resume() {
+        player?.play()
+        player?.setVolume(0.18, fadeDuration: 1.2)
+        isPlaying = true
     }
     
     func stop() {
-//        print("STOP CALLED — STACK TRACE:")
-        Thread.callStackSymbols.forEach { print($0) }
         player?.stop()
-           player = nil
-           currentHymnID = nil
-           isPlaying = false
+        player = nil
+        currentHymnID = nil
+        isPlaying = false
     }
 }
 

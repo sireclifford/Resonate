@@ -875,7 +875,7 @@ struct HomeView: View {
         let formatter = DateFormatter()
         formatter.timeStyle = .short
         formatter.dateStyle = .none
-        let timeString = formatter.string(from: environment.reminderSettingsViewModel.hotdTime)
+//        let timeString = formatter.string(from: environment.reminderSettingsViewModel.hotdTime)
 
         DispatchQueue.main.async {
             onSelectHymn(hymn)

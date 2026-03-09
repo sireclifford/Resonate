@@ -4,16 +4,19 @@ struct IntroSlide: View {
     
     var body: some View {
         ZStack {
-            // Replace with your hymn image background
-            LinearGradient(colors: [.gray.opacity(0.35), .black], startPoint: .top, endPoint: .bottom)
-                .ignoresSafeArea()
+            LinearGradient(
+                colors: [.black, .black.opacity(0.92), .gray.opacity(0.2)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
 
-            VStack(alignment: .leading, spacing: 16) {
-                Spacer()
+            VStack(alignment: .leading, spacing: 20) {
+                Spacer(minLength: 80)
 
                 Text("Hymn of the Day")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.75))
+                    .foregroundStyle(.white.opacity(0.7))
 
                 Text("#\(viewModel.index?.id ?? viewModel.hymnID)")
                     .font(.system(size: 16, weight: .bold))
@@ -25,7 +28,10 @@ struct IntroSlide: View {
                     .lineSpacing(6)
 
                 Spacer()
-                Spacer()
+
+                Text("Take a moment to worship through this hymn.")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.75))
             }
             .padding(.horizontal, 22)
             .padding(.bottom, 48)
