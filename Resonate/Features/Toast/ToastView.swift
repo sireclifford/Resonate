@@ -1,8 +1,10 @@
 import SwiftUI
+import Combine
 
 struct ToastView: View {
+    @State private var scale: CGFloat = 0.92
     let toast: ToastMessage
-
+    
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: iconName)
@@ -25,15 +27,33 @@ struct ToastView: View {
 
             Spacer(minLength: 0)
         }
+        .scaleEffect(scale)
+        .onAppear {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                scale = 1.0
+            }
+        }
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
         .background(.ultraThinMaterial)
+        .background(
+            RoundedRectangle(cornerRadius: 18)
+                .fill(Color(.systemBackground).opacity(0.35))
+        )
         .overlay(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .stroke(borderColor, lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .shadow(color: Color.black.opacity(0.14), radius: 14, y: 8)
+        .gesture(
+            DragGesture()
+                .onEnded{ value in
+                    if abs(value.translation.height) > 40 {
+                        NotificationCenter.default.post(name: .dismissToast, object: nil)
+                    }
+                }
+        )
     }
 
     private var iconName: String {

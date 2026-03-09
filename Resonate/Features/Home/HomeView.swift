@@ -216,9 +216,21 @@ struct HomeView: View {
                 .font(.title2.weight(.bold))
                 .foregroundStyle(.primary)
             Spacer()
-            Image(systemName: isHymnOfDayNotificationsOn ? "bell.fill" : "bell.slash.fill")
-                .font(.headline)
-                .foregroundStyle(isHymnOfDayNotificationsOn ? .accent : .secondary)
+            Image(systemName: "bell.fill")
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(colorScheme == .dark ? Color.white : Color.primary.opacity(0.78))
+                .frame(width: 38, height: 38)
+                .background(
+                    Circle()
+                        .fill(colorScheme == .dark ? Color.white.opacity(0.10) : Color.primary.opacity(0.05))
+                )
+                .overlay(
+                    Circle().stroke(
+                        colorScheme == .dark ? Color.white.opacity(0.20) : Color.primary.opacity(0.08),
+                        lineWidth: 1
+                    )
+                )
+                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.22 : 0.08), radius: 8, y: 4)
                 .accessibilityLabel(isHymnOfDayNotificationsOn ? "Notifications On" : "Notifications Off")
         }
     }
@@ -244,12 +256,12 @@ struct HomeView: View {
 
                         VStack {}
                             .frame(maxWidth: .infinity)
-                            .frame(height: 135)
+                            .frame(height: 118)
                             .background(
                                 LinearGradient(
                                     colors: colorScheme == .dark
-                                        ? [Color.black.opacity(0.70), Color.black.opacity(0.10)]
-                                        : [Color.white.opacity(0.85), Color.white.opacity(0.20)],
+                                        ? [Color.black.opacity(0.62), Color.black.opacity(0.08)]
+                                        : [Color.white.opacity(0.52), Color.white.opacity(0.06)],
                                     startPoint: .bottom,
                                     endPoint: .top
                                 )
@@ -286,23 +298,24 @@ struct HomeView: View {
                             .clipShape(Capsule())
                             .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.92) : .primary)
                         }
-                        .padding(14)
+                        .padding(.horizontal, 14)
+                        .padding(.top, 14)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                         .allowsHitTesting(false)
 
-                        VStack(alignment: .leading, spacing: 10) {
+                        VStack(alignment: .leading, spacing: 8) {
                             Text("#\(hymn.id) • \(hymn.title)")
-                                .font(.title3.weight(.semibold))
-                                .lineSpacing(2)
+                                .font(.headline.weight(.semibold))
+                                .lineSpacing(1)
                                 .foregroundStyle(colorScheme == .dark ? .white.opacity(0.95) : .primary)
                                 .lineLimit(2)
 
                             Text("A moment of quiet worship")
-                                .font(.system(size: 18, weight: .semibold, design: .serif))
-                                .foregroundStyle(colorScheme == .dark ? .white.opacity(0.9) : .primary.opacity(0.9))
+                                .font(.system(size: 17, weight: .semibold, design: .serif))
+                                .foregroundStyle(colorScheme == .dark ? .white.opacity(0.90) : .primary.opacity(0.90))
                                 .lineSpacing(2)
                                 .lineLimit(2)
-                                .padding(.top, 2)
+                                .padding(.top, 1)
 
                             Group {
                                 if !isHymnOfDayNotificationsOn {
@@ -322,7 +335,7 @@ struct HomeView: View {
                                                         "Daily reminder enabled",
                                                         subtitle: "You’ll be reminded at \(timeString)"
                                                     ),
-                                                    position: .bottom
+                                                    position: .top
                                                 )
                                             } else {
                                                 environment.toastCenter.show(
@@ -380,10 +393,15 @@ struct HomeView: View {
                                     .accessibilityLabel("Daily hymn reminder is enabled")
                                 }
                             }
+                            .padding(.top, 14)
                         }
-                        .padding(20)
+                        .frame(maxWidth: 315, alignment: .leading)
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 14)
+                        .padding(.bottom, 14)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
                     }
-                    .frame(maxWidth: .infinity, minHeight: 220)
+                    .frame(maxWidth: .infinity, minHeight: 208)
                     .contentShape(Rectangle())
                     .onTapGesture { showWorshipFlow = true }
                 }

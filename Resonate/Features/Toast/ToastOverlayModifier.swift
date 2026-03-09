@@ -17,6 +17,9 @@ struct ToastOverlayModifier: ViewModifier {
                         }
                 }
             }
+            .onReceive(NotificationCenter.default.publisher(for: .dismissToast)) { _ in
+                    toastCenter.hide()
+            }
     }
 
     private var alignment: Alignment {
@@ -49,4 +52,8 @@ extension View {
     func toastOverlay(using toastCenter: ToastCenter) -> some View {
         modifier(ToastOverlayModifier(toastCenter: toastCenter))
     }
+}
+
+extension Notification.Name {
+    static let dismissToast = Notification.Name("dismissToast")
 }

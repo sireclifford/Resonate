@@ -3,6 +3,7 @@ import UIKit
 
 struct OnboardingView: View {
     @EnvironmentObject private var environment: AppEnvironment
+    @Environment(\.colorScheme) private var colorScheme
     private let analytics: AnalyticsService
     var onBeginWorship: () -> Void
     var onDismiss: () -> Void
@@ -24,23 +25,25 @@ struct OnboardingView: View {
 
     var body: some View {
         ZStack {
-            // Warm parchment background
             LinearGradient(
-                colors: [
-                    Color(red: 0.98, green: 0.96, blue: 0.91),
-                    Color(red: 0.95, green: 0.92, blue: 0.85)
-                ],
+                colors: colorScheme == .dark
+                    ? [
+                        Color(red: 0.08, green: 0.08, blue: 0.09),
+                        Color(red: 0.11, green: 0.10, blue: 0.12)
+                    ]
+                    : [
+                        Color(red: 0.97, green: 0.95, blue: 0.90),
+                        Color(red: 0.93, green: 0.90, blue: 0.84)
+                    ],
                 startPoint: .top,
                 endPoint: .bottom
             )
             .ignoresSafeArea()
             .overlay(
-                // Subtle vignette for depth
                 RadialGradient(
-                    colors: [
-                        Color.black.opacity(0.06),
-                        Color.clear
-                    ],
+                    colors: colorScheme == .dark
+                        ? [Color.white.opacity(0.05), Color.clear]
+                        : [Color.black.opacity(0.05), Color.clear],
                     center: .center,
                     startRadius: 120,
                     endRadius: 520
@@ -48,10 +51,10 @@ struct OnboardingView: View {
                 .ignoresSafeArea()
             )
 
-            VStack(spacing: 32) {
+            VStack(spacing: 24) {
                 Spacer()
 
-                VStack(spacing: 16) {
+                VStack(spacing: 14) {
                     Group {
                         if let uiImage = UIImage(named: "LaunchLogo") {
                             Image(uiImage: uiImage)
@@ -63,39 +66,45 @@ struct OnboardingView: View {
                                 .scaledToFit()
                         }
                     }
-                    .frame(width: 64, height: 64)
-                    .foregroundStyle(.primary)
-                    .padding(.bottom, 2)
+                    .frame(width: 70, height: 70)
+                    .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.95) : .primary)
+                    .padding(.bottom, 4)
 
                     Text("Resonate")
-                        .font(.title)
-                        .fontDesign(.serif)
-                        .fontWeight(.semibold)
+                        .font(.system(size: 28, weight: .bold, design: .serif))
+                        .foregroundStyle(colorScheme == .dark ? Color.white : Color.black)
                         .multilineTextAlignment(.center)
 
                     Text("Every hymn carries a story.\nBegin each day in worship.")
-                        .font(.body)
+                        .font(.system(size: 17, weight: .medium))
                         .multilineTextAlignment(.center)
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 24)
+                        .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.72) : Color.primary.opacity(0.55))
+                        .lineSpacing(2)
+                        .padding(.horizontal, 28)
                 }
 
-                Spacer()
+                Spacer(minLength: 40)
 
-                VStack(spacing: 14) {
+                VStack(spacing: 16) {
                     Button {
                         analytics.onboardingCompleted()
                         UIImpactFeedbackGenerator(style: .soft).impactOccurred()
                         onBeginWorship()
                     } label: {
                         Text("Begin Worship")
+                            .font(.system(size: 17, weight: .semibold))
                             .frame(maxWidth: .infinity)
-                            .padding()
+                            .padding(.vertical, 16)
                             .background(
-                                RoundedRectangle(cornerRadius: 14)
+                                RoundedRectangle(cornerRadius: 18, style: .continuous)
                                     .fill(Color.accentColor)
                             )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                    .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                            )
                             .foregroundStyle(.white)
+                            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.26 : 0.12), radius: 12, y: 6)
                     }
 
                     Button {
@@ -103,12 +112,21 @@ struct OnboardingView: View {
                         showNotificationExplainer = true
                     } label: {
                         Text("Receive a Daily Hymn")
+                            .font(.system(size: 17, weight: .semibold))
                             .frame(maxWidth: .infinity)
-                            .padding()
+                            .padding(.vertical, 16)
                             .background(
-                                RoundedRectangle(cornerRadius: 14)
-                                    .stroke(Color.primary.opacity(0.2))
+                                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                    .fill(colorScheme == .dark ? Color.white.opacity(0.05) : Color.white.opacity(0.35))
                             )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                    .stroke(
+                                        colorScheme == .dark ? Color.white.opacity(0.14) : Color.black.opacity(0.10),
+                                        lineWidth: 1
+                                    )
+                            )
+                            .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.92) : Color.accentColor)
                     }
 
                     Button {
@@ -116,14 +134,14 @@ struct OnboardingView: View {
                         onDismiss()
                     } label: {
                         Text("Not now")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+                            .font(.footnote.weight(.medium))
+                            .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.55) : Color.primary.opacity(0.38))
                     }
-                    .padding(.top, 4)
+                    .padding(.top, 2)
                 }
-                .padding(.horizontal, 28)
+                .padding(.horizontal, 26)
 
-                Spacer().frame(height: 24)
+                Spacer().frame(height: 18)
             }
             .opacity(hasAppeared ? 1 : 0)
             .scaleEffect(hasAppeared ? 1 : 0.98)
