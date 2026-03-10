@@ -2,6 +2,7 @@ import AVFoundation
 import Foundation
 import Combine
 import MediaPlayer
+import Network
 
 final class AccompanimentPlaybackService: NSObject, ObservableObject {
 
@@ -64,6 +65,10 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
     private var player: AVAudioPlayer?
     private var progressTimer: Timer?
 
+    private let pathMonitor = NWPathMonitor()
+    private let monitorQueue = DispatchQueue(label: "AccompanimentPlaybackService.PathMonitor")
+    private var currentNetworkPath: NWPath?
+
     private let storageService: AccompanimentStorageService
     private let cacheService: AccompanimentCacheService
     private let settings: AppSettingsService
@@ -84,6 +89,7 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
         self.hymnTitleProvider = hymnTitleProvider
         super.init()
         configureRemoteCommands()
+        startNetworkMonitoring()
     }
 
     func togglePlayback(for hymnID: Int) {
@@ -108,41 +114,40 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
         }
     }
 
-    @MainActor
-    func download(for hymnID: Int) async {
-        guard !cacheService.isDownloaded(for: hymnID) else { return }
+    func toggleWorshipFlowPlayback(for hymnID: Int) {
+        if currentHymnID == hymnID {
+            switch state {
+            case .playing:
+                pause()
+            case .paused:
+                resume()
+            case .loading:
+                return
+            case .idle, .failed:
+                Task {
+                    await playForWorshipFlow(for: hymnID)
+                }
+            }
+            return
+        }
 
-        downloadingHymnID = hymnID
-        failedHymnID = nil
-        lastFileErrorMessage = nil
-
-        do {
-            let remoteURL = try await storageService.fetchDownloadURL(for: hymnID)
-            let (data, _) = try await URLSession.shared.data(from: remoteURL)
-            _ = try cacheService.save(data: data, for: hymnID)
-            downloadingHymnID = nil
-        } catch {
-            downloadingHymnID = nil
-            failedHymnID = hymnID
-            lastFileErrorMessage = error.localizedDescription
+        Task {
+            await playForWorshipFlow(for: hymnID)
         }
     }
 
-    func deleteDownload(for hymnID: Int) {
-        if currentHymnID == hymnID {
-            stop()
-        }
-
-        cacheService.delete(for: hymnID)
-
-        if failedHymnID == hymnID {
-            failedHymnID = nil
-            lastFileErrorMessage = nil
-        }
+    @MainActor
+    func playForWorshipFlow(for hymnID: Int) async {
+        await play(for: hymnID, allowAutomaticDownload: true)
     }
 
     @MainActor
     func play(for hymnID: Int) async {
+        await play(for: hymnID, allowAutomaticDownload: settings.autoDownloadAudio)
+    }
+
+    @MainActor
+    private func play(for hymnID: Int, allowAutomaticDownload: Bool) async {
         stop()
         currentHymnID = hymnID
         state = .loading
@@ -156,6 +161,22 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
             if cacheService.isDownloaded(for: hymnID) {
                 localURL = cacheService.localURL(for: hymnID)
             } else {
+                guard allowAutomaticDownload else {
+                    throw NSError(
+                        domain: "AccompanimentPlaybackService",
+                        code: 1000,
+                        userInfo: [NSLocalizedDescriptionKey: "Auto-download is turned off in Settings. Download this accompaniment first to play it."]
+                    )
+                }
+
+                guard canUseNetworkForAudioDownload else {
+                    throw NSError(
+                        domain: "AccompanimentPlaybackService",
+                        code: 1001,
+                        userInfo: [NSLocalizedDescriptionKey: "Cellular downloads are disabled in Settings."]
+                    )
+                }
+
                 downloadingHymnID = hymnID
                 let remoteURL = try await storageService.fetchDownloadURL(for: hymnID)
                 let (data, _) = try await URLSession.shared.data(from: remoteURL)
@@ -195,6 +216,51 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
             state = .failed(message: error.localizedDescription)
             currentHymnID = nil
         }
+    }
+
+    @MainActor
+    func download(for hymnID: Int) async {
+        guard !cacheService.isDownloaded(for: hymnID) else { return }
+
+        downloadingHymnID = hymnID
+        failedHymnID = nil
+        lastFileErrorMessage = nil
+
+        guard canUseNetworkForAudioDownload else {
+            downloadingHymnID = nil
+            failedHymnID = hymnID
+            lastFileErrorMessage = "Cellular downloads are disabled in Settings."
+            return
+        }
+
+        do {
+            let remoteURL = try await storageService.fetchDownloadURL(for: hymnID)
+            let (data, _) = try await URLSession.shared.data(from: remoteURL)
+            _ = try cacheService.save(data: data, for: hymnID)
+            downloadingHymnID = nil
+        } catch {
+            downloadingHymnID = nil
+            failedHymnID = hymnID
+            lastFileErrorMessage = error.localizedDescription
+        }
+    }
+
+    func deleteDownload(for hymnID: Int) {
+        if currentHymnID == hymnID {
+            stop()
+        }
+
+        cacheService.delete(for: hymnID)
+
+        if failedHymnID == hymnID {
+            failedHymnID = nil
+            lastFileErrorMessage = nil
+        }
+    }
+
+
+    deinit {
+        pathMonitor.cancel()
     }
 
     func fadeOutAndStop(duration: TimeInterval = 1.6) {
@@ -247,6 +313,25 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
         currentHymnID = nil
         state = .idle
+    }
+
+    private var canUseNetworkForAudioDownload: Bool {
+        guard let path = currentNetworkPath else {
+            return settings.allowCellularDownload
+        }
+
+        if path.usesInterfaceType(.cellular) {
+            return settings.allowCellularDownload
+        }
+
+        return true
+    }
+
+    private func startNetworkMonitoring() {
+        pathMonitor.pathUpdateHandler = { [weak self] path in
+            self?.currentNetworkPath = path
+        }
+        pathMonitor.start(queue: monitorQueue)
     }
 
     private func startProgressTimer() {

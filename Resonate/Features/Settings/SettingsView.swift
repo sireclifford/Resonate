@@ -1,4 +1,6 @@
 import SwiftUI
+import StoreKit
+import UIKit
 
 struct SettingsView: View {
     
@@ -10,6 +12,7 @@ struct SettingsView: View {
     @State private var showTerms = false
     @State private var showCredits = false
     @State private var showClearSuccess = false
+    @State private var showClearDownloadedAudioConfirmation = false
     @ObservedObject private var settings: AppSettingsService
     
     init(environment: AppEnvironment) {
@@ -66,6 +69,75 @@ struct SettingsView: View {
                 CreditsView()
             }
         }
+        .sheet(isPresented: $showClearDownloadedAudioConfirmation) {
+            VStack(spacing: 0) {
+                Capsule()
+                    .fill(Color.secondary.opacity(0.22))
+                    .frame(width: 42, height: 5)
+                    .padding(.top, 10)
+                    .padding(.bottom, 18)
+
+                VStack(spacing: 14) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.red.opacity(0.12))
+                            .frame(width: 60, height: 60)
+
+                        Image(systemName: "trash.fill")
+                            .font(.system(size: 24, weight: .semibold))
+                            .foregroundStyle(.red)
+                    }
+
+                    VStack(spacing: 8) {
+                        Text("Clear Downloaded Audio?")
+                            .font(.title3.weight(.semibold))
+                            .multilineTextAlignment(.center)
+
+                        Text("This will remove all downloaded accompaniments from your device. You can download them again anytime.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .padding(.horizontal, 24)
+
+                HStack(spacing: 12) {
+                    Button {
+                        showClearDownloadedAudioConfirmation = false
+                    } label: {
+                        Text("Cancel")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                    }
+                    .buttonStyle(.plain)
+                    .background(Color(.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+                    Button {
+                        environment.accompanimentCacheService.clearAll()
+                        showClearDownloadedAudioConfirmation = false
+                    } label: {
+                        Text("Clear")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                    }
+                    .buttonStyle(.plain)
+                    .background(Color.red)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 22)
+                .padding(.bottom, 18)
+            }
+            .presentationDetents([.height(270)])
+            .presentationDragIndicator(.hidden)
+            .presentationCornerRadius(28)
+            .presentationBackground(.regularMaterial)
+        }
     }
     
     private var appearanceSection: some View {
@@ -105,6 +177,29 @@ struct SettingsView: View {
     private var readerSection: some View {
         SettingsSectionCard(title: "Reader", icon: "textformat") {
             VStack(spacing: 12) {
+                Menu {
+                    ForEach(ReaderFontSize.allCases) { size in
+                        Button {
+                            settings.fontSize = size
+                        } label: {
+                            HStack {
+                                Text(size.label)
+                                if size == settings.fontSize {
+                                    Spacer()
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    HStack {
+                        Text("Font Size")
+                        Spacer()
+                        Text(settings.fontSize.label)
+                            .foregroundStyle(.secondary)
+                            .font(.subheadline)
+                    }
+                }
                 Menu {
                     ForEach(ReaderFontFamily.allCases) { family in
                         Button {
@@ -186,6 +281,16 @@ struct SettingsView: View {
     private var audioSection: some View {
         SettingsSectionCard(title: "Audio", icon: "speaker.wave.2") {
             VStack(spacing: 8) {
+                Toggle(
+                    "Auto Download Accompaniments",
+                    isOn: $settings.autoDownloadAudio
+                )
+
+                Toggle(
+                    "Allow Cellular Downloads",
+                    isOn: $settings.allowCellularDownload
+                )
+
                 Toggle(
                     "Stop Playback When Leaving Hymn",
                     isOn: $settings.stopPlaybackOnExit
@@ -281,18 +386,28 @@ struct SettingsView: View {
     private var librarySection: some View {
         SettingsSectionCard(title: "Library", icon: "books.vertical") {
             VStack(spacing: 12) {
+                HStack {
+                    Text("Downloaded Audio")
+                    Spacer()
+                    Text(formattedStorageSize(environment.accompanimentCacheService.totalStorageSize()))
+                        .foregroundStyle(.secondary)
+                        .font(.subheadline)
+                }
+
                 Button("Clear Recently Viewed") {
                     environment.recentlyViewedService.clear()
                     showClearSuccess = true
                 }
-                
+
                 Divider()
-                
+
                 Button(role: .destructive) {
-                    environment.audioPlaybackService.stop()
+                    showClearDownloadedAudioConfirmation = true
                 } label: {
-                    Text("Stop Playback")
+                    Text("Clear Downloaded Audio")
                 }
+
+                Divider()
             }
         }
     }
@@ -307,6 +422,11 @@ struct SettingsView: View {
                     Text("Resonate – Digital Hymnal")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+
+                    Text("A digital house of worship through hymns, reflection, and story.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
                     
                     HStack {
                         Text("Version")
@@ -329,7 +449,7 @@ struct SettingsView: View {
                     }
                     
                     Button { showSuggestion = true } label: {
-                        settingsRow(title: "Suggest a Hymn")
+                        settingsRow(title: "Request a Hymn")
                     }
                 }
                 
@@ -347,15 +467,39 @@ struct SettingsView: View {
                     Button { showCredits = true } label: {
                         settingsRow(title: "Credits")
                     }
+
+                    Divider()
+
+                    Button {
+                        let url = URL(string: "https://apps.apple.com")!
+                        let activity = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                        if let scene = UIApplication.shared.connectedScenes
+                            .compactMap({ $0 as? UIWindowScene })
+                            .first(where: { $0.activationState == .foregroundActive }),
+                           let window = scene.keyWindow,
+                           let root = window.rootViewController {
+                            root.present(activity, animated: true)
+                        }
+                    } label: {
+                        settingsRow(title: "Share Resonate")
+                    }
+
+                    Button {
+                        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                            AppStore.requestReview(in: scene)
+                        }
+                    } label: {
+                        settingsRow(title: "Rate Resonate")
+                    }
                     
-//                    #if DEBUG
+#if DEBUG
                     NavigationLink {
                         NotificationDebugView()
                             .environmentObject(environment)
                     } label: {
                         settingsRow(title: "Notification Debug")
                     }
-//                    #endif
+#endif
                 }
             }
         }
@@ -371,6 +515,10 @@ struct SettingsView: View {
         }
     }
 
+    private func formattedStorageSize(_ bytes: Int64) -> String {
+        ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file)
+    }
+
     private func settingsRow(title: String) -> some View {
         HStack {
             Text(title)
@@ -380,3 +528,5 @@ struct SettingsView: View {
         }
     }
 }
+
+ 

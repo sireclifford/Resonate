@@ -14,17 +14,24 @@ struct HymnCardView: View {
                 HymnCardBackground(seed: index.id)
                     .frame(height: 180)
 
-                if environment.tuneService.tuneExists(for: index.id) {
+                if environment.accompanimentPlaybackService.isDownloaded(for: index.id) {
                     VStack {
                         HStack {
-                            Image(systemName: "speaker.wave.2.fill")
-                                .font(.caption)
-                                .padding(6)
-                                .background(.ultraThinMaterial)
-                                .clipShape(Circle())
-                                .scaleEffect(showAudioBadge ? 1 : 0.6)
-                                .opacity(showAudioBadge ? 1 : 0)
-                                .animation(.easeOut(duration: 0.3), value: showAudioBadge)
+                            HStack(spacing: 6) {
+                                Image(systemName: "music.note")
+                                    .font(.caption.weight(.semibold))
+
+                                Text("Downloaded")
+                                    .font(.caption2.weight(.semibold))
+                            }
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(.ultraThinMaterial)
+                            .clipShape(Capsule())
+                            .scaleEffect(showAudioBadge ? 1 : 0.85)
+                            .opacity(showAudioBadge ? 1 : 0)
+                            .animation(.easeOut(duration: 0.3), value: showAudioBadge)
 
                             Spacer()
                         }

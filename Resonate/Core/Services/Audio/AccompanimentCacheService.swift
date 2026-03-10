@@ -21,7 +21,7 @@ final class AccompanimentCacheService {
 
     /// Returns the expected local file URL for a hymn accompaniment
     func localURL(for hymnID: Int) -> URL {
-        let filename = String(format: "%03d.m4a", hymnID)
+        let filename = String(format: "%03d.mp3", hymnID)
         return baseDirectory.appendingPathComponent(filename)
     }
 

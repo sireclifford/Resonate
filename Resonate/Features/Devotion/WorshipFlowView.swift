@@ -91,7 +91,7 @@ struct WorshipFlowView: View {
 
                 isMuted = false
                 isClosing = false
-                audioService.togglePlayback(for: viewModel.hymnID)
+                audioService.toggleWorshipFlowPlayback(for: viewModel.hymnID)
 
                 logSlideView()
             }

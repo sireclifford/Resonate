@@ -180,12 +180,17 @@ struct HomeView: View {
         }
         .onChange(of: viewModel.hymnOfTheDay?.id) { _, _ in
             attemptAutoOpenHymnOfTheDayIfNeeded()
+            prefetchHomeAudioAvailability()
+        }
+        .onChange(of: viewModel.recentlyViewed.map(\.id)) { _, _ in
+            prefetchHomeAudioAvailability()
         }
         .onAppear {
             scheduleMidnightRefresh()
             scheduleGreetingRefresh()
             viewModel.refreshHymnOfTheDay()
             attemptAutoOpenHymnOfTheDayIfNeeded()
+            prefetchHomeAudioAvailability()
         }
         .onDisappear {
             midnightTimer?.invalidate()
@@ -424,7 +429,6 @@ struct HomeView: View {
                                 }
                             }
                             worshipStart = nil
-//                            print("Opened today at home:", environment.hymnOfTheDayEngagementService.hasOpenedToday(hymnID: hymn.id))
                         }
                     } else {
                         Text("Preparing worship…")
@@ -854,6 +858,24 @@ struct HomeView: View {
                 )
                 .shadow(color: Color.black.opacity(0.06), radius: 10, y: 6)
             }
+        }
+    }
+
+    private func prefetchHomeAudioAvailability() {
+        var hymnIDs = Set<Int>()
+
+        if let hotdID = viewModel.hymnOfTheDay?.id {
+            hymnIDs.insert(hotdID)
+        }
+
+        for hymn in viewModel.recentlyViewed {
+            hymnIDs.insert(hymn.id)
+        }
+
+        guard !hymnIDs.isEmpty else { return }
+
+        Task {
+            await environment.accompanimentStorageService.prefetchAvailability(for: Array(hymnIDs))
         }
     }
 
