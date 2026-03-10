@@ -122,6 +122,9 @@ final class HymnService: ObservableObject {
     func hymnOfTheDay(on date: Date = Date()) -> HymnIndex? {
         let hymns = index
         guard !hymns.isEmpty else { return nil }
+//        #if DEBUG
+//        return hymnIndex(by: 264)
+//        #endif
 
         let formatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)

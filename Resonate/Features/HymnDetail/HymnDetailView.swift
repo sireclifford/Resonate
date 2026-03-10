@@ -7,6 +7,7 @@ struct HymnDetailView: View {
     @ObservedObject private var settings: AppSettingsService
     @StateObject private var viewModel: HymnDetailViewModel
     @ObservedObject private var favouritesService: FavouritesService
+    @ObservedObject private var accompanimentPlaybackService: AccompanimentPlaybackService
     
     @State private var showStory = false
     @State private var viewStart: Date?
@@ -30,8 +31,9 @@ struct HymnDetailView: View {
         _favouritesService = ObservedObject(
             wrappedValue: environment.favouritesService
         )
-        
-        
+        _accompanimentPlaybackService = ObservedObject(
+            wrappedValue: environment.accompanimentPlaybackService
+        )
     }
     
     var body: some View {
@@ -86,23 +88,24 @@ struct HymnDetailView: View {
                 .padding()
             }
             
+            // Accompaniment download/delete row
+            accompanimentActionRow
+            
             // Bottom bar
             ReaderBottomBar(
-                audioPlaybackService: environment.audioPlaybackService,
-                canPlay: environment.tuneService.tuneExists(for: viewModel.hymn.id),
+                audioPlaybackService: accompanimentPlaybackService,
+                canPlay: accompanimentPlaybackService.fileState(for: viewModel.hymn.id) == .downloaded,
                 hasNext: viewModel.hasNext,
                 hasPrevious: viewModel.hasPrevious,
                 onPrevious: {
-                    environment.audioPlaybackService.stop()
+                    accompanimentPlaybackService.stop()
                     viewModel.previousHymn()
                 },
                 onPlayToggle: {
-                    environment.audioPlaybackService.togglePlayback(for: viewModel.hymn.id,
-                                                                    tuneService: environment.tuneService
-                    )
+                    accompanimentPlaybackService.togglePlayback(for: viewModel.hymn.id)
                 },
                 onNext: {
-                    environment.audioPlaybackService.stop()
+                    accompanimentPlaybackService.stop()
                     viewModel.nextHymn()
                 }
             )
@@ -149,23 +152,24 @@ struct HymnDetailView: View {
         }
         .sheet(isPresented: $showNotificationPrompt){
             VStack {
-                    Text("Receive a Daily Hymn?")
-                    Text("Begin each day with reflection.")
-
-                    Button("Yes, Remind Me") {
-                        environment.analyticsService.log(.notificationPromptAccepted, parameters: nil)
-                        environment.notificationService.requestPermission()
-                        showNotificationPrompt = false
-                    }
-
-                    Button("Not Now") {
-                        environment.analyticsService.log(.notificationPromptDeclined, parameters: nil)
-                        showNotificationPrompt = false
-                    }
+                Text("Receive a Daily Hymn?")
+                Text("Begin each day with reflection.")
+                
+                Button("Yes, Remind Me") {
+                    environment.analyticsService.log(.notificationPromptAccepted, parameters: nil)
+                    environment.notificationService.requestPermission()
+                    showNotificationPrompt = false
                 }
+                
+                Button("Not Now") {
+                    environment.analyticsService.log(.notificationPromptDeclined, parameters: nil)
+                    showNotificationPrompt = false
+                }
+            }
         }
         .toolbar(.hidden, for: .tabBar)
         .onAppear {
+            environment.activeHymnDetailID = viewModel.hymn.id
             environment.analyticsService.hymnOpened(
                 id: viewModel.hymn.id,
                 category: viewModel.hymn.category.rawValue,
@@ -180,24 +184,97 @@ struct HymnDetailView: View {
             viewStart = Date()
         }
         .onDisappear {
+            if environment.activeHymnDetailID == viewModel.hymn.id {
+                environment.activeHymnDetailID = nil
+            }
             if settings.stopPlaybackOnExit {
-                environment.audioPlaybackService.stop()
+                accompanimentPlaybackService.stop()
             }
             
             let dwellSeconds = viewStart.map { Int(Date().timeIntervalSince($0).rounded()) } ?? 0
             environment.analyticsService.hymnClosed(hymnID: viewModel.hymn.id, durationSeconds: dwellSeconds)
             
             guard let start = viewStart,
-                     Date().timeIntervalSince(start) >= 10,
-                     !counted
-               else { return }
-               
+                  Date().timeIntervalSince(start) >= 10,
+                  !counted
+            else { return }
+            
             environment.sessionService.markInteraction()
             environment.usageService.increment(viewModel.hymn.id)
             environment.recentlyViewedService.record(id: viewModel.hymn.id)
             counted = true
             environment.recentSearchService.add(viewModel.hymn.id)
         }
+    }
+    
+    @ViewBuilder
+    private var accompanimentActionRow: some View {
+        let hymnID = viewModel.hymn.id
+        let fileState = accompanimentPlaybackService.fileState(for: hymnID)
+        
+        HStack(spacing: 12) {
+            switch fileState {
+            case .downloaded:
+                Label("Downloaded", systemImage: "arrow.down.circle.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.green)
+                
+                Spacer()
+                
+                Button("Delete") {
+                    accompanimentPlaybackService.deleteDownload(for: hymnID)
+                }
+                .font(.subheadline.weight(.semibold))
+                
+            case .downloading:
+                ProgressView()
+                    .progressViewStyle(.circular)
+                
+                Text("Downloading accompaniment…")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                
+                Spacer()
+                
+            case .remoteOnly:
+                Label("Available online", systemImage: "icloud.and.arrow.down")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                
+                Spacer()
+                
+                Button("Download") {
+                    Task {
+                        await accompanimentPlaybackService.download(for: hymnID)
+                    }
+                }
+                .font(.subheadline.weight(.semibold))
+                
+            case .failed(let message):
+                VStack(alignment: .leading, spacing: 4) {
+                    Label("Download failed", systemImage: "exclamationmark.triangle.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.orange)
+                    
+                    Text(message)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+                
+                Spacer()
+                
+                Button("Retry") {
+                    Task {
+                        await accompanimentPlaybackService.download(for: hymnID)
+                    }
+                }
+                .font(.subheadline.weight(.semibold))
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 10)
+        .background(Color(.secondarySystemBackground))
     }
 }
 

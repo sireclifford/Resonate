@@ -3,7 +3,7 @@ import SwiftUI
 struct RootTabView: View {
     @EnvironmentObject private var environment: AppEnvironment
     @ObservedObject private var settings: AppSettingsService
-    @ObservedObject private var audioService: AudioPlaybackService
+    @ObservedObject private var audioService: AccompanimentPlaybackService
     
     @State private var showOnboarding = false
     
@@ -15,7 +15,7 @@ struct RootTabView: View {
         )
         
         _audioService = ObservedObject(
-            wrappedValue: environment.audioPlaybackService
+            wrappedValue: environment.accompanimentPlaybackService
         )
     }
     
@@ -46,8 +46,10 @@ struct RootTabView: View {
                         .environmentObject(environment)
                         .padding(.horizontal)
                         .padding(.top, 8)
+                        .transition(.move(edge: .top).combined(with: .opacity))
                 }
             }
+            .animation(.spring(response: 0.4, dampingFraction: 0.9), value: audioService.currentHymnID)
             .onChange(of: selectedTab) { oldValue, newValue in
                 let tabName: String
                 switch newValue {

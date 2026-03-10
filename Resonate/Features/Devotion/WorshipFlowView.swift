@@ -38,8 +38,8 @@ struct WorshipFlowContainer: View {
             viewModel: viewModel,
             slides: slides,
             analytics: environment.analyticsService,
-            audioService: environment.audioPlaybackService,
-            tuneService: environment.tuneService
+            audioService: environment.accompanimentPlaybackService,
+            environment: environment
         )
     }
 }
@@ -49,13 +49,21 @@ struct WorshipFlowView: View {
     @ObservedObject var viewModel: DevotionViewModel
     let slides: [WorshipSlide]
     let analytics: AnalyticsService
-    let audioService: AudioPlaybackService
-    let tuneService: TuneService
+    let audioService: AccompanimentPlaybackService
+    let environment: AppEnvironment
     
     @Environment(\.dismiss) private var dismiss
     @State private var index: Int = 0
     @State private var isMuted: Bool = false
     @State private var isClosing: Bool = false
+    @State private var showStory: Bool = false
+
+    private var canControlAudio: Bool {
+        audioService.currentHymnID == viewModel.hymnID && (
+            audioService.state == .playing ||
+            audioService.state == .paused
+        )
+    }
 
     
     var body: some View {
@@ -83,7 +91,7 @@ struct WorshipFlowView: View {
 
                 isMuted = false
                 isClosing = false
-                audioService.play(for: viewModel.hymnID, tuneService: tuneService)
+                audioService.togglePlayback(for: viewModel.hymnID)
 
                 logSlideView()
             }
@@ -118,7 +126,9 @@ struct WorshipFlowView: View {
                             .padding(10)
                             .background(.white.opacity(0.12))
                             .clipShape(Circle())
+                            .opacity(canControlAudio ? 1.0 : 0.45)
                     }
+                    .disabled(!canControlAudio)
                 }
                 .padding(.horizontal, 16)
                 
@@ -153,6 +163,18 @@ struct WorshipFlowView: View {
                     }
                 }
         )
+        .sheet(isPresented: $showStory) {
+            NavigationStack {
+                if let story = environment.hymnStoryService.story(for: viewModel.hymnID) {
+                    HymnStoryView(story: story)
+                        .environmentObject(environment)
+                } else {
+                    StoryUnavailableView()
+                }
+            }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+        }
         .onDisappear {
             if !isClosing {
                 audioService.stop()
@@ -190,6 +212,8 @@ struct WorshipFlowView: View {
     }
     
     private func toggleMute() {
+        guard canControlAudio else { return }
+
         if isMuted {
             audioService.resume()
             isMuted = false
@@ -238,9 +262,15 @@ struct WorshipFlowView: View {
             ReflectionSlide(viewModel: viewModel)
 
         case .complete:
-            CompletionSlide(viewModel: viewModel, onNext: {
-                next()
-            })
+            CompletionSlide(
+                viewModel: viewModel,
+                onNext: {
+                    next()
+                },
+                onOpenStory: {
+                    showStory = true
+                }
+            )
         }
     }
 }

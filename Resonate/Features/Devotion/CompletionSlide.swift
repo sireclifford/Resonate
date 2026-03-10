@@ -3,6 +3,7 @@ import SwiftUI
 struct CompletionSlide: View {
     @ObservedObject var viewModel: DevotionViewModel
     let onNext: () -> Void
+    let onOpenStory: () -> Void
 
     var body: some View {
         ZStack {
@@ -26,6 +27,7 @@ struct CompletionSlide: View {
 
                 Spacer()
 
+                /*
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Up Next")
                         .font(.system(size: 16, weight: .bold))
@@ -55,6 +57,46 @@ struct CompletionSlide: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
                 .padding(.horizontal, 18)
+                */
+
+                Button(action: onOpenStory) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Learn More")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(.white)
+
+                        HStack(spacing: 12) {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(.white.opacity(0.12))
+                                .frame(width: 54, height: 54)
+                                .overlay(
+                                    Image(systemName: "book.pages")
+                                        .foregroundStyle(.white)
+                                )
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Story Behind the Hymn")
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundStyle(.white.opacity(0.75))
+
+                                Text("Discover how \"\(viewModel.title)\" was written")
+                                    .font(.system(size: 16, weight: .bold))
+                                    .foregroundStyle(.white)
+                            }
+
+                            Spacer()
+
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(.white.opacity(0.8))
+                        }
+                        .padding(14)
+                        .background(.white.opacity(0.08))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                    }
+                    .padding(.horizontal, 18)
+                }
+                .buttonStyle(.plain)
 
                 Button(action: onNext) {
                     Text("Continue")

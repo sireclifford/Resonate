@@ -9,6 +9,11 @@ final class AppEnvironment: ObservableObject {
     let favouritesService: FavouritesService
     let tuneService: TuneService
     let sessionService: SessionService
+    let accompanimentStorageService: AccompanimentStorageService
+    let accompanimentCacheService: AccompanimentCacheService
+    let navigationService: NavigationService
+    @Published var accompanimentPlaybackService: AccompanimentPlaybackService
+    @Published var activeHymnDetailID: Int?
     
     let categoryViewModel: CategoryViewModel
     let searchViewModel: SearchViewModel
@@ -61,6 +66,18 @@ final class AppEnvironment: ObservableObject {
         self.persistenceService = persistenceService
         self.usageService = UsageService()
         self.recentSearchService = RecentSearchService()
+        self.accompanimentStorageService = AccompanimentStorageService()
+        self.accompanimentCacheService = AccompanimentCacheService()
+        self.navigationService = NavigationService()
+        self.accompanimentPlaybackService = AccompanimentPlaybackService(
+            storageService: accompanimentStorageService,
+            cacheService: accompanimentCacheService,
+            settings: settingsService,
+            analyticsService: analyticsService,
+            hymnTitleProvider: { id in
+                hymnService.index.first(where: { $0.id == id })?.title ?? "Hymn \(id)"
+            }
+        )
         
         self.favouritesService = FavouritesService(persistence: persistenceService, settings: settingsService,
                                                    analyticsService: analyticsService

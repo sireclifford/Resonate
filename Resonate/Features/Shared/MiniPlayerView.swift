@@ -3,10 +3,10 @@ import SwiftUI
 struct MiniPlayerView: View {
     
     @EnvironmentObject private var environment: AppEnvironment
-    @ObservedObject private var audio: AudioPlaybackService
+    @ObservedObject private var audio: AccompanimentPlaybackService
     
     init(environment: AppEnvironment) {
-        _audio = ObservedObject(wrappedValue: environment.audioPlaybackService)
+        _audio = ObservedObject(wrappedValue: environment.accompanimentPlaybackService)
     }
     
     var body: some View {
@@ -25,30 +25,41 @@ struct MiniPlayerView: View {
                         .font(.headline)
                 }
                 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 6) {
                     Text(hymn.title)
                         .font(.system(size: 15, weight: .semibold))
                         .lineLimit(1)
-                    
+
                     Text(hymn.category.title)
                         .font(.system(size: 12))
                         .foregroundStyle(.secondary)
+
+                    ProgressView(value: audio.progress)
+                        .progressViewStyle(.linear)
+                        .tint(.primary.opacity(0.85))
+                        .frame(maxWidth: .infinity)
+                        .scaleEffect(x: 1, y: 0.6, anchor: .center)
                 }
                 
                 Spacer()
                 
                 Button {
-                    audio.togglePlayback(
-                        for: id,
-                        tuneService: environment.tuneService
-                    )
-                    if let id = environment.audioPlaybackService.currentHymnID {
+                    Haptics.light()
+                    audio.togglePlayback(for: id)
+                    if let id = environment.accompanimentPlaybackService.currentHymnID {
                         environment.analyticsService.miniPlayerToggled(id: id)
                     }
                 } label: {
-                    Image(systemName: audio.isPlaying ? "pause.fill" : "play.fill")
-                        .font(.system(size: 18, weight: .bold))
-                        .frame(width: 40, height: 40)
+                    Group {
+                        if audio.isLoading {
+                            ProgressView()
+                                .scaleEffect(0.7)
+                        } else {
+                            Image(systemName: audio.isPlaying ? "pause.fill" : "play.fill")
+                                .font(.system(size: 18, weight: .bold))
+                        }
+                    }
+                    .frame(width: 40, height: 40)
                 }
                 
                 Button {
@@ -75,7 +86,12 @@ struct MiniPlayerView: View {
             //            .padding(.horizontal)
             .padding(.bottom, 6)
             .onTapGesture {
-                    environment.analyticsService.miniPlayerTapped(id: id)
+                guard environment.activeHymnDetailID != id else { return }
+                environment.analyticsService.miniPlayerTapped(id: id)
+                environment.navigationService.openHymn(
+                    id: id,
+                    source: "miniplayer"
+                )
             }
         }
     }

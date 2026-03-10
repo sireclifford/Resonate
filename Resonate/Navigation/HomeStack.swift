@@ -43,6 +43,25 @@ struct HomeStack: View {
             .onChange(of: environment.notificationHymnID) { _, _ in
                 handleNotificationRouting()
             }
+            .onReceive(environment.navigationService.$requestedHymn) { request in
+                guard let request else { return }
+                guard let hymn = environment.hymnService.index.first(where: { $0.id == request.id }) else {
+                    environment.navigationService.consumeHymnRequest()
+                    return
+                }
+
+                // Ensure we are on Home tab
+                selectedTab = 0
+
+                // Reset navigation so the requested hymn opens cleanly
+                path = NavigationPath()
+
+                // Defer push slightly to ensure the Home stack is mounted
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    path.append(hymn)
+                    environment.navigationService.consumeHymnRequest()
+                }
+            }
         }
     }
     
@@ -61,6 +80,9 @@ struct HomeStack: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                 path.append(hymn)
             }
+
+            environment.notificationHymnID = nil
+            return
         }
 
         environment.notificationHymnID = nil

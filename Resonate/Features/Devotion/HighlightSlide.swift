@@ -34,19 +34,19 @@ struct HighlightSlide: View {
 
                 Spacer()
 
-                Button {
-                    // share highlight
-                } label: {
-                    Text("Share this line")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(.black)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 12)
-                        .background(.white)
-                        .clipShape(Capsule())
-                }
-
-                Spacer(minLength: 40)
+//                Button {
+//                    // share highlight
+//                } label: {
+//                    Text("Share this line")
+//                        .font(.system(size: 16, weight: .bold))
+//                        .foregroundStyle(.black)
+//                        .padding(.horizontal, 20)
+//                        .padding(.vertical, 12)
+//                        .background(.white)
+//                        .clipShape(Capsule())
+//                }
+//
+//                Spacer(minLength: 40)
             }
             .padding(.horizontal, 22)
             .padding(.bottom, 40)

@@ -8,7 +8,6 @@ struct HOTDReminderPolicy: ReminderPolicyEvaluating {
 private let minimumSameDayBuffer: TimeInterval = 60
 #else
 private let minimumSameDayBuffer: TimeInterval = 2 * 60 * 60
-//    private let minimumSameDayBuffer: TimeInterval = 60
 #endif
     
     init(
@@ -82,26 +81,31 @@ private let minimumSameDayBuffer: TimeInterval = 2 * 60 * 60
     
     private func nextTriggerDate(now: Date, reminderTime: Date, calendar: Calendar) -> Date {
         let comps = calendar.dateComponents([.hour, .minute], from: reminderTime)
+        let roundedNow = calendar.date(
+            from: calendar.dateComponents([.year, .month, .day, .hour, .minute], from: now)
+        ) ?? now
         
         guard let nextOccurrence = calendar.nextDate(
-            after: now,
+            after: roundedNow,
             matching: DateComponents(hour: comps.hour, minute: comps.minute, second: 0),
             matchingPolicy: .nextTime
         ) else {
             return now.addingTimeInterval(24 * 60 * 60)
         }
         
-        let timeUntilNext = nextOccurrence.timeIntervalSince(now)
+        let timeUntilNext = nextOccurrence.timeIntervalSince(roundedNow)
         
         if timeUntilNext >= minimumSameDayBuffer {
             return nextOccurrence
         }
         
 #if DEBUG
-print("NOW:", now)
-print("NEXT OCCURRENCE:", nextOccurrence)
-print("TIME UNTIL NEXT:", timeUntilNext)
-print("MINIMUM BUFFER:", minimumSameDayBuffer)
+        print("NOW:", now)
+        print("ROUNDED NOW:", roundedNow)
+        print("REMINDER TIME:", reminderTime)
+        print("NEXT OCCURRENCE:", nextOccurrence)
+        print("TIME UNTIL NEXT:", timeUntilNext)
+        print("MINIMUM BUFFER:", minimumSameDayBuffer)
 #endif
         
         let tomorrow = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now)) ?? now

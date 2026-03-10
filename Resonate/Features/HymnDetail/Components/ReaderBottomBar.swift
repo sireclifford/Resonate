@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ReaderBottomBar: View {
     
-    @ObservedObject var audioPlaybackService: AudioPlaybackService
+    @ObservedObject var audioPlaybackService: AccompanimentPlaybackService
     
     let canPlay: Bool
     let hasNext: Bool
