@@ -12,7 +12,7 @@ struct CompletionSlide: View {
             VStack(spacing: 18) {
                 Spacer()
 
-                Image(systemName: "checkmark.circle.fill")
+                Image(systemName: "checkmark.seal.fill")
                     .font(.system(size: 72, weight: .bold))
                     .foregroundStyle(.white)
 
