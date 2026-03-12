@@ -4,7 +4,7 @@ struct ReaderBottomBar: View {
     
     @ObservedObject var audioPlaybackService: AccompanimentPlaybackService
     
-    let canPlay: Bool
+    let hymnID: Int
     let hasNext: Bool
     let hasPrevious: Bool
     let onPrevious: () -> Void
@@ -20,12 +20,20 @@ struct ReaderBottomBar: View {
 
             Spacer()
 
-            if canPlay {
+            let state = audioPlaybackService.fileState(for: hymnID)
+
+            switch state {
+
+            case .downloaded:
                 Button(action: onPlayToggle) {
                     Image(systemName: audioPlaybackService.isPlaying ? "pause.fill" : "play.fill")
                         .font(.system(size: 28, weight: .semibold))
                 }
-            } else {
+
+            case .downloading:
+                ProgressView()
+
+            case .remoteOnly, .unavailable, .failed(_):
                 Image(systemName: "speaker.slash")
                     .font(.system(size: 22, weight: .medium))
                     .foregroundColor(.secondary)

@@ -24,7 +24,6 @@ struct AppRootView: View {
                     onDismiss: {
                         // Mark first launch complete and dismiss onboarding
                         environment.settingsService.markFirstLaunchCompleted()
-                        environment.analyticsService.onboardingCompleted()
                         showOnboarding = false
                     }
                 )
@@ -70,3 +69,4 @@ struct AppRootView: View {
         .toastOverlay(using: environment.toastCenter)
     }
 }
+

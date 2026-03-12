@@ -27,7 +27,23 @@ final class AccompanimentStorageService {
 
     /// Fetches the public download URL for a hymn accompaniment file.
     func fetchDownloadURL(for hymnID: Int) async throws -> URL {
-        try await reference(for: hymnID).downloadURL()
+        do {
+            let url = try await reference(for: hymnID).downloadURL()
+
+            await MainActor.run {
+                self.availabilityCache[hymnID] = true
+                self.inFlightChecks[hymnID] = nil
+            }
+
+            return url
+        } catch {
+            await MainActor.run {
+                self.availabilityCache[hymnID] = false
+                self.inFlightChecks[hymnID] = nil
+            }
+
+            throw error
+        }
     }
 
     /// Checks if an accompaniment file exists in Firebase Storage.

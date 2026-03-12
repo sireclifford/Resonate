@@ -9,19 +9,20 @@ struct HymnCardView: View {
     @State private var showAudioBadge = false
 
     var body: some View {
+        let audioState = environment.accompanimentPlaybackService.fileState(for: index.id)
         VStack(alignment: .leading, spacing: 8) {
             ZStack {
                 HymnCardBackground(seed: index.id)
                     .frame(height: 180)
 
-                if environment.accompanimentPlaybackService.isDownloaded(for: index.id) {
+                if let audioBadge = audioBadge(for: audioState) {
                     VStack {
                         HStack {
                             HStack(spacing: 6) {
-                                Image(systemName: "music.note")
+                                Image(systemName: audioBadge.systemImage)
                                     .font(.caption.weight(.semibold))
 
-                                Text("Downloaded")
+                                Text(audioBadge.title)
                                     .font(.caption2.weight(.semibold))
                             }
                             .foregroundStyle(.white)
@@ -74,5 +75,25 @@ struct HymnCardView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: 260, alignment: .top)
+    }
+
+    private struct AudioBadge {
+        let title: String
+        let systemImage: String
+    }
+
+    private func audioBadge(for state: AccompanimentPlaybackService.FileState) -> AudioBadge? {
+        switch state {
+        case .downloaded:
+            return AudioBadge(title: "Downloaded", systemImage: "music.note")
+        case .remoteOnly:
+            return AudioBadge(title: "Online", systemImage: "icloud.and.arrow.down")
+        case .downloading:
+            return AudioBadge(title: "Downloading", systemImage: "arrow.down.circle")
+        case .unavailable:
+            return nil
+        case .failed:
+            return nil
+        }
     }
 }

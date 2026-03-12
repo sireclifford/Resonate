@@ -6,6 +6,16 @@ enum AnalyticsEvent: String {
     case hymnAudioPlayed   = "hymn_audio_played"
     case hymnAudioPaused   = "hymn_audio_paused"
     case hymnAudioCompleted = "hymn_audio_completed"
+    case hymnAudioStopped  = "hymn_audio_stopped"
+
+    // Accompaniment download lifecycle
+    case accompanimentDownloadStarted   = "accompaniment_download_started"
+    case accompanimentDownloadCompleted = "accompaniment_download_completed"
+    case accompanimentDownloadFailed    = "accompaniment_download_failed"
+
+    // Streaming / worship flow audio
+    case hymnAudioStreamed = "hymn_audio_streamed"
+    case worshipAudioStarted = "worship_audio_started"
     
     case searchPerformed   = "search_performed"
     case searchResultTapped = "search_result_tapped"

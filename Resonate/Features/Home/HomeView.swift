@@ -4,6 +4,7 @@ struct HomeView: View {
     let environment: AppEnvironment
     let onSelectHymn: (HymnIndex) -> Void
     let onSeeAll: () -> Void
+    let onRoute: (HomeRoute) -> Void
 
     @StateObject private var viewModel: HomeViewModel
     @ObservedObject private var favouritesService: FavouritesService
@@ -17,11 +18,17 @@ struct HomeView: View {
     @State private var isSearchPresented = false
     @State private var pendingAutoOpenHymnOfTheDay = false
 
-    init(environment: AppEnvironment, onSelectHymn: @escaping (HymnIndex) -> Void, onSeeAll: @escaping () -> Void) {
+    init(
+        environment: AppEnvironment,
+        onSelectHymn: @escaping (HymnIndex) -> Void,
+        onSeeAll: @escaping () -> Void,
+        onRoute: @escaping (HomeRoute) -> Void
+    ) {
 
         self.environment = environment
         self.onSelectHymn = onSelectHymn
         self.onSeeAll = onSeeAll
+        self.onRoute = onRoute
         self.favouritesService = environment.favouritesService
         self.settingsService = environment.settingsService
         _viewModel = StateObject(
@@ -244,6 +251,13 @@ struct HomeView: View {
         GlobalSearchBar(
             viewModel: environment.searchViewModel,
             onActivate: {
+                environment.analyticsService.log(
+                    .searchPerformed,
+                    parameters: [
+                        .source: "home",
+                        .searchQuery: "activated"
+                    ]
+                )
                 isSearchPresented = true
             }
         )
@@ -334,7 +348,8 @@ struct HomeView: View {
                                             let timeString = formatter.string(from: environment.reminderSettingsViewModel.hotdTime)
 
                                             if environment.reminderSettingsViewModel.hotdEnabled {
-//                                                settingsService.shouldAutoOpenHymnOfDay = true
+                                                environment.analyticsService.notificationPromptAccepted()
+                                                environment.analyticsService.reminderScheduled(timeBucket: timeString)
                                                 environment.toastCenter.show(
                                                     .success(
                                                         "Daily reminder enabled",
@@ -343,6 +358,7 @@ struct HomeView: View {
                                                     position: .top
                                                 )
                                             } else {
+                                                environment.analyticsService.notificationPromptDeclined()
                                                 environment.toastCenter.show(
                                                     .error(
                                                         "Notifications not enabled",
@@ -408,7 +424,16 @@ struct HomeView: View {
                     }
                     .frame(maxWidth: .infinity, minHeight: 208)
                     .contentShape(Rectangle())
-                    .onTapGesture { showWorshipFlow = true }
+                    .onTapGesture {
+                        environment.analyticsService.log(
+                            .tabSwitched,
+                            parameters: [
+                                .source: "home",
+                                .destination: "worship_flow_from_hotd_card"
+                            ]
+                        )
+                        showWorshipFlow = true
+                    }
                 }
                 .fullScreenCover(isPresented: $showWorshipFlow) {
                     if let hymn = viewModel.hymnOfTheDay {
@@ -602,7 +627,14 @@ struct HomeView: View {
                     .font(.title3.weight(.semibold))
                 VStack(spacing: 12) {
                     Button {
-                        onSeeAll()
+                        environment.analyticsService.log(
+                            .tabSwitched,
+                            parameters: [
+                                .source: "home",
+                                .destination: "browse_most_loved"
+                            ]
+                        )
+                        onRoute(.mostLoved)
                     } label: {
                         startHereCard(
                             title: "Most Loved Hymns",
@@ -613,7 +645,14 @@ struct HomeView: View {
                     .buttonStyle(.plain)
 
                     Button {
-                        onSeeAll()
+                        environment.analyticsService.log(
+                            .tabSwitched,
+                            parameters: [
+                                .source: "home",
+                                .destination: "browse_editors_picks"
+                            ]
+                        )
+                        onRoute(.editorsPicks)
                     } label: {
                         startHereCard(
                             title: "Editor’s Picks",
@@ -626,6 +665,13 @@ struct HomeView: View {
                     if let hymn = viewModel.hymnOfTheDay {
                         Button {
                             DispatchQueue.main.async {
+                                environment.analyticsService.log(
+                                    .categoryOpened,
+                                    parameters: [
+                                        .category: "featured_reflection_home",
+                                        .hymnID: hymn.id
+                                    ]
+                                )
                                 onSelectHymn(hymn)
                             }
                         } label: {
@@ -650,6 +696,13 @@ struct HomeView: View {
 
                 Spacer()
                 Button("See All") {
+                    environment.analyticsService.log(
+                        .tabSwitched,
+                        parameters: [
+                            .source: "home",
+                            .destination: "browse_themes"
+                        ]
+                    )
                     onSeeAll()
                 }
                 .font(.subheadline)
@@ -698,6 +751,17 @@ struct HomeView: View {
                             )
                         }
                         .buttonStyle(.plain)
+                        .simultaneousGesture(
+                            TapGesture().onEnded {
+                                environment.analyticsService.log(
+                                    .categoryOpened,
+                                    parameters: [
+                                        .category: category.title,
+                                        .source: "home"
+                                    ]
+                                )
+                            }
+                        )
                     }
                 }
                 .padding(.horizontal, 4)
@@ -900,7 +964,7 @@ struct HomeView: View {
 //        let timeString = formatter.string(from: environment.reminderSettingsViewModel.hotdTime)
 
         DispatchQueue.main.async {
-            onSelectHymn(hymn)
+            showWorshipFlow = true
         }
     }
 
@@ -1002,6 +1066,10 @@ struct HomeView: View {
             return "sparkles"
         case let title where title.contains("birth"):
             return "star.fill"
+        case let title where title.contains("child"):
+            return "face.smiling"
+        case let title where title.contains("warfare"):
+            return "person.2.shield"
         default:
             return "book.closed"
         }

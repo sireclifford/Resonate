@@ -12,7 +12,6 @@ struct HymnDetailView: View {
     @State private var showStory = false
     @State private var viewStart: Date?
     @State private var counted = false
-    @State private var showNotificationPrompt = false
     @State private var storyViewStart: Date?
     
     let index: HymnIndex
@@ -94,7 +93,7 @@ struct HymnDetailView: View {
             // Bottom bar
             ReaderBottomBar(
                 audioPlaybackService: accompanimentPlaybackService,
-                canPlay: accompanimentPlaybackService.fileState(for: viewModel.hymn.id) == .downloaded,
+                hymnID: viewModel.hymn.id,
                 hasNext: viewModel.hasNext,
                 hasPrevious: viewModel.hasPrevious,
                 onPrevious: {
@@ -149,23 +148,6 @@ struct HymnDetailView: View {
             }
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
-        }
-        .sheet(isPresented: $showNotificationPrompt){
-            VStack {
-                Text("Receive a Daily Hymn?")
-                Text("Begin each day with reflection.")
-                
-                Button("Yes, Remind Me") {
-                    environment.analyticsService.log(.notificationPromptAccepted, parameters: nil)
-                    environment.notificationService.requestPermission()
-                    showNotificationPrompt = false
-                }
-                
-                Button("Not Now") {
-                    environment.analyticsService.log(.notificationPromptDeclined, parameters: nil)
-                    showNotificationPrompt = false
-                }
-            }
         }
         .toolbar(.hidden, for: .tabBar)
         .onAppear {
@@ -250,9 +232,23 @@ struct HymnDetailView: View {
                 }
                 .font(.subheadline.weight(.semibold))
                 
+            case .unavailable:
+                Label("Accompaniment unavailable", systemImage: "speaker.slash")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                
+                Spacer()
+
+                Button("Retry") {
+                    Task {
+                        await accompanimentPlaybackService.download(for: hymnID)
+                    }
+                }
+                .font(.subheadline.weight(.semibold))
+                
             case .failed(let message):
                 VStack(alignment: .leading, spacing: 4) {
-                    Label("Download failed", systemImage: "exclamationmark.triangle.fill")
+                    Label("Accompaniment unavailable", systemImage: "exclamationmark.triangle.fill")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.orange)
                     

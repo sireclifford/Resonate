@@ -23,7 +23,7 @@ final class AppSettingsService: ObservableObject {
     
     @Published var dailyReminderEnabled: Bool {
         didSet {
-            UserDefaults.standard.set(dailyReminderEnabled, forKey: Keys.dailyReminderEnabled)
+            defaults.set(dailyReminderEnabled, forKey: Keys.dailyReminderEnabled)
         }
     }
     @Published var dailyReminderTime: Date {

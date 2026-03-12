@@ -7,7 +7,7 @@ final class FavouritesViewModel: ObservableObject {
     
     private let hymnService: HymnService
     private let favouritesService: FavouritesService
-    private var cancellables = Set<AnyCancellable>()   // ← THIS LINE
+    private var cancellables = Set<AnyCancellable>()
     
     init(hymnService: HymnService,
          favouritesService: FavouritesService) {

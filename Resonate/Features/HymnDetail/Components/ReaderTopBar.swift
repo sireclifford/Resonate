@@ -36,13 +36,33 @@ struct ReaderTopBar: View {
 
             Menu {
                 ForEach(ReaderFontSize.allCases) { size in
-                    Button(size.label) {
+                    Button {
                         onFontSelect(size)
+                    } label: {
+                        HStack {
+                            Text(size.label.replacingOccurrences(of: "px", with: " pt"))
+                            if size == fontSize {
+                                Spacer()
+                                Image(systemName: "checkmark")
+                            }
+                        }
                     }
                 }
             } label: {
-                Text(fontSize.label)
-                    .font(.josefin(size: 14))
+                HStack(spacing: 6) {
+                    Text("Aa")
+                        .font(.system(size: 15, weight: .semibold, design: .serif))
+
+                    Text(fontSize.label.replacingOccurrences(of: "px", with: " pt"))
+                        .font(.josefin(size: 13))
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(
+                    Capsule()
+                        .fill(Color(.secondarySystemBackground))
+                )
             }
 
             Button(action: onFavouriteToggle) {

@@ -241,11 +241,13 @@ struct CategoriesView: View {
                         } else {
                             List {
                                 ForEach(filteredHymns) { hymn in
-                                    NavigationLink(value: hymn) {
-                                        HymnRowView(hymn: hymn)
-                                    }
-                                    .simultaneousGesture(
-                                        TapGesture().onEnded {
+                                    NavigationLink {
+                                        HymnDetailView(
+                                            index: hymn,
+                                            environment: environment,
+                                            source: "categories"
+                                        )
+                                        .onAppear {
                                             environment.analyticsService.log(
                                                 .hymnOpened,
                                                 parameters: [
@@ -255,7 +257,13 @@ struct CategoriesView: View {
                                                 ]
                                             )
                                         }
-                                    )
+                                    } label: {
+                                        HymnRowView(hymn: hymn)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                            .contentShape(Rectangle())
+                                    }
+                                    .buttonStyle(.plain)
+                                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                                 }
                             }
                             .listStyle(.plain)

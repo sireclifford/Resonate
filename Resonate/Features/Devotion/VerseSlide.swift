@@ -15,16 +15,19 @@ struct VerseSlide: View {
 
                 Spacer(minLength: 12)
 
-                VStack(alignment: .leading, spacing: 16) {
-                    ForEach(Array(viewModel.lines(for: verseIndex).enumerated()), id: \.offset) { _, line in
-                        Text(line)
-                            .font(.system(size: 34, weight: .semibold, design: .serif))
-                            .foregroundStyle(.white)
-                            .lineSpacing(10)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        ForEach(Array(viewModel.lines(for: verseIndex).enumerated()), id: \.offset) { _, line in
+                            Text(line)
+                                .font(.system(size: 28, weight: .semibold, design: .serif))
+                                .foregroundStyle(.white)
+                                .lineSpacing(10)
+                                .multilineTextAlignment(.leading)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
 
                 Spacer()
 
@@ -36,6 +39,7 @@ struct VerseSlide: View {
             .padding(.horizontal, 22)
             .padding(.top, 80)
             .padding(.bottom, 40)
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         }
     }
 
@@ -67,7 +71,7 @@ struct ChorusSlide: View {
                 VStack(alignment: .leading, spacing: 16) {
                     ForEach(Array((viewModel.detail?.chorus ?? []).enumerated()), id: \.offset) { _, line in
                         Text(line)
-                            .font(.system(size: 36, weight: .bold, design: .serif))
+                            .font(.system(size: 30, weight: .bold, design: .serif))
                             .foregroundStyle(.white)
                             .lineSpacing(10)
                             .frame(maxWidth: .infinity, alignment: .leading)

@@ -155,19 +155,19 @@ struct OnboardingView: View {
             NotificationExplainerSheet(
                 onEnable: {
                     analytics.notificationPromptAccepted()
-                    
-                    
                     // Reflect immediately in Settings
-                    environment.settingsService.dailyReminderEnabled = true
-                    environment.settingsService.skipTodayDailyReminder = true
+                    environment.reminderSettingsViewModel.hotdEnabled = true
                     // Request system permission (non-blocking)
-                    environment.notificationService.requestPermission()
-
-                    // Ask user to pick a time
+                    Task {
+                        _ = try? await environment.authorizationManager.requestAuthorization()
+                    }
+                    // Ask user to pick a time after the explainer sheet has dismissed.
                     shouldBeginWorshipAfterTimePicker = true
                     showNotificationExplainer = false
-                    
-                    showTimePicker = true
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        showTimePicker = true
+                    }
                 },
                 onSkip: {
                     analytics.notificationPromptDeclined()
@@ -194,3 +194,4 @@ struct OnboardingView: View {
         }
     }
 }
+

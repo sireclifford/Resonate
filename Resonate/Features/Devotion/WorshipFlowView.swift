@@ -57,6 +57,7 @@ struct WorshipFlowView: View {
     @State private var isMuted: Bool = false
     @State private var isClosing: Bool = false
     @State private var showStory: Bool = false
+    @State private var hasStartedAudio = false
 
     private var canControlAudio: Bool {
         audioService.currentHymnID == viewModel.hymnID && (
@@ -91,9 +92,15 @@ struct WorshipFlowView: View {
 
                 isMuted = false
                 isClosing = false
-                audioService.toggleWorshipFlowPlayback(for: viewModel.hymnID)
-
                 logSlideView()
+
+                guard !hasStartedAudio else { return }
+                hasStartedAudio = true
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    guard !isClosing else { return }
+                    audioService.toggleWorshipFlowPlayback(for: viewModel.hymnID)
+                }
             }
             .onChange(of: index) { oldValue, newValue in
                 logSlideView()
@@ -179,6 +186,7 @@ struct WorshipFlowView: View {
             if !isClosing {
                 audioService.stop()
             }
+            hasStartedAudio = false
         }
     }
     
@@ -202,6 +210,7 @@ struct WorshipFlowView: View {
     private func closeFlow() {
         guard !isClosing else { return }
         isClosing = true
+        hasStartedAudio = false
 
         let fadeDuration: TimeInterval = 1.0
         audioService.fadeOutAndStop(duration: fadeDuration)

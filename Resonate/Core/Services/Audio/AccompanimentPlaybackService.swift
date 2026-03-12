@@ -10,6 +10,7 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
         case remoteOnly
         case downloading
         case downloaded
+        case unavailable
         case failed(message: String)
     }
 
@@ -53,6 +54,10 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
 
         if downloadingHymnID == hymnID {
             return .downloading
+        }
+
+        if let cachedAvailability = storageService.cachedAvailability(for: hymnID), cachedAvailability == false {
+            return .failed(message: "Accompaniment unavailable. Try again later.")
         }
 
         if failedHymnID == hymnID, let lastFileErrorMessage {
@@ -139,6 +144,12 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
     @MainActor
     func playForWorshipFlow(for hymnID: Int) async {
         await play(for: hymnID, allowAutomaticDownload: true)
+
+        if state == .playing, currentHymnID == hymnID {
+            analyticsService.log(.worshipAudioStarted, parameters: [
+                .hymnID: hymnID
+            ])
+        }
     }
 
     @MainActor
@@ -178,9 +189,17 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
                 }
 
                 downloadingHymnID = hymnID
+                analyticsService.log(.accompanimentDownloadStarted, parameters: [
+                    .hymnID: hymnID
+                ])
+
                 let remoteURL = try await storageService.fetchDownloadURL(for: hymnID)
                 let (data, _) = try await URLSession.shared.data(from: remoteURL)
                 localURL = try cacheService.save(data: data, for: hymnID)
+
+                analyticsService.log(.accompanimentDownloadCompleted, parameters: [
+                    .hymnID: hymnID
+                ])
                 downloadingHymnID = nil
             }
 
@@ -210,10 +229,25 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
             stopProgressTimer()
             currentTime = 0
             duration = 0
+
+            if downloadingHymnID == hymnID {
+                analyticsService.log(.accompanimentDownloadFailed, parameters: [
+                    .hymnID: hymnID
+                ])
+            }
+
             downloadingHymnID = nil
             failedHymnID = hymnID
-            lastFileErrorMessage = error.localizedDescription
-            state = .failed(message: error.localizedDescription)
+
+            if let cachedAvailability = storageService.cachedAvailability(for: hymnID), cachedAvailability == false {
+                let message = "Accompaniment unavailable. Try again later."
+                lastFileErrorMessage = message
+                state = .failed(message: message)
+            } else {
+                lastFileErrorMessage = error.localizedDescription
+                state = .failed(message: error.localizedDescription)
+            }
+
             currentHymnID = nil
         }
     }
@@ -234,14 +268,30 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
         }
 
         do {
+            analyticsService.log(.accompanimentDownloadStarted, parameters: [
+                .hymnID: hymnID
+            ])
+
             let remoteURL = try await storageService.fetchDownloadURL(for: hymnID)
             let (data, _) = try await URLSession.shared.data(from: remoteURL)
             _ = try cacheService.save(data: data, for: hymnID)
+
+            analyticsService.log(.accompanimentDownloadCompleted, parameters: [
+                .hymnID: hymnID
+            ])
             downloadingHymnID = nil
         } catch {
+            analyticsService.log(.accompanimentDownloadFailed, parameters: [
+                .hymnID: hymnID
+            ])
             downloadingHymnID = nil
             failedHymnID = hymnID
-            lastFileErrorMessage = error.localizedDescription
+
+            if let cachedAvailability = storageService.cachedAvailability(for: hymnID), cachedAvailability == false {
+                lastFileErrorMessage = "Accompaniment unavailable. Try again later."
+            } else {
+                lastFileErrorMessage = error.localizedDescription
+            }
         }
     }
 
@@ -288,6 +338,9 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
             self.stopProgressTimer()
             self.state = .paused
             if let hymnID = self.currentHymnID {
+                self.analyticsService.log(.hymnAudioPaused, parameters: [
+                    .hymnID: hymnID
+                ])
                 self.updateNowPlayingInfo(for: hymnID, isPlaying: false)
             }
         }
@@ -304,6 +357,8 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
     }
 
     func stop() {
+        let stoppedHymnID = currentHymnID
+
         player?.stop()
         stopProgressTimer()
         currentTime = 0
@@ -313,6 +368,12 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
         currentHymnID = nil
         state = .idle
+
+        if let stoppedHymnID {
+            analyticsService.log(.hymnAudioStopped, parameters: [
+                .hymnID: stoppedHymnID
+            ])
+        }
     }
 
     private var canUseNetworkForAudioDownload: Bool {
@@ -396,12 +457,20 @@ extension AccompanimentPlaybackService: AVAudioPlayerDelegate {
 
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         DispatchQueue.main.async {
+            let completedHymnID = self.currentHymnID
+
             self.stopProgressTimer()
             self.currentTime = 0
             self.duration = 0
             MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
             self.state = .idle
             self.currentHymnID = nil
+
+            if let completedHymnID {
+                self.analyticsService.log(.hymnAudioCompleted, parameters: [
+                    .hymnID: completedHymnID
+                ])
+            }
         }
     }
 }

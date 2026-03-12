@@ -428,12 +428,16 @@ struct SettingsView: View {
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                     
-                    HStack {
-                        Text("Version")
-                        Spacer()
-                        Text(Bundle.main.appVersion)
-                            .foregroundStyle(.secondary)
-                            .font(.subheadline)
+                    VStack(spacing: 6) {
+                        HStack {
+                            Text("Version")
+                            Spacer()
+                            Text(displayVersion)
+                                .foregroundStyle(.secondary)
+                                .font(.subheadline)
+                        }
+
+//                         
                     }
                 }
                 
@@ -505,6 +509,14 @@ struct SettingsView: View {
         }
     }
     
+    private var displayVersion: String {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+    }
+
+    private var buildNumber: String {
+        Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+    }
+
     private func permissionLabel(_ status: NotificationAuthorizationStatus) -> String {
         switch status {
         case .notDetermined: return "Not Determined"

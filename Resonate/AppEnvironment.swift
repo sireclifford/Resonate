@@ -38,17 +38,17 @@ final class AppEnvironment: ObservableObject {
     
     let reminderSettingsViewModel: ReminderSettingsViewModel
     
-    let notificationService: NotificationService
     let hymnOfTheDayEngagementService: HymnOfTheDayEngagementService
     let usageService: UsageService
     let recentSearchService: RecentSearchService
     
     let toastCenter: ToastCenter
     
-    @Published var notificationHymnID: Int?
     @Published var audioPlaybackService: AudioPlaybackService
     
     var pendingSessionSource: String? = nil
+    
+    private var cancellables = Set<AnyCancellable>()
     
     init(
         hymnService: HymnService = HymnService(),
@@ -96,8 +96,6 @@ final class AppEnvironment: ObservableObject {
             analytics: analyticsService
         )
         self.hymnStoryService = HymnStoryService()
-        
-        self.notificationService = NotificationService()
         self.hymnOfTheDayEngagementService = HymnOfTheDayEngagementService(persistence: persistenceService)
 
         // New notification architecture
@@ -133,12 +131,6 @@ final class AppEnvironment: ObservableObject {
             dateProvider: dateProvider
         )
         self.toastCenter = ToastCenter()
-        
-        self.notificationService.onNotificationTapped = { [weak self] hymnID in
-            self?.notificationHymnID = hymnID
-            self?.pendingSessionSource = "push_notification"
-            self?.analyticsService.reminderNotificationTapped(hymnID: hymnID)
-        }
     }
     
     @MainActor

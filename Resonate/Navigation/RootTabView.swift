@@ -67,10 +67,6 @@ struct RootTabView: View {
                     ]
                 )
             }
-            .onChange(of: environment.notificationHymnID) { _, newValue in
-                guard newValue != nil else { return }
-                selectedTab = 0
-            }
         }
     }
     
