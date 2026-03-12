@@ -3,34 +3,6 @@ import Combine
 import CryptoKit
 final class HymnService: ObservableObject {
     
-    private struct WorshipMetadata {
-        let scriptureRef: String
-        let highlight: String
-        let reflection: String
-        let storyHint: String
-    }
-
-    private let worshipMetadata: [Int: WorshipMetadata] = [
-        1: WorshipMetadata(
-            scriptureRef: "Psalm 95:1",
-            highlight: "O come, let us sing unto the Lord",
-            reflection: "Worship begins when we turn our attention fully toward God. Let this hymn open your heart to praise.",
-            storyHint: "This hymn has encouraged generations to begin worship with joy and reverence."
-        ),
-        2: WorshipMetadata(
-            scriptureRef: "Proverbs 3:5–6",
-            highlight: "Trust in the Lord with all thine heart",
-            reflection: "Trust grows when we surrender control and lean on God's wisdom instead of our own.",
-            storyHint: "The writer of this hymn learned deep trust through seasons of uncertainty."
-        ),
-        3: WorshipMetadata(
-            scriptureRef: "Romans 15:13",
-            highlight: "Joy and hope arise from faith",
-            reflection: "Hope is not wishful thinking; it is confidence rooted in God's promises.",
-            storyHint: "This hymn was written to remind believers that joy can coexist with hardship."
-        )
-    ]
-    
     private(set) var index: [HymnIndex] = []
     @Published private(set) var currentHymnOfTheDay: HymnIndex?
     private var detailStorage: [Int: HymnDetail] = [:]
@@ -56,16 +28,14 @@ final class HymnService: ObservableObject {
             // Transform into index + detail storage
             for dto in fullHymns {
                 
-                let meta = worshipMetadata[dto.id]
-                
                 let detail = HymnDetail(
                     id: dto.id,
                     verses: dto.verses,
                     chorus: dto.chorus,
-                    scriptureRef: meta?.scriptureRef,
-                    highlight: meta?.highlight,
-                    storyHint: meta?.storyHint,
-                    reflection: meta?.reflection
+                    scriptureRef: nil,
+                    highlight: nil,
+                    storyHint: nil,
+                    reflection: nil
                 )
                 detailStorage[dto.id] = detail
                 

@@ -31,10 +31,10 @@ struct VerseSlide: View {
 
                 Spacer()
 
-                HStack(spacing: 10) {
-                    chip("2 min sing")
-                    chip("1 min reflect")
-                }
+//                HStack(spacing: 10) {
+//                    chip("2 min sing")
+//                    chip("1 min reflect")
+//                }
             }
             .padding(.horizontal, 22)
             .padding(.top, 80)
