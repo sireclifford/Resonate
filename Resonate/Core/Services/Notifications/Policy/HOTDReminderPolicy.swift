@@ -51,7 +51,7 @@ struct HOTDReminderPolicy: ReminderPolicyEvaluating {
             identifier: .hotdPrimary,
             type: .hymnOfTheDay,
             nextFireDate: nextFireDate,
-            schedule: dailySchedule(fromNextFireDate: nextFireDate),
+            schedule: schedule(fromNextFireDate: nextFireDate, now: context.now),
             contentHash: payload.hashValueString
         )
         
@@ -99,15 +99,6 @@ struct HOTDReminderPolicy: ReminderPolicyEvaluating {
             return nextOccurrence
         }
         
-#if DEBUG
-        print("NOW:", now)
-        print("ROUNDED NOW:", roundedNow)
-        print("REMINDER TIME:", reminderTime)
-        print("NEXT OCCURRENCE:", nextOccurrence)
-        print("TIME UNTIL NEXT:", timeUntilNext)
-        print("MINIMUM BUFFER:", minimumSameDayBuffer)
-#endif
-        
         let tomorrow = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now)) ?? now
         var tomorrowComps = calendar.dateComponents([.year, .month, .day], from: tomorrow)
         tomorrowComps.hour = comps.hour
@@ -117,9 +108,15 @@ struct HOTDReminderPolicy: ReminderPolicyEvaluating {
         return calendar.date(from: tomorrowComps) ?? nextOccurrence
     }
     
-    private func dailySchedule(fromNextFireDate next: Date) -> ReminderSchedule {
-        let comps = dateProvider.calendar.dateComponents([.hour, .minute], from: next)
-        return .daily(hour: comps.hour ?? 9, minute: comps.minute ?? 0)
+    private func schedule(fromNextFireDate next: Date, now: Date) -> ReminderSchedule {
+        let calendar = dateProvider.calendar
+        let timeComponents = calendar.dateComponents([.hour, .minute], from: next)
+
+        if calendar.isDate(next, inSameDayAs: now) {
+            return .daily(hour: timeComponents.hour ?? 9, minute: timeComponents.minute ?? 0)
+        }
+
+        return .oneTime(on: next, calendar: calendar)
     }
 }
 

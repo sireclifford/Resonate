@@ -1,4 +1,5 @@
 import Foundation
+import UserNotifications
 
 final class ReminderScheduler: ReminderScheduling {
     private let client: NotificationCenterClient
@@ -54,27 +55,28 @@ final class ReminderScheduler: ReminderScheduling {
 
             let idsToClear = [normalizedSnapshot.identifier.rawValue, "daily_hymn_reminder"]
 
+
             await client.removePending(ids: idsToClear)
             await client.removeDelivered(ids: idsToClear)
+
+            let repeats: Bool
+            switch snapshot.schedule {
+            case .daily, .weekly:
+                repeats = true
+            case .oneShot:
+                repeats = false
+            }
 
             let request = requestFactory.makeRequest(
                 payload: payload,
                 nextFireDate: snapshot.nextFireDate,
                 calendar: dateProvider.calendar,
-                repeats: true
+                repeats: repeats
             )
 
             do {
-#if DEBUG
-                print("Scheduling HOTD reminder")
-                print("Scheduled at:", dateProvider.now)
-                print("Identifier:", normalizedSnapshot.identifier.rawValue)
-                print("Next fire date:", normalizedSnapshot.nextFireDate)
-                print("Schedule:", normalizedSnapshot.schedule)
-                print("Content hash:", normalizedSnapshot.contentHash)
-#endif
-                
                 try await client.add(request)
+
                 stateStore.saveSnapshot(normalizedSnapshot)
             } catch {
                 print("Failed to add request:", error)
@@ -113,23 +115,17 @@ final class ReminderScheduler: ReminderScheduling {
             await client.removePending(ids: [normalizedSnapshot.identifier.rawValue])
             await client.removeDelivered(ids: [normalizedSnapshot.identifier.rawValue])
 
-            let request = requestFactory.makeRequest(
+            let weekday = dateProvider.calendar.component(.weekday, from: snapshot.nextFireDate)
+            let request = requestFactory.makeWeeklyRequest(
                 payload: payload,
-                nextFireDate: snapshot.nextFireDate,
+                firstFireDate: snapshot.nextFireDate,
                 calendar: dateProvider.calendar,
-                repeats: true
+                weekday: weekday
             )
-            
-#if DEBUG
-print("Scheduling Sabbath reminder")
-print("Identifier:", normalizedSnapshot.identifier.rawValue)
-print("Next fire date:", normalizedSnapshot.nextFireDate)
-print("Schedule:", normalizedSnapshot.schedule)
-print("Content hash:", normalizedSnapshot.contentHash)
-#endif
 
             do {
                 try await client.add(request)
+
                 stateStore.saveSnapshot(normalizedSnapshot)
             } catch {
                 print("Failed to schedule Sabbath reminder:", error)
@@ -156,3 +152,4 @@ print("Content hash:", normalizedSnapshot.contentHash)
         return dateProvider.calendar.date(from: components) ?? date
     }
 }
+
