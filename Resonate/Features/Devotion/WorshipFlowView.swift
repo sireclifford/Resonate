@@ -272,7 +272,17 @@ struct WorshipFlowView: View {
             ChorusSlide(viewModel: viewModel)
             
         case .highlight(let text):
-            HighlightSlide(hymn: viewModel.index ?? HymnIndex(id: viewModel.hymnID, title: viewModel.title, category: .uncategorized, language: .english, verseCount: viewModel.verseCount), highlight: text)
+            HighlightSlide(
+                hymn: viewModel.index ?? HymnIndex(
+                    id: viewModel.hymnID,
+                    title: viewModel.title,
+                    category: .uncategorized,
+                    language: .english,
+                    verseCount: viewModel.verseCount,
+                    occasions: nil
+                ),
+                highlight: text
+            )
             
         case .reflection:
             ReflectionSlide(viewModel: viewModel)
@@ -282,7 +292,9 @@ struct WorshipFlowView: View {
                 viewModel: viewModel,
                 onNext: {
                     environment.hymnOfTheDayEngagementService.markOpened(hymnID: viewModel.hymnID)
-                    Haptics.light()
+                    if environment.settingsService.enableHaptics {
+                        Haptics.light()
+                    }
                     next()
                 },
                 onOpenStory: {

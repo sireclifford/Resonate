@@ -44,7 +44,9 @@ struct MiniPlayerView: View {
                 Spacer()
                 
                 Button {
-                    Haptics.light()
+                    if environment.settingsService.enableHaptics {
+                        Haptics.light()
+                    }
                     audio.togglePlayback(for: id)
                     if let id = environment.accompanimentPlaybackService.currentHymnID {
                         environment.analyticsService.miniPlayerToggled(id: id)

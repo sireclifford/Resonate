@@ -21,7 +21,7 @@ final class AppEnvironment: ObservableObject {
     let settingsService: AppSettingsService
     let hymnStoryService: HymnStoryService
     let analyticsService: AnalyticsService
-
+    
     // New notification architecture
     let dateProvider: DateProviding
     let authorizationManager: NotificationAuthorizationManaging
@@ -79,8 +79,11 @@ final class AppEnvironment: ObservableObject {
             }
         )
         
+        self.toastCenter = ToastCenter()
+        
         self.favouritesService = FavouritesService(persistence: persistenceService, settings: settingsService,
-                                                   analyticsService: analyticsService
+                                                   analyticsService: analyticsService, toastCenter: toastCenter,
+                                                   hymnService: hymnService
         )
         self.tuneService = TuneService()
         self.recentlyViewedService = RecentlyViewedService()
@@ -97,7 +100,7 @@ final class AppEnvironment: ObservableObject {
         )
         self.hymnStoryService = HymnStoryService()
         self.hymnOfTheDayEngagementService = HymnOfTheDayEngagementService(persistence: persistenceService)
-
+        
         // New notification architecture
         self.dateProvider = SystemDateProvider()
         self.authorizationManager = NotificationAuthorizationManager()
@@ -130,7 +133,7 @@ final class AppEnvironment: ObservableObject {
             scheduler: reminderScheduler,
             dateProvider: dateProvider
         )
-        self.toastCenter = ToastCenter()
+      
     }
     
     @MainActor
