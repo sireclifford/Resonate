@@ -38,13 +38,21 @@ final class ReminderScheduler: ReminderScheduling {
             await cancel(identifier: identifier)
 
         case .schedule(let snapshot, let payload):
-            let existing = stateStore.loadSnapshot(for: snapshot.identifier)
+            let normalizedSnapshot = ReminderSnapshot(
+                identifier: snapshot.identifier,
+                type: snapshot.type,
+                nextFireDate: normalizedSnapshotDate(snapshot.nextFireDate),
+                schedule: snapshot.schedule,
+                contentHash: snapshot.contentHash
+            )
 
-            if existing == snapshot {
+            let existing = stateStore.loadSnapshot(for: normalizedSnapshot.identifier)
+
+            if existing == normalizedSnapshot {
                 return
             }
 
-            let idsToClear = [snapshot.identifier.rawValue, "daily_hymn_reminder"]
+            let idsToClear = [normalizedSnapshot.identifier.rawValue, "daily_hymn_reminder"]
 
             await client.removePending(ids: idsToClear)
             await client.removeDelivered(ids: idsToClear)
@@ -52,20 +60,22 @@ final class ReminderScheduler: ReminderScheduling {
             let request = requestFactory.makeRequest(
                 payload: payload,
                 nextFireDate: snapshot.nextFireDate,
-                calendar: dateProvider.calendar
+                calendar: dateProvider.calendar,
+                repeats: true
             )
 
             do {
 #if DEBUG
                 print("Scheduling HOTD reminder")
-                print("Identifier:", snapshot.identifier.rawValue)
-                print("Next fire date:", snapshot.nextFireDate)
-                print("Schedule:", snapshot.schedule)
-                print("Content hash:", snapshot.contentHash)
+                print("Scheduled at:", dateProvider.now)
+                print("Identifier:", normalizedSnapshot.identifier.rawValue)
+                print("Next fire date:", normalizedSnapshot.nextFireDate)
+                print("Schedule:", normalizedSnapshot.schedule)
+                print("Content hash:", normalizedSnapshot.contentHash)
 #endif
                 
                 try await client.add(request)
-                stateStore.saveSnapshot(snapshot)
+                stateStore.saveSnapshot(normalizedSnapshot)
             } catch {
                 print("Failed to add request:", error)
             }
@@ -86,32 +96,41 @@ final class ReminderScheduler: ReminderScheduling {
             await cancel(identifier: identifier)
 
         case .schedule(let snapshot, let payload):
-            let existing = stateStore.loadSnapshot(for: snapshot.identifier)
+            let normalizedSnapshot = ReminderSnapshot(
+                identifier: snapshot.identifier,
+                type: snapshot.type,
+                nextFireDate: normalizedSnapshotDate(snapshot.nextFireDate),
+                schedule: snapshot.schedule,
+                contentHash: snapshot.contentHash
+            )
 
-            if existing == snapshot {
+            let existing = stateStore.loadSnapshot(for: normalizedSnapshot.identifier)
+
+            if existing == normalizedSnapshot {
                 return
             }
 
-            await client.removePending(ids: [snapshot.identifier.rawValue])
-            await client.removeDelivered(ids: [snapshot.identifier.rawValue])
+            await client.removePending(ids: [normalizedSnapshot.identifier.rawValue])
+            await client.removeDelivered(ids: [normalizedSnapshot.identifier.rawValue])
 
             let request = requestFactory.makeRequest(
                 payload: payload,
                 nextFireDate: snapshot.nextFireDate,
-                calendar: dateProvider.calendar
+                calendar: dateProvider.calendar,
+                repeats: true
             )
             
 #if DEBUG
 print("Scheduling Sabbath reminder")
-print("Identifier:", snapshot.identifier.rawValue)
-print("Next fire date:", snapshot.nextFireDate)
-print("Schedule:", snapshot.schedule)
-print("Content hash:", snapshot.contentHash)
+print("Identifier:", normalizedSnapshot.identifier.rawValue)
+print("Next fire date:", normalizedSnapshot.nextFireDate)
+print("Schedule:", normalizedSnapshot.schedule)
+print("Content hash:", normalizedSnapshot.contentHash)
 #endif
 
             do {
                 try await client.add(request)
-                stateStore.saveSnapshot(snapshot)
+                stateStore.saveSnapshot(normalizedSnapshot)
             } catch {
                 print("Failed to schedule Sabbath reminder:", error)
             }
@@ -130,5 +149,10 @@ print("Content hash:", snapshot.contentHash)
         await client.removePending(ids: idsToClear)
         await client.removeDelivered(ids: idsToClear)
         stateStore.removeSnapshot(for: identifier)
+    }
+    
+    private func normalizedSnapshotDate(_ date: Date) -> Date {
+        let components = dateProvider.calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date)
+        return dateProvider.calendar.date(from: components) ?? date
     }
 }

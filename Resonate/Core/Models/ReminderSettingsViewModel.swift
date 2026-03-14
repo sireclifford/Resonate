@@ -171,14 +171,13 @@ final class ReminderSettingsViewModel: ObservableObject {
 
         // Use current HOTD if already loaded, otherwise ask the service for today's hymn
         let hymn = hymnService.currentHymnOfTheDay ?? hymnService.hymnOfTheDay()
-        let openedToday = hymn.map { engagementService.hasOpenedToday(hymnID: $0.id) } ?? false
-
-        #if DEBUG
-        print("SYNC HOTD")
-        print("Current hymn id:", hymn?.id as Any)
-        print("Current hymn title:", hymn?.title as Any)
-        print("Opened today:", openedToday)
-        #endif
+        
+        let openedToday: Bool
+        if let hymn {
+            openedToday = engagementService.hasOpenedToday(hymnID: hymn.id)
+        } else {
+            openedToday = false
+        }
         
         let context = ReminderContext(
             now: dateProvider.now,

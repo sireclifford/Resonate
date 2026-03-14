@@ -348,35 +348,35 @@ struct SettingsView: View {
                 }
                 #endif
             }
-            VStack(spacing: 12) {
-                Toggle("Sabbath Reminder", isOn: Binding(
-                    get: { environment.reminderSettingsViewModel.sabbathEnabled },
-                    set: { newValue in
-                        if newValue {
-                            Task {
-                                await environment.reminderSettingsViewModel.requestPermissionAndEnableSabbath()
-                            }
-                        } else {
-                            Task {
-                                await environment.reminderSettingsViewModel.disableSabbath()
-                            }
-                        }
-                    }
-                ))
-
-                if environment.reminderSettingsViewModel.sabbathEnabled {
-                    DatePicker(
-                        "Sabbath Reminder Time",
-                        selection: Binding(
-                            get: { environment.reminderSettingsViewModel.sabbathTime },
-                            set: { newValue in
-                                environment.reminderSettingsViewModel.sabbathTime = newValue
-                            }
-                        ),
-                        displayedComponents: .hourAndMinute
-                    )
-                }
-            }
+//            VStack(spacing: 12) {
+//                Toggle("Sabbath Reminder", isOn: Binding(
+//                    get: { environment.reminderSettingsViewModel.sabbathEnabled },
+//                    set: { newValue in
+//                        if newValue {
+//                            Task {
+//                                await environment.reminderSettingsViewModel.requestPermissionAndEnableSabbath()
+//                            }
+//                        } else {
+//                            Task {
+//                                await environment.reminderSettingsViewModel.disableSabbath()
+//                            }
+//                        }
+//                    }
+//                ))
+//
+//                if environment.reminderSettingsViewModel.sabbathEnabled {
+//                    DatePicker(
+//                        "Sabbath Reminder Time",
+//                        selection: Binding(
+//                            get: { environment.reminderSettingsViewModel.sabbathTime },
+//                            set: { newValue in
+//                                environment.reminderSettingsViewModel.sabbathTime = newValue
+//                            }
+//                        ),
+//                        displayedComponents: .hourAndMinute
+//                    )
+//                }
+//            }
         }
         .task {
             await environment.reminderSettingsViewModel.load()
@@ -412,6 +412,14 @@ struct SettingsView: View {
         }
     }
     
+    private var buildConfigurationLabel: String {
+    #if DEBUG
+        return "Debug"
+    #else
+        return "Release"
+    #endif
+    }
+    
     private var aboutSection: some View {
         SettingsSectionCard(title: "About", icon: "info.circle") {
             VStack(spacing: 20) {
@@ -419,11 +427,11 @@ struct SettingsView: View {
                     Text("Resonate")
                         .font(.headline)
                     
-                    Text("Resonate – Digital Hymnal")
+                    Text("A Digital Hymnal")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
 
-                    Text("A digital house of worship through hymns, reflection, and story.")
+                    Text("A quiet place for worship through hymns, reflection, and story.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -436,9 +444,16 @@ struct SettingsView: View {
                                 .foregroundStyle(.secondary)
                                 .font(.subheadline)
                         }
-
-//                         
                     }
+                    
+                    HStack {
+                        Text("Build Configuration")
+                        Spacer()
+                        Text(buildConfigurationLabel)
+                            .foregroundStyle(.secondary)
+                            .font(.subheadline)
+                    }
+                    
                 }
                 
                 Divider()

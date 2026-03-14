@@ -100,7 +100,11 @@ struct ReminderTimePickerView: View {
                 Spacer()
 
                 Button {
-                    environment.settingsService.dailyReminderTime = selectedTime
+                    let calendar = Calendar.current
+                    let components = calendar.dateComponents([.hour, .minute], from: selectedTime)
+                    let normalizedTime = calendar.date(from: components) ?? selectedTime
+
+                    environment.reminderSettingsViewModel.hotdTime = normalizedTime
                     dismiss()
                 } label: {
                     Text("Done")
@@ -122,8 +126,11 @@ struct ReminderTimePickerView: View {
             .padding(.bottom, 16)
         }
         .onAppear {
-            // Start from current settings value
-            selectedTime = environment.settingsService.dailyReminderTime
+            // Start from the reminder view model source of truth and normalize to hour/minute only.
+            let calendar = Calendar.current
+            let currentTime = environment.reminderSettingsViewModel.hotdTime
+            let components = calendar.dateComponents([.hour, .minute], from: currentTime)
+            selectedTime = calendar.date(from: components) ?? currentTime
         }
     }
 }

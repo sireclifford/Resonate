@@ -5,9 +5,9 @@ struct HOTDReminderPolicy: ReminderPolicyEvaluating {
     private let dateProvider: DateProviding
     private let contentBuilder: ReminderContentBuilding
 #if DEBUG
-private let minimumSameDayBuffer: TimeInterval = 60
+    private let minimumSameDayBuffer: TimeInterval = 60
 #else
-private let minimumSameDayBuffer: TimeInterval = 2 * 60 * 60
+    private let minimumSameDayBuffer: TimeInterval = 2 * 60 * 60
 #endif
     
     init(
@@ -30,9 +30,9 @@ private let minimumSameDayBuffer: TimeInterval = 2 * 60 * 60
         guard let payload = contentBuilder.payload(for: context) else {
             return .suppress(reason: .noContentAvailable)
         }
-
+        
         let nextFireDate: Date
-
+        
         if context.hotdOpenedToday {
             nextFireDate = tomorrowTriggerDate(
                 now: context.now,
@@ -46,15 +46,15 @@ private let minimumSameDayBuffer: TimeInterval = 2 * 60 * 60
                 calendar: dateProvider.calendar
             )
         }
-
+        
         let snapshot = ReminderSnapshot(
             identifier: .hotdPrimary,
             type: .hymnOfTheDay,
             nextFireDate: nextFireDate,
-            schedule: dailySchedule(from: context.hotdTime),
+            schedule: dailySchedule(fromNextFireDate: nextFireDate),
             contentHash: payload.hashValueString
         )
-
+        
         return .schedule(snapshot: snapshot, payload: payload)
     }
     
@@ -64,18 +64,18 @@ private let minimumSameDayBuffer: TimeInterval = 2 * 60 * 60
         calendar: Calendar
     ) -> Date {
         let timeComponents = calendar.dateComponents([.hour, .minute], from: reminderTime)
-
+        
         let tomorrow = calendar.date(
             byAdding: .day,
             value: 1,
             to: calendar.startOfDay(for: now)
         ) ?? now.addingTimeInterval(24 * 60 * 60)
-
+        
         var components = calendar.dateComponents([.year, .month, .day], from: tomorrow)
         components.hour = timeComponents.hour
         components.minute = timeComponents.minute
         components.second = 0
-
+        
         return calendar.date(from: components) ?? tomorrow
     }
     
@@ -117,8 +117,8 @@ private let minimumSameDayBuffer: TimeInterval = 2 * 60 * 60
         return calendar.date(from: tomorrowComps) ?? nextOccurrence
     }
     
-    private func dailySchedule(from time: Date) -> ReminderSchedule {
-        let comps = dateProvider.calendar.dateComponents([.hour, .minute], from: time)
+    private func dailySchedule(fromNextFireDate next: Date) -> ReminderSchedule {
+        let comps = dateProvider.calendar.dateComponents([.hour, .minute], from: next)
         return .daily(hour: comps.hour ?? 9, minute: comps.minute ?? 0)
     }
 }

@@ -362,7 +362,7 @@ struct HomeView: View {
                                                 environment.toastCenter.show(
                                                     .error(
                                                         "Notifications not enabled",
-                                                        subtitle: "Please allow notifications to receive daily reminders."
+                                                        subtitle: "Please allow notifications in your app settings to receive daily reminders."
                                                     ),
                                                     position: .bottom
                                                 )
