@@ -157,11 +157,20 @@ struct HymnDetailView: View {
                 category: viewModel.hymn.category.rawValue,
                 source: source
             )
-            
-            if let hotd = environment.hymnService.hymnOfTheDay(),
-               viewModel.hymn.id == hotd.id {
-                environment.hymnOfTheDayEngagementService.markOpened(hymnID: viewModel.hymn.id)
-            }
+//            
+//            if let hotd = environment.hymnService.hymnOfTheDay(),
+//               viewModel.hymn.id == hotd.id {
+//                environment.hymnOfTheDayEngagementService.markOpened(hymnID: viewModel.hymn.id)
+//#if DEBUG
+//                print("MARK OPENED: id=\(viewModel.hymn.id) at \(Date())")
+//                if let storedID: Int = environment.persistenceService.load(Int.self, for: "last_opened_hymn_id"),
+//                   let storedDate: Date = environment.persistenceService.load(Date.self, for: "last_opened_hymn_date") {
+//                    print("PERSISTED: id=\(storedID), date=\(storedDate)")
+//                } else {
+//                    print("PERSISTED: missing values")
+//                }
+//#endif
+//            }
             
             viewStart = Date()
         }
@@ -238,7 +247,7 @@ struct HymnDetailView: View {
                     .foregroundStyle(.secondary)
                 
                 Spacer()
-
+                
                 Button("Retry") {
                     Task {
                         await accompanimentPlaybackService.download(for: hymnID)
