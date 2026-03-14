@@ -3,37 +3,37 @@ import SwiftUI
 struct WorshipFlowContainer: View {
     let hymnID: Int
     let environment: AppEnvironment
-
+    
     private var slides: [WorshipSlide] {
         let viewModel = DevotionViewModel(hymnID: hymnID, hymnService: environment.hymnService)
-
+        
         let highlightText: String = viewModel.detail?.highlight
-            ?? viewModel.detail?.chorus?.first
-            ?? viewModel.detail?.verses.first?.first
-            ?? viewModel.title
-
+        ?? viewModel.detail?.chorus?.first
+        ?? viewModel.detail?.verses.first?.first
+        ?? viewModel.title
+        
         var slides: [WorshipSlide] = [.intro]
-
+        
         let hasChorus = !(viewModel.detail?.chorus?.isEmpty ?? true)
-
+        
         for verseIndex in 0..<max(viewModel.verseCount, 1) {
             slides.append(.verse(verseIndex: verseIndex))
-
+            
             if hasChorus {
                 slides.append(.chorus)
             }
         }
-
+        
         slides.append(.highlight(text: highlightText))
         slides.append(.reflection)
         slides.append(.complete)
-
+        
         return slides
     }
-
+    
     var body: some View {
         let viewModel = DevotionViewModel(hymnID: hymnID, hymnService: environment.hymnService)
-
+        
         WorshipFlowView(
             viewModel: viewModel,
             slides: slides,
@@ -58,14 +58,14 @@ struct WorshipFlowView: View {
     @State private var isClosing: Bool = false
     @State private var showStory: Bool = false
     @State private var hasStartedAudio = false
-
+    
     private var canControlAudio: Bool {
         audioService.currentHymnID == viewModel.hymnID && (
             audioService.state == .playing ||
             audioService.state == .paused
         )
     }
-
+    
     
     var body: some View {
         ZStack {
@@ -87,16 +87,23 @@ struct WorshipFlowView: View {
             .animation(.easeInOut(duration: 0.25), value: index)
             .onAppear {
                 analytics.log(
-                .worshipFlowStarted,
-                parameters: [.hymnID: viewModel.index?.id ?? viewModel.hymnID])
-
+                    .worshipFlowStarted,
+                    parameters: [.hymnID: viewModel.index?.id ?? viewModel.hymnID])
+                
+                if let hotd = environment.hymnService.hymnOfTheDay(),
+                   viewModel.hymnID == hotd.id {
+                    environment.hymnOfTheDayEngagementService.markOpened(hymnID: viewModel.hymnID)
+                }
+                
+               
+                
                 isMuted = false
                 isClosing = false
                 logSlideView()
-
+                
                 guard !hasStartedAudio else { return }
                 hasStartedAudio = true
-
+                
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                     guard !isClosing else { return }
                     audioService.toggleWorshipFlowPlayback(for: viewModel.hymnID)
@@ -121,9 +128,9 @@ struct WorshipFlowView: View {
                             .background(.white.opacity(0.12))
                             .clipShape(Circle())
                     }
-
+                    
                     Spacer()
-
+                    
                     Button {
                         toggleMute()
                     } label: {
@@ -150,9 +157,9 @@ struct WorshipFlowView: View {
                     .frame(width: 72)
                     .contentShape(Rectangle())
                     .onTapGesture { previous() }
-
+                
                 Spacer()
-
+                
                 Color.clear
                     .frame(width: 72)
                     .contentShape(Rectangle())
@@ -201,8 +208,8 @@ struct WorshipFlowView: View {
         } else {
             // completed
             analytics.log(
-            .worshipFlowCompleted,
-            parameters: [.hymnID: viewModel.index?.id ?? viewModel.hymnID])
+                .worshipFlowCompleted,
+                parameters: [.hymnID: viewModel.index?.id ?? viewModel.hymnID])
             closeFlow()
         }
     }
@@ -211,10 +218,10 @@ struct WorshipFlowView: View {
         guard !isClosing else { return }
         isClosing = true
         hasStartedAudio = false
-
+        
         let fadeDuration: TimeInterval = 1.0
         audioService.fadeOutAndStop(duration: fadeDuration)
-
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + fadeDuration) {
             dismiss()
         }
@@ -222,7 +229,7 @@ struct WorshipFlowView: View {
     
     private func toggleMute() {
         guard canControlAudio else { return }
-
+        
         if isMuted {
             audioService.resume()
             isMuted = false
@@ -257,23 +264,25 @@ struct WorshipFlowView: View {
         switch slide {
         case .intro:
             IntroSlide(viewModel: viewModel)
-
+            
         case .verse(let verseIndex):
             VerseSlide(viewModel: viewModel, verseIndex: verseIndex)
-
+            
         case .chorus:
             ChorusSlide(viewModel: viewModel)
-
+            
         case .highlight(let text):
             HighlightSlide(hymn: viewModel.index ?? HymnIndex(id: viewModel.hymnID, title: viewModel.title, category: .uncategorized, language: .english, verseCount: viewModel.verseCount), highlight: text)
-
+            
         case .reflection:
             ReflectionSlide(viewModel: viewModel)
-
+            
         case .complete:
             CompletionSlide(
                 viewModel: viewModel,
                 onNext: {
+                    environment.hymnOfTheDayEngagementService.markOpened(hymnID: viewModel.hymnID)
+                    Haptics.light()
                     next()
                 },
                 onOpenStory: {
@@ -283,4 +292,5 @@ struct WorshipFlowView: View {
         }
     }
 }
- 
+
+
