@@ -158,6 +158,28 @@ struct HomeView: View {
     
     var body: some View {
         ScrollView {
+            #if DEBUG
+            Button {
+//                let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
+//                viewModel.refreshHymnOfTheDay(on: tomorrow)
+                
+                let calendar = Calendar.current
+                let today = Date()
+
+                for offset in 0...5 {
+                    if let date = calendar.date(byAdding: .day, value: offset, to: today) {
+                        viewModel.refreshHymnOfTheDay(on: date)
+                        print("DAY +\(offset):", viewModel.hymnOfTheDay?.title ?? "nil")
+                    }
+                }
+            } label: {
+                Text("Refresh hymn of the day")
+            }
+            .buttonStyle(.plain)
+            
+            #endif
+            
+            
             content
         }
         .scrollIndicators(.hidden)
@@ -958,9 +980,9 @@ struct HomeView: View {
 
         environment.analyticsService.reminderHymnOpened(hymnID: hymn.id)
 
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        formatter.dateStyle = .none
+//        let formatter = DateFormatter()
+//        formatter.timeStyle = .short
+//        formatter.dateStyle = .none
 //        let timeString = formatter.string(from: environment.reminderSettingsViewModel.hotdTime)
 
         DispatchQueue.main.async {

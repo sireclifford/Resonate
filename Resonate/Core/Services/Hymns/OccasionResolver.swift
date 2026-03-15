@@ -3,7 +3,7 @@ import Foundation
 struct OccasionResolver {
     private let calendar: Calendar
 
-    init(calendar: Calendar = OccasionResolver.utcGregorianCalendar) {
+    init(calendar: Calendar = OccasionResolver.localGregorianCalendar) {
         self.calendar = calendar
     }
 
@@ -75,6 +75,12 @@ struct OccasionResolver {
     static let utcGregorianCalendar: Calendar = {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .gmt
+        return calendar
+    }()
+
+    static let localGregorianCalendar: Calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .current
         return calendar
     }()
 }

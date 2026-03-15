@@ -36,5 +36,10 @@ final class HomeViewModel: ObservableObject {
     func refreshHymnOfTheDay() {
         hymnOfTheDay = hymnService.hymnOfTheDay()
     }
+
+    /// Debug/testing helper to compute HOTD for a specific date
+    func refreshHymnOfTheDay(on date: Date) {
+        hymnOfTheDay = hymnService.hymnOfTheDay(on: date)
+    }
     
 }

@@ -7,7 +7,7 @@ struct HymnOfTheDayEngine {
     private let globalSeed: UInt64
 
     init(
-        calendar: Calendar = OccasionResolver.utcGregorianCalendar,
+        calendar: Calendar = OccasionResolver.localGregorianCalendar,
         globalSeed: UInt64 = 2026
     ) {
         self.calendar = calendar
@@ -171,8 +171,8 @@ struct HymnOfTheDayEngine {
 
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.calendar = OccasionResolver.utcGregorianCalendar
-        formatter.timeZone = OccasionResolver.utcGregorianCalendar.timeZone
+        formatter.calendar = OccasionResolver.localGregorianCalendar
+        formatter.timeZone = OccasionResolver.localGregorianCalendar.timeZone
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter
     }()
