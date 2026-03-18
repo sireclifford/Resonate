@@ -23,4 +23,8 @@ final class UserNotificationCenterClient: NotificationCenterClient {
     func pendingRequests() async -> [UNNotificationRequest] {
         await center.pendingNotificationRequests()
     }
+
+    func deliveredNotifications() async -> [UNNotification] {
+        await center.deliveredNotifications()
+    }
 }

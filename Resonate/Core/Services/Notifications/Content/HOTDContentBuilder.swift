@@ -1,8 +1,16 @@
 import Foundation
 
 struct HOTDContentBuilder: ReminderContentBuilding {
-    func payload(for context: ReminderContext) -> ReminderPayload? {
-        let hymnTitle = context.hotdTitle ?? "Hymn of the Day"
+    private let hymnService: HymnService
+
+    init(hymnService: HymnService) {
+        self.hymnService = hymnService
+    }
+
+    func payload(for context: ReminderContext, scheduledFor fireDate: Date?) -> ReminderPayload? {
+        let scheduledHymn = fireDate.flatMap { hymnService.hymnOfTheDay(on: $0) }
+        let hymnTitle = scheduledHymn?.title ?? context.hotdTitle ?? "Hymn of the Day"
+        let hymnID = scheduledHymn?.id ?? context.hotdHymnID ?? 0
 
         let subtitles = [
             "Begin your day in worship",
@@ -25,7 +33,7 @@ struct HOTDContentBuilder: ReminderContentBuilding {
             badge: nil,
             userInfo: [
                 "type": ReminderType.hymnOfTheDay.rawValue,
-                "hymnID": String(context.hotdHymnID ?? 0)
+                "hymnID": String(hymnID)
             ]
         )
     }

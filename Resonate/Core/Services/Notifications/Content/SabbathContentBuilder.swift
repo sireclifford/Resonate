@@ -1,7 +1,7 @@
 import Foundation
 
 struct SabbathContentBuilder: ReminderContentBuilding {
-    func payload(for context: ReminderContext) -> ReminderPayload? {
+    func payload(for context: ReminderContext, scheduledFor fireDate: Date?) -> ReminderPayload? {
         guard let _ = context.sabbathTime else { return nil }
 
         return ReminderPayload(

@@ -6,4 +6,5 @@ protocol NotificationCenterClient {
     func removePending(ids: [String]) async
     func removeDelivered(ids: [String]) async
     func pendingRequests() async -> [UNNotificationRequest]
+    func deliveredNotifications() async -> [UNNotification]
 }

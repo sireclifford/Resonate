@@ -3,6 +3,7 @@ import UserNotifications
 
 struct NotificationRequestFactory {
     func makeRequest(
+        requestIdentifier: String? = nil,
         payload: ReminderPayload,
         nextFireDate: Date,
         calendar: Calendar,
@@ -34,13 +35,14 @@ struct NotificationRequestFactory {
         }
 
         return UNNotificationRequest(
-            identifier: payload.identifier.rawValue,
+            identifier: requestIdentifier ?? payload.identifier.rawValue,
             content: content,
             trigger: trigger
         )
     }
     
     func makeWeeklyRequest(
+        requestIdentifier: String? = nil,
         payload: ReminderPayload,
         firstFireDate: Date,
         calendar: Calendar,
@@ -67,7 +69,7 @@ struct NotificationRequestFactory {
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
 
         return UNNotificationRequest(
-            identifier: payload.identifier.rawValue,
+            identifier: requestIdentifier ?? payload.identifier.rawValue,
             content: content,
             trigger: trigger
         )

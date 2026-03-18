@@ -26,15 +26,15 @@ struct SabbathReminderPolicy: ReminderPolicyEvaluating {
             return .suppress(reason: .noContentAvailable)
         }
 
-        guard let payload = contentBuilder.payload(for: context) else {
-            return .suppress(reason: .noContentAvailable)
-        }
-
         let nextFireDate = nextSabbathTriggerDate(
             now: context.now,
             reminderTime: reminderTime,
             calendar: dateProvider.calendar
         )
+
+        guard let payload = contentBuilder.payload(for: context, scheduledFor: nextFireDate) else {
+            return .suppress(reason: .noContentAvailable)
+        }
 
         let snapshot = ReminderSnapshot(
             identifier: .sabbathPrimary(),

@@ -27,10 +27,6 @@ struct HOTDReminderPolicy: ReminderPolicyEvaluating {
             return .suppress(reason: .permissionDenied)
         }
         
-        guard let payload = contentBuilder.payload(for: context) else {
-            return .suppress(reason: .noContentAvailable)
-        }
-        
         let nextFireDate: Date
         
         if context.hotdOpenedToday {
@@ -45,6 +41,20 @@ struct HOTDReminderPolicy: ReminderPolicyEvaluating {
                 reminderTime: context.hotdTime,
                 calendar: dateProvider.calendar
             )
+        }
+
+#if DEBUG
+        Self.debugLogDecision(
+            now: context.now,
+            reminderTime: context.hotdTime,
+            hotdOpenedToday: context.hotdOpenedToday,
+            nextFireDate: nextFireDate,
+            calendar: dateProvider.calendar
+        )
+#endif
+
+        guard let payload = contentBuilder.payload(for: context, scheduledFor: nextFireDate) else {
+            return .suppress(reason: .noContentAvailable)
         }
         
         let snapshot = ReminderSnapshot(
@@ -94,6 +104,16 @@ struct HOTDReminderPolicy: ReminderPolicyEvaluating {
         }
         
         let timeUntilNext = nextOccurrence.timeIntervalSince(roundedNow)
+
+#if DEBUG
+        Self.debugLogBufferCheck(
+            roundedNow: roundedNow,
+            nextOccurrence: nextOccurrence,
+            timeUntilNext: timeUntilNext,
+            minimumSameDayBuffer: minimumSameDayBuffer,
+            calendar: calendar
+        )
+#endif
         
         if timeUntilNext >= minimumSameDayBuffer {
             return nextOccurrence
@@ -118,6 +138,62 @@ struct HOTDReminderPolicy: ReminderPolicyEvaluating {
 
         return .oneTime(on: next, calendar: calendar)
     }
+
+#if DEBUG
+    private static func debugLogDecision(
+        now: Date,
+        reminderTime: Date,
+        hotdOpenedToday: Bool,
+        nextFireDate: Date,
+        calendar: Calendar
+    ) {
+        print(
+            """
+            HOTD policy decision
+            - now: \(debugString(for: now, calendar: calendar))
+            - reminderTime: \(debugTimeString(for: reminderTime, calendar: calendar))
+            - hotdOpenedToday: \(hotdOpenedToday)
+            - nextFireDate: \(debugString(for: nextFireDate, calendar: calendar))
+            """
+        )
+    }
+
+    private static func debugLogBufferCheck(
+        roundedNow: Date,
+        nextOccurrence: Date,
+        timeUntilNext: TimeInterval,
+        minimumSameDayBuffer: TimeInterval,
+        calendar: Calendar
+    ) {
+        print(
+            """
+            HOTD buffer check
+            - roundedNow: \(debugString(for: roundedNow, calendar: calendar))
+            - nextOccurrence: \(debugString(for: nextOccurrence, calendar: calendar))
+            - timeUntilNextSeconds: \(Int(timeUntilNext))
+            - minimumSameDayBufferSeconds: \(Int(minimumSameDayBuffer))
+            """
+        )
+    }
+
+    private static func debugString(for date: Date, calendar: Calendar) -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.timeZone = calendar.timeZone
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .medium
+        return formatter.string(from: date)
+    }
+
+    private static func debugTimeString(for date: Date, calendar: Calendar) -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.timeZone = calendar.timeZone
+        formatter.dateStyle = .none
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
+    }
+#endif
 }
 
 private extension ReminderPayload {
