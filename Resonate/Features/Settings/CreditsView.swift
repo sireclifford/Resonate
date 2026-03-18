@@ -4,61 +4,29 @@ struct CreditsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 32) {
+                hero
                 
-                // MARK: App Identity
-                VStack(spacing: 12) {
-                    
-                    Image(systemName: "checkmark.seal.text.page")
-                        .font(.system(size: 48))
-                        .foregroundStyle(.primary)
-                    
-                    Text("Resonate")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    
-                    Text("Seventh-day Adventist Hymnal Companion")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                    
-                    Text(" \(Bundle.main.appVersion)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                
-                Divider()
-                
-                // MARK: Development
                 section(
                     title: "Development",
                     icon: "hammer.fill",
                     content: """
-                    Designed and developed by Clifford Owusu.
+                    Resonate was designed and developed by Clifford Owusu.
                     
-                    Resonate is built to provide structured hymn access,
-                    tune playback, scripture integration, and historical context
-                    in a modern, searchable format.
+                    The app brings together hymn reading, tune playback, scripture access, and historical companion material in a calm, focused interface built for worship and study.
                     """
                 )
                 
-                Divider()
-                
-                // MARK: Hymn Stories
                 VStack(alignment: .leading, spacing: 16) {
-                    
                     HStack(spacing: 8) {
                         Image(systemName: "doc.text.magnifyingglass")
                             .foregroundStyle(.secondary)
-                        
-                        Text("Hymn Stories & Historical Content")
+
+                        Text("Content & Attribution")
                             .font(.headline)
                     }
-                    
+
                     Text("""
-                    Historical commentary and companion material sourced from:
-                    Hymns for Worship – SDA Hymnal Companion.
+                    Historical commentary and companion material are sourced from Hymns for Worship - SDA Hymnal Companion and related attribution-friendly references.
                     """)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -77,40 +45,26 @@ struct CreditsView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
-                Divider()
-                
-                // MARK: Music Attribution
                 section(
-                    title: "Music & Tune Information",
+                    title: "Music & Tune Data",
                     icon: "music.note",
                     content: """
-                    Tune names, composers, metrical structures,
-                    and historical metadata derived from
-                    public hymnological archives and
-                    denominational hymn records.
-                    
-                    Audio playback within the app uses locally bundled files
-                    for testing purposes.
+                    Tune names, composers, metrical structures, and selected historical metadata are informed by public hymnological archives and denominational hymn records.
                     """
                 )
                 
-                Divider()
-                
-                // MARK: Scripture
                 VStack(alignment: .leading, spacing: 12) {
-                    
                     HStack(spacing: 8) {
                         Image(systemName: "book.fill")
                             .foregroundStyle(.secondary)
-                        
-                        Text("Scripture References")
+
+                        Text("Bible & Scripture")
                             .font(.headline)
                     }
-                    
+
                     Text("""
-                    Scripture references follow standard Protestant canon
-                    notation using USFM identifiers for internal indexing.
-                    
+                    Scripture references follow standard Protestant canon notation using USFM identifiers for internal indexing.
+
                     Bible API powered by YouVersion.
                     """)
                     .font(.subheadline)
@@ -132,58 +86,97 @@ struct CreditsView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
-                Divider()
-                
-                // MARK: Legal
                 section(
                     title: "Legal & Disclaimer",
                     icon: "shield.lefthalf.filled",
                     content: """
-                    Resonate is an independent project and is not officially
-                    affiliated with the General Conference of Seventh-day Adventists.
-                    
-                    All hymn texts, tune names, and referenced materials remain
-                    the property of their respective copyright holders.
-                    
-                    Where applicable, copyrights are acknowledged
-                    within individual hymn metadata.
+                    Resonate is an independent project and is not officially affiliated with the General Conference of Seventh-day Adventists.
+
+                    Hymn texts, tune names, and referenced materials remain the property of their respective copyright holders. Where applicable, attribution is acknowledged within the app and its supporting metadata.
                     """
                 )
                 
-                Divider()
-                
-                // MARK: Acknowledgments
                 section(
                     title: "Acknowledgments",
                     icon: "heart.fill",
                     content: """
-                    Special thanks to early testers, worship leaders, and contributors who provided technical, theological, and usability feedback during development.
+                    Special thanks to early testers, worship leaders, and contributors whose technical, theological, and usability feedback helped shape the app.
                     """
                 )
             }
             .padding()
         }
+        .background(
+            LinearGradient(
+                colors: [Color(.systemBackground), Color(.secondarySystemBackground)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
         .navigationTitle("Credits")
+    }
+
+    private var hero: some View {
+        VStack(spacing: 12) {
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.accentColor.opacity(0.18), Color.orange.opacity(0.12)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 84, height: 84)
+
+                Image(systemName: "checkmark.seal.text.page")
+                    .font(.system(size: 34, weight: .semibold))
+                    .foregroundStyle(.primary)
+            }
+
+            Text("Resonate")
+                .font(.title2.weight(.semibold))
+
+            Text("A digital hymnal companion shaped for worship, reflection, and hymn study.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            Text(Bundle.main.appVersion)
+                .font(.caption.weight(.medium))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 24)
+        .background(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
     }
 
 
     private func section(title: String, icon: String, content: String) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            
             HStack(spacing: 8) {
                 Image(systemName: icon)
                     .foregroundStyle(.secondary)
-                
+
                 Text(title)
                     .font(.headline)
             }
-            
+
             Text(content)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
+        .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
     }
     
     
