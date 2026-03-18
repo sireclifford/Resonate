@@ -29,6 +29,7 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
     @Published private(set) var lastFileErrorMessage: String?
     @Published private(set) var currentTime: TimeInterval = 0
     @Published private(set) var duration: TimeInterval = 0
+    @Published private(set) var fileStateVersion: Int = 0
 
     var isPlaying: Bool {
         state == .playing
@@ -279,6 +280,7 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
                 .hymnID: hymnID
             ])
             downloadingHymnID = nil
+            fileStateVersion &+= 1
         } catch {
             analyticsService.log(.accompanimentDownloadFailed, parameters: [
                 .hymnID: hymnID
@@ -294,6 +296,7 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
         }
     }
 
+    @MainActor
     func deleteDownload(for hymnID: Int) {
         if currentHymnID == hymnID {
             stop()
@@ -305,6 +308,8 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
             failedHymnID = nil
             lastFileErrorMessage = nil
         }
+
+        fileStateVersion &+= 1
     }
 
 
