@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ReaderTopBar: View {
+    @Environment(\.colorScheme) private var colorScheme
 
     let index: HymnIndex
     let verseCount: Int
@@ -16,10 +17,18 @@ struct ReaderTopBar: View {
 
     var body: some View {
         HStack(spacing: 16) {
+            HStack(spacing: 8) {
+                Text("Hymn \(index.id)")
+                    .font(.josefin(size: 14, weight: .semibold))
+                    .foregroundStyle(.primary)
 
-            Text("Hymn \(index.id) • \(verseCount) Verses")
-                .font(.josefin(size: 14))
-                .foregroundColor(.secondary)
+                Text("•")
+                    .foregroundStyle(.tertiary)
+
+                Text("\(verseCount) verses")
+                    .font(.josefin(size: 14))
+                    .foregroundStyle(.secondary)
+            }
 
             Spacer()
 
@@ -61,15 +70,33 @@ struct ReaderTopBar: View {
                 .padding(.vertical, 6)
                 .background(
                     Capsule()
-                        .fill(Color(.secondarySystemBackground))
+                        .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color(.secondarySystemBackground))
+                )
+                .overlay(
+                    Capsule()
+                        .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.05), lineWidth: 1)
                 )
             }
 
             Button(action: onFavouriteToggle) {
                 Image(systemName: isFavourite ? "heart.fill" : "heart")
+                    .foregroundStyle(isFavourite ? .red : .primary)
+                    .frame(width: 34, height: 34)
+                    .background(
+                        Circle()
+                            .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color(.secondarySystemBackground))
+                    )
+                    .overlay(
+                        Circle()
+                            .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.05), lineWidth: 1)
+                    )
             }
+            .buttonStyle(.plain)
         }
-        .padding()
-        .background(Color(.systemBackground))
+        .padding(.horizontal, 20)
+        .padding(.vertical, 14)
+        .background(
+            colorScheme == .dark ? Color.black.opacity(0.16) : Color.white.opacity(0.82)
+        )
     }
 }

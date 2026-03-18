@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ReaderBottomBar: View {
+    @Environment(\.colorScheme) private var colorScheme
     
     @ObservedObject var audioPlaybackService: AccompanimentPlaybackService
     
@@ -16,7 +17,12 @@ struct ReaderBottomBar: View {
             Button(action: onPrevious) {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 18, weight: .medium))
-            }.disabled(!hasPrevious)
+                    .frame(width: 40, height: 40)
+                    .background(controlBackground)
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .disabled(!hasPrevious)
 
             Spacer()
 
@@ -28,7 +34,11 @@ struct ReaderBottomBar: View {
                 Button(action: onPlayToggle) {
                     Image(systemName: audioPlaybackService.isPlaying ? "pause.fill" : "play.fill")
                         .font(.system(size: 28, weight: .semibold))
+                        .frame(width: 58, height: 58)
+                        .background(controlBackground)
+                        .clipShape(Circle())
                 }
+                .buttonStyle(.plain)
 
             case .downloading:
                 ProgressView()
@@ -44,11 +54,21 @@ struct ReaderBottomBar: View {
             Button(action: onNext) {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 18, weight: .medium))
-            }.disabled(!hasNext)
+                    .frame(width: 40, height: 40)
+                    .background(controlBackground)
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .disabled(!hasNext)
         }
-        .padding(.horizontal, 36)
-        .padding(.vertical, 20)
-        .background(Color(.systemBackground))
+        .padding(.horizontal, 28)
+        .padding(.vertical, 16)
+        .background(
+            colorScheme == .dark ? Color.black.opacity(0.22) : Color.white.opacity(0.90)
+        )
+    }
 
+    private var controlBackground: some ShapeStyle {
+        colorScheme == .dark ? AnyShapeStyle(Color.white.opacity(0.08)) : AnyShapeStyle(Color(.secondarySystemBackground))
     }
 }

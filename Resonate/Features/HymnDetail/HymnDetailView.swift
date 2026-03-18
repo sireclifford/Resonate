@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct HymnDetailView: View {
+    @Environment(\.colorScheme) private var colorScheme
     
     let environment: AppEnvironment
     let source: String
@@ -54,38 +55,27 @@ struct HymnDetailView: View {
             )
             
             
-            Divider()
-            
-            // Lyrics only scroll
             ScrollView {
-                VStack(alignment: .leading, spacing: 32) {
-                    
-                    ForEach(viewModel.versesForSelectedLanguage.indices, id: \.self) { index in
-                        VerseView(
-                            title: "\(index + 1).",
-                            lines: viewModel.versesForSelectedLanguage[index],
-                            fontSize: settings.fontSize,
-                            fontFamily: settings.fontFamily,
-                            lineSpacing: settings.lineSpacing,
-                            showVerseNumbers: settings.showVerseNumbers
-                        )
-                        
-                        if let chorus = viewModel.detail?.chorus {
-                            if settings.chorusLabelStyle != .hide {
-                                ChorusView(
-                                    title: settings.chorusLabelStyle.label,
-                                    lines: chorus,
-                                    fontFamily: settings.fontFamily,
-                                    fontSize: settings.fontSize,
-                                    lineSpacing: settings.lineSpacing,
-                                )
-                            }
-                        }
-                    }
-                    
+                VStack(alignment: .leading, spacing: 30) {
+                    devotionalHeader
+                    lyricsCanvas
+
                 }
-                .padding()
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                .padding(.bottom, 24)
             }
+            .background(
+                LinearGradient(
+                    colors: [
+                        Color(.systemBackground),
+                        Color(.systemBackground),
+                        Color(.secondarySystemBackground)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
             
             // Accompaniment download/delete row
             accompanimentActionRow
@@ -111,16 +101,6 @@ struct HymnDetailView: View {
         }
         .navigationTitle(viewModel.hymn.title)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                    showStory = true
-                } label: {
-                    Image(systemName: "book.pages")
-                }
-            }
-        }
         .sheet(isPresented: $showStory, onDismiss: {
             if let start = storyViewStart {
                 let seconds = Int(Date().timeIntervalSince(start).rounded())
@@ -196,6 +176,221 @@ struct HymnDetailView: View {
             counted = true
             environment.recentSearchService.add(viewModel.hymn.id)
         }
+    }
+
+    private var devotionalHeader: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Hymn \(viewModel.hymn.id)")
+                        .font(.caption.weight(.semibold))
+                        .textCase(.uppercase)
+                        .tracking(0.8)
+                        .foregroundStyle(.secondary)
+
+                    Text(viewModel.hymn.title)
+                        .font(.system(size: 34, weight: .bold, design: .serif))
+                        .foregroundStyle(.primary)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    HStack(spacing: 8) {
+                        detailPill(text: viewModel.hymn.category.title, icon: "tag.fill")
+                        detailPill(text: "\(viewModel.detail?.verses.count ?? 0) verses", icon: "text.justify")
+                    }
+                }
+
+                Spacer(minLength: 12)
+
+                VStack(spacing: 14) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.white.opacity(colorScheme == .dark ? 0.08 : 0.44))
+                            .frame(width: 64, height: 64)
+
+                        Image(systemName: detailSymbol)
+                            .font(.system(size: 24, weight: .semibold))
+                            .foregroundStyle(.primary)
+                    }
+
+                    storyButton
+                }
+            }
+
+            if let devotionalContext {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text(devotionalContext.title)
+                        .font(.caption.weight(.semibold))
+                        .textCase(.uppercase)
+                        .tracking(0.7)
+                        .foregroundStyle(.secondary)
+
+                    Text(devotionalContext.body)
+                        .font(.system(size: 17, weight: .medium, design: .serif))
+                        .foregroundStyle(.primary.opacity(0.92))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(18)
+                .background(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .fill(colorScheme == .dark ? Color.white.opacity(0.05) : Color(.secondarySystemBackground))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.06), lineWidth: 1)
+                )
+            }
+        }
+        .padding(22)
+        .background(
+            RoundedRectangle(cornerRadius: 30, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: colorScheme == .dark
+                            ? [
+                                Color(red: 0.19, green: 0.18, blue: 0.20),
+                                Color(red: 0.12, green: 0.12, blue: 0.14)
+                            ]
+                            : [
+                                Color(red: 0.95, green: 0.93, blue: 0.88),
+                                Color(red: 0.90, green: 0.88, blue: 0.82)
+                            ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 30, style: .continuous)
+                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.06), lineWidth: 1)
+        )
+        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.24 : 0.06), radius: 18, y: 10)
+    }
+
+    private var lyricsCanvas: some View {
+        VStack(alignment: .leading, spacing: 22) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Lyrics")
+                    .font(.title3.weight(.semibold))
+
+                Text("Read slowly, sing freely, and linger where the words ask you to.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            VStack(alignment: .leading, spacing: 24) {
+                ForEach(viewModel.versesForSelectedLanguage.indices, id: \.self) { index in
+                    VStack(alignment: .leading, spacing: 18) {
+                        VerseView(
+                            title: "\(index + 1).",
+                            lines: viewModel.versesForSelectedLanguage[index],
+                            fontSize: settings.fontSize,
+                            fontFamily: settings.fontFamily,
+                            lineSpacing: settings.lineSpacing,
+                            showVerseNumbers: settings.showVerseNumbers
+                        )
+
+                        if let chorus = viewModel.detail?.chorus, settings.chorusLabelStyle != .hide {
+                            ChorusView(
+                                title: settings.chorusLabelStyle.label,
+                                lines: chorus,
+                                fontFamily: settings.fontFamily,
+                                fontSize: settings.fontSize,
+                                lineSpacing: settings.lineSpacing,
+                            )
+                        }
+                    }
+
+                    if index < viewModel.versesForSelectedLanguage.indices.last ?? 0 {
+                        Rectangle()
+                            .fill(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.06))
+                            .frame(height: 1)
+                    }
+                }
+            }
+            .padding(22)
+            .background(
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .fill(colorScheme == .dark ? Color.white.opacity(0.04) : Color(.systemBackground))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.06), lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.18 : 0.04), radius: 14, y: 8)
+        }
+    }
+
+    private var storyButton: some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            showStory = true
+        } label: {
+            Image(systemName: "book.pages")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(.primary)
+                .frame(width: 44, height: 44)
+                .background(Color.white.opacity(colorScheme == .dark ? 0.08 : 0.44))
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.05), lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var devotionalContext: (title: String, body: String)? {
+        if let highlight = viewModel.detail?.highlight, !highlight.isEmpty {
+            return ("Reflection", highlight)
+        }
+
+        if let scriptureRef = viewModel.detail?.scriptureRef, !scriptureRef.isEmpty {
+            return ("Scripture", scriptureRef)
+        }
+
+        if let reflection = viewModel.detail?.reflection, !reflection.isEmpty {
+            return ("Meditation", reflection)
+        }
+
+        return nil
+    }
+
+    private var detailSymbol: String {
+        let title = viewModel.hymn.category.title.lowercased()
+        if title.contains("praise") || title.contains("adoration") {
+            return "hands.clap.fill"
+        } else if title.contains("prayer") || title.contains("meditation") {
+            return "hands.sparkles.fill"
+        } else if title.contains("comfort") || title.contains("hope") {
+            return "heart.text.square.fill"
+        } else if title.contains("morning") {
+            return "sunrise.fill"
+        } else if title.contains("evening") {
+            return "moon.stars.fill"
+        } else if title.contains("sabbath") {
+            return "sun.max.fill"
+        } else {
+            return "music.note"
+        }
+    }
+
+    private func detailPill(text: String, icon: String) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.caption.weight(.semibold))
+            Text(text)
+                .font(.subheadline.weight(.medium))
+                .lineLimit(1)
+        }
+        .foregroundStyle(.secondary)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color.white.opacity(colorScheme == .dark ? 0.08 : 0.44))
+        .clipShape(Capsule())
+        .overlay(
+            Capsule()
+                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.05), lineWidth: 1)
+        )
     }
     
     @ViewBuilder
@@ -277,9 +472,17 @@ struct HymnDetailView: View {
                 .font(.subheadline.weight(.semibold))
             }
         }
-        .padding(.horizontal)
-        .padding(.vertical, 10)
-        .background(Color(.secondarySystemBackground))
+        .padding(.horizontal, 20)
+        .padding(.vertical, 14)
+        .background(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.06), lineWidth: 1)
+        )
+        .padding(.horizontal, 20)
+        .padding(.bottom, 10)
     }
 }
-
