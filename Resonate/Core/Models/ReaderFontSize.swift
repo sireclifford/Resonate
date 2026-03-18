@@ -8,9 +8,9 @@ enum ReaderFontSize: String, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .small: return "16px"
-        case .medium: return "18px"
-        case .large: return "20px"
+        case .small: return "16pt"
+        case .medium: return "18pt"
+        case .large: return "20pt"
         }
     }
 
