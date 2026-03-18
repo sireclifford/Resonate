@@ -5,6 +5,8 @@ struct NotificationDebugView: View {
     @EnvironmentObject var environment: AppEnvironment
 
     @State private var pendingRequests: [String] = []
+    @State private var deliveredRequests: [String] = []
+    @State private var hotdDebugDetails: HOTDDebugDetails?
     @State private var authorizationStatus: NotificationAuthorizationStatus = .notDetermined
 
     var body: some View {
@@ -71,6 +73,19 @@ struct NotificationDebugView: View {
                         await refresh()
                     }
                 }
+
+                if let hotdDebugDetails {
+                    LabeledContent("Identifier", value: hotdDebugDetails.identifier)
+                    LabeledContent("Title", value: hotdDebugDetails.title)
+                    LabeledContent("Body", value: hotdDebugDetails.body)
+                    LabeledContent("Hymn ID", value: hotdDebugDetails.hymnID ?? "Missing")
+                    LabeledContent("Current HOTD Opened", value: hotdDebugDetails.currentHOTDHasOpenedTodayText)
+                    LabeledContent("Scheduled HOTD Opened", value: hotdDebugDetails.scheduledHOTDHasOpenedTodayText)
+                    LabeledContent("Next Fire", value: hotdDebugDetails.nextFireDateText ?? "Unknown")
+                } else {
+                    Text("No pending HOTD request")
+                        .foregroundStyle(.secondary)
+                }
             }
 
             Section("Sabbath Reminder") {
@@ -125,6 +140,22 @@ struct NotificationDebugView: View {
                     Task { await refresh() }
                 }
             }
+
+            Section("Delivered Notifications") {
+                if deliveredRequests.isEmpty {
+                    Text("None")
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(deliveredRequests, id: \.self) { id in
+                        Text(id)
+                            .font(.footnote)
+                    }
+                }
+
+                Button("Refresh Delivered") {
+                    Task { await refresh() }
+                }
+            }
         }
         .navigationTitle("Notification Debug")
         .task {
@@ -136,8 +167,11 @@ struct NotificationDebugView: View {
         authorizationStatus = await environment.authorizationManager.currentStatus()
 
         let requests = await environment.notificationClient.pendingRequests()
+        let delivered = await environment.notificationClient.deliveredNotifications()
 
         var results: [String] = []
+        var deliveredResults: [String] = []
+        var hotdDetails: HOTDDebugDetails?
 
         for request in requests {
             var description = request.identifier
@@ -153,9 +187,38 @@ struct NotificationDebugView: View {
             }
 
             results.append(description)
+
+            if request.identifier.hasPrefix(ReminderIdentifier.hotdPrimary.rawValue) {
+                let candidate = HOTDDebugDetails(
+                    identifier: request.identifier,
+                    title: request.content.title,
+                    body: request.content.body,
+                    hymnID: request.content.userInfo["hymnID"] as? String,
+                    currentHOTDHasOpenedTodayText: currentHOTDHasOpenedTodayText(),
+                    scheduledHOTDHasOpenedTodayText: scheduledHOTDHasOpenedTodayText(for: request.content.userInfo["hymnID"] as? String),
+                    nextFireDateText: notificationDateDescription(for: request.trigger),
+                    nextFireDate: calendarTriggerDate(for: request.trigger)
+                )
+
+                if hotdDetails == nil || (candidate.nextFireDate ?? .distantFuture) < (hotdDetails?.nextFireDate ?? .distantFuture) {
+                    hotdDetails = candidate
+                }
+            }
         }
 
+        for notification in delivered {
+            let request = notification.request
+            let deliveredDate = notification.date
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .short
+
+            deliveredResults.append("\(request.identifier) — \(formatter.string(from: deliveredDate))")
+        }
+
+        hotdDebugDetails = hotdDetails
         pendingRequests = results.sorted()
+        deliveredRequests = deliveredResults.sorted()
     }
 
     private func scheduleTestNotification() async {
@@ -207,4 +270,61 @@ struct NotificationDebugView: View {
         case .ephemeral: return "Ephemeral"
         }
     }
+
+    private func notificationDateDescription(for trigger: UNNotificationTrigger?) -> String? {
+        if let nextDate = calendarTriggerDate(for: trigger) {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .short
+            return formatter.string(from: nextDate)
+        }
+
+        if let trigger = trigger as? UNTimeIntervalNotificationTrigger {
+            return "in \(Int(trigger.timeInterval))s"
+        }
+
+        return nil
+    }
+
+    private func calendarTriggerDate(for trigger: UNNotificationTrigger?) -> Date? {
+        guard let trigger = trigger as? UNCalendarNotificationTrigger else {
+            return nil
+        }
+
+        return trigger.nextTriggerDate()
+    }
+
+    private func currentHOTDHasOpenedTodayText() -> String {
+        let currentHOTD = environment.hymnService.currentHymnOfTheDay ?? environment.hymnService.hymnOfTheDay()
+
+        guard
+            let currentHOTD
+        else {
+            return "Unknown"
+        }
+
+        return environment.hymnOfTheDayEngagementService.hasOpenedToday(hymnID: currentHOTD.id) ? "Yes" : "No"
+    }
+
+    private func scheduledHOTDHasOpenedTodayText(for hymnID: String?) -> String {
+        guard
+            let hymnID,
+            let parsedHymnID = Int(hymnID)
+        else {
+            return "Unknown"
+        }
+
+        return environment.hymnOfTheDayEngagementService.hasOpenedToday(hymnID: parsedHymnID) ? "Yes" : "No"
+    }
+}
+
+private struct HOTDDebugDetails {
+    let identifier: String
+    let title: String
+    let body: String
+    let hymnID: String?
+    let currentHOTDHasOpenedTodayText: String
+    let scheduledHOTDHasOpenedTodayText: String
+    let nextFireDateText: String?
+    let nextFireDate: Date?
 }
