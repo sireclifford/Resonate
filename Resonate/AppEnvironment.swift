@@ -107,7 +107,7 @@ final class AppEnvironment: ObservableObject {
         self.notificationClient = UserNotificationCenterClient()
         self.requestFactory = NotificationRequestFactory()
         self.reminderStateStore = UserDefaultsReminderStateStore()
-        self.hotdContentBuilder = HOTDContentBuilder()
+        self.hotdContentBuilder = HOTDContentBuilder(hymnService: hymnService)
         self.hotdPolicy = HOTDReminderPolicy(
             dateProvider: dateProvider,
             contentBuilder: hotdContentBuilder
@@ -121,6 +121,7 @@ final class AppEnvironment: ObservableObject {
             client: notificationClient,
             requestFactory: requestFactory,
             stateStore: reminderStateStore,
+            hotdContentBuilder: hotdContentBuilder,
             hotdPolicy: hotdPolicy,
             sabbathPolicy: sabbathPolicy,
             dateProvider: dateProvider

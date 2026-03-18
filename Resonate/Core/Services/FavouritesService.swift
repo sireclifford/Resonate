@@ -52,9 +52,8 @@ final class FavouritesService: ObservableObject {
         }
 
         save()
-        if settings.enableHaptics {
+        
             Haptics.light()
-        }
     }
     
     private func load() {

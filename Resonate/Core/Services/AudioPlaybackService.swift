@@ -62,9 +62,8 @@ final class AudioPlaybackService: NSObject, ObservableObject {
 
             analyticsService.hymnAudioPlayed(id: id)
 
-            if settings.enableHaptics {
                 Haptics.light()
-            }
+            
         } catch {
         }
     }

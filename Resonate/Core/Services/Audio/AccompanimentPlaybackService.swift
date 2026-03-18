@@ -222,9 +222,8 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
 
             analyticsService.hymnAudioPlayed(id: hymnID)
 
-            if settings.enableHaptics {
                 Haptics.light()
-            }
+            
         } catch {
             stopProgressTimer()
             currentTime = 0

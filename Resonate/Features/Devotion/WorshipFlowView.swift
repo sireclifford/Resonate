@@ -292,9 +292,8 @@ struct WorshipFlowView: View {
                 viewModel: viewModel,
                 onNext: {
                     environment.hymnOfTheDayEngagementService.markOpened(hymnID: viewModel.hymnID)
-                    if environment.settingsService.enableHaptics {
                         Haptics.light()
-                    }
+                    
                     next()
                 },
                 onOpenStory: {

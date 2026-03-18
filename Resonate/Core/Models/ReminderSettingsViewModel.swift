@@ -104,7 +104,6 @@ final class ReminderSettingsViewModel: ObservableObject {
 
             if status.isAllowedToSchedule {
                 hotdEnabled = true
-                await syncHOTD()
             } else {
                 hotdEnabled = false
             }
