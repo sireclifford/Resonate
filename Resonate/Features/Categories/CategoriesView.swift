@@ -9,6 +9,7 @@ enum BrowseSegment: String, CaseIterable, Identifiable {
 struct CategoriesView: View {
     let environment: AppEnvironment
     @StateObject private var viewModel: CategoryViewModel
+    @Environment(\.colorScheme) private var colorScheme
 
     @State private var segment: BrowseSegment = .themes
     @State private var isGrid = false
@@ -50,7 +51,7 @@ struct CategoriesView: View {
         GridItem(.adaptive(minimum: 160), spacing: 16, alignment: .top)
     ]
 
-    private var devotionalGroups: [DevotionalCategoryGroup] {
+    private var devotionalGroups: [DevotionalCategoryGroupSection] {
         let allGroups = DevotionalCategoryGroup.allCases.map { group in
             DevotionalCategoryGroupSection(
                 group: group,
@@ -165,6 +166,7 @@ struct CategoriesView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Find a Path for This Moment")
                 .font(.system(size: 31, weight: .bold, design: .serif))
+                .foregroundStyle(.primary)
 
             Text("Move through worship, comfort, prayer, hope, and sacred seasons with curated hymn pathways.")
                 .font(.subheadline)
@@ -177,10 +179,15 @@ struct CategoriesView: View {
             RoundedRectangle(cornerRadius: 28, style: .continuous)
                 .fill(
                     LinearGradient(
-                        colors: [
-                            Color(red: 0.95, green: 0.93, blue: 0.87),
-                            Color(red: 0.90, green: 0.87, blue: 0.80)
-                        ],
+                        colors: colorScheme == .dark
+                            ? [
+                                Color(red: 0.18, green: 0.18, blue: 0.20),
+                                Color(red: 0.13, green: 0.13, blue: 0.15)
+                            ]
+                            : [
+                                Color(red: 0.95, green: 0.93, blue: 0.87),
+                                Color(red: 0.90, green: 0.87, blue: 0.80)
+                            ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -188,7 +195,7 @@ struct CategoriesView: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Color.primary.opacity(0.06), lineWidth: 1)
+                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.06), lineWidth: 1)
         )
         .padding(.horizontal, 16)
     }
@@ -558,7 +565,7 @@ private enum DevotionalCategoryGroup: String, CaseIterable {
             return [
                 .adoration_and_praise, .opening_of_worship, .close_of_worship,
                 .glory_and_praise, .call_to_worship, .love_of_god,
-                .majesty_and_power_of_god, .faithfulness_of_god, .trinity
+                .majesty_and_power_of_god, .faithfulness_of_god, .sda_hymnal_trinity
             ]
         case .prayer:
             return [

@@ -5,6 +5,7 @@ struct CategoryDetailView: View {
     let hymns: [HymnIndex]
     let environment: AppEnvironment
     @ObservedObject var favouritesService: FavouritesService
+    @Environment(\.colorScheme) private var colorScheme
 
     private let columns = [
         GridItem(.flexible()),
@@ -76,12 +77,16 @@ struct CategoryDetailView: View {
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
-                    .background(Color.white.opacity(0.5))
+                    .background(
+                        Capsule()
+                            .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.5))
+                    )
                     .clipShape(Capsule())
             }
 
             Text(category.title)
                 .font(.system(size: 30, weight: .bold, design: .serif))
+                .foregroundStyle(.primary)
 
             Text(devotionalDescriptor(for: category))
                 .font(.subheadline)
@@ -94,10 +99,15 @@ struct CategoryDetailView: View {
             RoundedRectangle(cornerRadius: 28, style: .continuous)
                 .fill(
                     LinearGradient(
-                        colors: [
-                            Color(red: 0.95, green: 0.93, blue: 0.87),
-                            Color(red: 0.90, green: 0.87, blue: 0.80)
-                        ],
+                        colors: colorScheme == .dark
+                            ? [
+                                Color(red: 0.19, green: 0.18, blue: 0.20),
+                                Color(red: 0.12, green: 0.12, blue: 0.14)
+                            ]
+                            : [
+                                Color(red: 0.95, green: 0.93, blue: 0.87),
+                                Color(red: 0.90, green: 0.87, blue: 0.80)
+                            ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -105,8 +115,9 @@ struct CategoryDetailView: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Color.primary.opacity(0.06), lineWidth: 1)
+                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.12 : 0.06), lineWidth: 1)
         )
+        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.24 : 0.06), radius: 18, y: 10)
         .padding(.horizontal, 20)
     }
 
