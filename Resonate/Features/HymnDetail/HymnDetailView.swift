@@ -54,12 +54,11 @@ struct HymnDetailView: View {
                 }
             )
             
-            
             ScrollView {
                 VStack(alignment: .leading, spacing: 30) {
                     devotionalHeader
+                    accompanimentActionRow
                     lyricsCanvas
-
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 20)
@@ -77,10 +76,6 @@ struct HymnDetailView: View {
                 )
             )
             
-            // Accompaniment download/delete row
-            accompanimentActionRow
-            
-            // Bottom bar
             ReaderBottomBar(
                 audioPlaybackService: accompanimentPlaybackService,
                 hymnID: viewModel.hymn.id,
@@ -482,7 +477,5 @@ struct HymnDetailView: View {
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.06), lineWidth: 1)
         )
-        .padding(.horizontal, 20)
-        .padding(.bottom, 10)
     }
 }
