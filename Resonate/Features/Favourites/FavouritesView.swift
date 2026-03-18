@@ -116,8 +116,8 @@ struct FavouritesView: View {
                         .fill(
                             LinearGradient(
                                 colors: [
-                                    Color(red: 0.78, green: 0.61, blue: 0.34).opacity(0.24),
-                                    Color(red: 0.46, green: 0.31, blue: 0.18).opacity(0.12)
+                                    Color(red: 0.78, green: 0.61, blue: 0.34).opacity(colorScheme == .dark ? 0.28 : 0.24),
+                                    Color(red: 0.46, green: 0.31, blue: 0.18).opacity(colorScheme == .dark ? 0.18 : 0.12)
                                 ],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
@@ -152,7 +152,7 @@ struct FavouritesView: View {
                     LinearGradient(
                         colors: colorScheme == .dark
                             ? [
-                                Color(red: 0.16, green: 0.16, blue: 0.18),
+                                Color(red: 0.19, green: 0.18, blue: 0.20),
                                 Color(red: 0.12, green: 0.12, blue: 0.14)
                             ]
                             : [
@@ -166,8 +166,9 @@ struct FavouritesView: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.06), lineWidth: 1)
+                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.12 : 0.06), lineWidth: 1)
         )
+        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.26 : 0.06), radius: 18, y: 10)
     }
 
     private var lensPicker: some View {
@@ -254,9 +255,22 @@ struct FavouritesView: View {
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
 
-                    HStack(spacing: 10) {
-                        featurePill(text: "Hymn \(hymn.id)", icon: "music.note")
-                        featurePill(text: hymn.category.title, icon: devotionalLenses(for: hymn).first?.icon ?? "sparkles")
+                    ViewThatFits(in: .vertical) {
+                        HStack(spacing: 10) {
+                            featurePill(text: "Hymn \(hymn.id)", icon: "music.note")
+                            featurePill(
+                                text: hymn.category.title,
+                                icon: devotionalLenses(for: hymn).first?.icon ?? "sparkles"
+                            )
+                        }
+
+                        VStack(alignment: .leading, spacing: 10) {
+                            featurePill(text: "Hymn \(hymn.id)", icon: "music.note")
+                            featurePill(
+                                text: hymn.category.title,
+                                icon: devotionalLenses(for: hymn).first?.icon ?? "sparkles"
+                            )
+                        }
                     }
 
                     HStack(spacing: 12) {
@@ -392,18 +406,26 @@ struct FavouritesView: View {
         HStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.caption.weight(.bold))
-            VStack(alignment: .leading, spacing: 1) {
-                Text(title)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text(value)
-                    .font(.subheadline.weight(.semibold))
-            }
+                .foregroundStyle(colorScheme == .dark ? .white : .primary)
+
+            Text(title)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            Text(value)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(colorScheme == .dark ? .white : .primary)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
-        .background(Color.white.opacity(colorScheme == .dark ? 0.06 : 0.52))
-        .clipShape(Capsule())
+        .background(
+            Capsule()
+                .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.52))
+        )
+        .overlay(
+            Capsule()
+                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.05), lineWidth: 1)
+        )
     }
 
     private func sectionTitle(_ title: String) -> some View {
@@ -420,9 +442,10 @@ struct FavouritesView: View {
         .font(.caption.weight(.medium))
         .foregroundStyle(.secondary)
         .padding(.horizontal, 12)
-        .padding(.vertical, 8)
+        .padding(.vertical, 7)
         .background(Color.white.opacity(colorScheme == .dark ? 0.08 : 0.46))
         .clipShape(Capsule())
+        .fixedSize(horizontal: true, vertical: false)
     }
 
     private func actionCapsule(title: String, icon: String) -> some View {
