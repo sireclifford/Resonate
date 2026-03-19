@@ -520,8 +520,10 @@ struct SettingsView: View {
                 }
                 aboutGroup {
                     Button {
-                        let url = URL(string: "https://apps.apple.com")!
-                        let activity = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                        let activity = UIActivityViewController(
+                            activityItems: [AppLinks.shareMessage, AppLinks.shareURL],
+                            applicationActivities: nil
+                        )
                         if let scene = UIApplication.shared.connectedScenes
                             .compactMap({ $0 as? UIWindowScene })
                             .first(where: { $0.activationState == .foregroundActive }),
