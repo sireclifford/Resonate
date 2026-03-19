@@ -5,15 +5,55 @@ struct HymnListView: View {
     let title: String
     let hymns: [HymnIndex]
     let environment: AppEnvironment
+    @Environment(\.colorScheme) private var colorScheme
 
     private var subtitle: String {
         switch title {
         case "Most Loved Hymns":
-            return "Beloved hymns to return to again and again."
+            return "Beloved hymns the church returns to for worship, comfort, and steady devotion."
         case "Editor’s Picks", "Editor's Picks":
             return "A gentle place to begin your worship journey."
         default:
             return "A curated collection for worship and reflection."
+        }
+    }
+
+    private var eyebrow: String {
+        switch title {
+        case "Most Loved Hymns":
+            return "Community Treasure"
+        case "Editor’s Picks", "Editor's Picks":
+            return "Curated Collection"
+        default:
+            return "Collection"
+        }
+    }
+
+    private var heroIcon: String {
+        switch title {
+        case "Most Loved Hymns":
+            return "heart.fill"
+        case "Editor’s Picks", "Editor's Picks":
+            return "sparkles"
+        default:
+            return "music.note.list"
+        }
+    }
+
+    private var heroGradient: [Color] {
+        switch title {
+        case "Most Loved Hymns":
+            return colorScheme == .dark
+                ? [Color(red: 0.24, green: 0.18, blue: 0.19), Color(red: 0.15, green: 0.12, blue: 0.13)]
+                : [Color(red: 0.84, green: 0.72, blue: 0.48), Color(red: 0.65, green: 0.52, blue: 0.31)]
+        case "Editor’s Picks", "Editor's Picks":
+            return colorScheme == .dark
+                ? [Color(red: 0.19, green: 0.18, blue: 0.22), Color(red: 0.12, green: 0.12, blue: 0.15)]
+                : [Color(red: 0.91, green: 0.92, blue: 0.96), Color(red: 0.82, green: 0.84, blue: 0.91)]
+        default:
+            return colorScheme == .dark
+                ? [Color(red: 0.19, green: 0.18, blue: 0.20), Color(red: 0.12, green: 0.12, blue: 0.14)]
+                : [Color(red: 0.94, green: 0.93, blue: 0.89), Color(red: 0.88, green: 0.87, blue: 0.82)]
         }
     }
 
@@ -32,16 +72,9 @@ struct HymnListView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(title)
-                            .font(.system(size: 34, weight: .bold, design: .rounded))
-
-                        Text(subtitle)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 12)
+                    hero
+                        .padding(.horizontal, 20)
+                        .padding(.top, 12)
 
                     LazyVStack(spacing: 14) {
                         ForEach(hymns, id: \.id) { hymn in
@@ -63,6 +96,88 @@ struct HymnListView: View {
                     .font(.headline)
             }
         }
+    }
+
+    private var hero: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(eyebrow)
+                        .font(.caption.weight(.semibold))
+                        .textCase(.uppercase)
+                        .tracking(0.8)
+                        .foregroundStyle(colorScheme == .dark ? .white.opacity(0.72) : .secondary)
+
+                    Text(title)
+                        .font(.system(size: 34, weight: .bold, design: .serif))
+                        .foregroundStyle(colorScheme == .dark ? .white : .primary)
+
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(colorScheme == .dark ? .white.opacity(0.78) : .primary.opacity(0.82))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: 12)
+
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(colorScheme == .dark ? 0.08 : 0.26))
+                        .frame(width: 58, height: 58)
+
+                    Image(systemName: heroIcon)
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(colorScheme == .dark ? .white : .primary)
+                }
+            }
+
+            HStack(spacing: 10) {
+                heroPill(title: "Hymns", value: "\(hymns.count)", icon: "music.note")
+                if title == "Most Loved Hymns" {
+                    heroPill(title: "Tone", value: "Beloved", icon: "heart.fill")
+                }
+            }
+        }
+        .padding(22)
+        .background(
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: heroGradient,
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.06), lineWidth: 1)
+        )
+        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.24 : 0.08), radius: 18, y: 10)
+    }
+
+    private func heroPill(title: String, value: String, icon: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(colorScheme == .dark ? .white : .primary)
+            Text(title)
+                .font(.subheadline)
+                .foregroundStyle(colorScheme == .dark ? .white.opacity(0.72) : .secondary)
+            Text(value)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(colorScheme == .dark ? .white : .primary)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(
+            Capsule()
+                .fill(Color.white.opacity(colorScheme == .dark ? 0.08 : 0.24))
+        )
+        .overlay(
+            Capsule()
+                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.05), lineWidth: 1)
+        )
     }
 }
 
@@ -224,4 +339,3 @@ struct HymnRowCard: View {
         .buttonStyle(.plain)
     }
 }
-

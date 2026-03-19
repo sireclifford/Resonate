@@ -67,6 +67,28 @@ struct HomeView: View {
         settingsService.dailyReminderEnabled
     }
 
+    private var devotionalIntro: String {
+        switch greeting {
+        case "Good Morning":
+            return "Begin the day with worship, stillness, and a hymn that settles the heart."
+        case "Good Afternoon":
+            return "Return to a quiet place of worship in the middle of the day."
+        case "Good Evening":
+            return "Step into a gentler rhythm of reflection, gratitude, and song."
+        default:
+            return "Close the day with a hymn that keeps watch through the quiet hours."
+        }
+    }
+
+    private var homeFocusCategories: [HymnCategory] {
+        [
+            .meditation_and_prayer,
+            .hope_and_comfort,
+            .morning_worship,
+            .sabbath
+        ].filter { environment.categoryViewModel.categories.contains($0) }
+    }
+
     private var greetingIconName: String {
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
@@ -229,8 +251,7 @@ struct HomeView: View {
 
     private var content: some View {
         VStack(alignment: .leading, spacing: 32) {
-            GreetingRow
-            SearchSection
+            DevotionalWelcomeHero
             DailyHymnHero
             ContinueAndStartHereSection
             ThemesSection
@@ -239,34 +260,103 @@ struct HomeView: View {
         .animation(.easeInOut(duration: 0.6), value: viewModel.hymnOfTheDay?.id)
     }
 
-    private var GreetingRow: some View {
-        HStack(spacing: 10) {
-            GreetingIcon()
+    private var DevotionalWelcomeHero: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 10) {
+                        GreetingIcon()
+                        Text(greeting)
+                            .id(greetingTick)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
 
-            Text(greeting + ",")
-                .id(greetingTick)
-                .font(.title2.weight(.bold))
-            Text("Friend")
-                .font(.title2.weight(.bold))
-                .foregroundStyle(.primary)
-            Spacer()
-            Image(systemName: "bell.fill")
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(colorScheme == .dark ? Color.white : Color.primary.opacity(0.78))
-                .frame(width: 38, height: 38)
-                .background(
-                    Circle()
-                        .fill(colorScheme == .dark ? Color.white.opacity(0.10) : Color.primary.opacity(0.05))
-                )
-                .overlay(
-                    Circle().stroke(
-                        colorScheme == .dark ? Color.white.opacity(0.20) : Color.primary.opacity(0.08),
-                        lineWidth: 1
+                    Text("Begin Here")
+                        .font(.system(size: 34, weight: .bold, design: .serif))
+                        .foregroundStyle(.primary)
+
+                    Text(devotionalIntro)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: 12)
+
+                Image(systemName: isHymnOfDayNotificationsOn ? "bell.badge.fill" : "bell.slash.fill")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(colorScheme == .dark ? Color.white : Color.primary.opacity(0.78))
+                    .frame(width: 42, height: 42)
+                    .background(
+                        Circle()
+                            .fill(colorScheme == .dark ? Color.white.opacity(0.10) : Color.primary.opacity(0.05))
+                    )
+                    .overlay(
+                        Circle().stroke(
+                            colorScheme == .dark ? Color.white.opacity(0.20) : Color.primary.opacity(0.08),
+                            lineWidth: 1
+                        )
+                    )
+                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.22 : 0.08), radius: 8, y: 4)
+                    .accessibilityLabel(isHymnOfDayNotificationsOn ? "Notifications On" : "Notifications Off")
+            }
+
+            SearchSection
+
+            if !homeFocusCategories.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(homeFocusCategories, id: \.self) { category in
+                            NavigationLink(value: category) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: symbol(for: category))
+                                        .font(.caption.weight(.semibold))
+                                    Text(categoryChipTitle(for: category))
+                                        .font(.subheadline.weight(.medium))
+                                }
+                                .foregroundStyle(colorScheme == .dark ? .white : .primary)
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 10)
+                                .background(
+                                    Capsule()
+                                        .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.60))
+                                )
+                                .overlay(
+                                    Capsule()
+                                        .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.05), lineWidth: 1)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+            }
+        }
+        .padding(22)
+        .background(
+            RoundedRectangle(cornerRadius: 30, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: colorScheme == .dark
+                            ? [
+                                Color(red: 0.18, green: 0.18, blue: 0.20),
+                                Color(red: 0.12, green: 0.12, blue: 0.14)
+                            ]
+                            : [
+                                Color(red: 0.84, green: 0.72, blue: 0.48),
+                                Color(red: 0.67, green: 0.54, blue: 0.30)
+                            ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
                 )
-                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.22 : 0.08), radius: 8, y: 4)
-                .accessibilityLabel(isHymnOfDayNotificationsOn ? "Notifications On" : "Notifications Off")
-        }
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 30, style: .continuous)
+                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.06), lineWidth: 1)
+        )
+        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.24 : 0.06), radius: 18, y: 10)
     }
 
     private var SearchSection: some View {
@@ -289,162 +379,111 @@ struct HomeView: View {
         Group {
             if let hymn = viewModel.hymnOfTheDay {
                 VStack(alignment: .leading, spacing: 12) {
-                    ZStack(alignment: .bottomLeading) {
+                    ZStack {
                         let cardShape = RoundedRectangle(cornerRadius: 26, style: .continuous)
                         let palette = hotdGradientColors(for: hymn.id)
 
                         DailyHymnCardBackground(cardShape: cardShape, palette: palette, colorScheme: colorScheme)
 
-                        VStack {}
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 118)
-                            .background(
-                                LinearGradient(
-                                    colors: colorScheme == .dark
-                                        ? [Color.black.opacity(0.62), Color.black.opacity(0.08)]
-                                        : [Color.white.opacity(0.52), Color.white.opacity(0.06)],
-                                    startPoint: .bottom,
-                                    endPoint: .top
-                                )
-                            )
-                            .clipShape(cardShape)
+                        Circle()
+                            .fill(Color.white.opacity(colorScheme == .dark ? 0.10 : 0.16))
+                            .frame(width: 170, height: 170)
+                            .blur(radius: 2)
+                            .offset(x: 128, y: -92)
                             .allowsHitTesting(false)
 
-                        HStack(alignment: .center, spacing: 12) {
-                            // Left label: Hymn of the Day
-                            Text("Hymn of the Day")
-                                .font(.footnote.weight(.semibold))
-                                .textCase(.uppercase)
-                                .tracking(0.8)
-                                .foregroundStyle(colorScheme == .dark ? .white.opacity(0.82) : .secondary)
+                        Circle()
+                            .fill(Color.black.opacity(colorScheme == .dark ? 0.18 : 0.08))
+                            .frame(width: 220, height: 220)
+                            .blur(radius: 18)
+                            .offset(x: 110, y: 112)
+                            .allowsHitTesting(false)
 
-                            Spacer()
+                        VStack(alignment: .leading, spacing: 18) {
+                            HStack(alignment: .top, spacing: 12) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Hymn for Today")
+                                        .font(.caption.weight(.semibold))
+                                        .textCase(.uppercase)
+                                        .tracking(1.2)
+                                        .foregroundStyle(colorScheme == .dark ? .white.opacity(0.82) : .secondary)
 
-                            // Right pill: Today
-                            HStack(spacing: 6) {
-                                Image(systemName: "sparkles")
-                                    .font(.system(size: 12, weight: .semibold))
-                                Text("Today")
-                                    .font(.caption.weight(.semibold))
+                                    Text("#\(hymn.id)")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(colorScheme == .dark ? .white.opacity(0.72) : .secondary)
+                                }
+
+                                Spacer(minLength: 12)
+
+                                hotdMetaPill(text: "Today", systemImage: "sparkles")
                             }
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 7)
-                            .background(.thinMaterial)
-                            .overlay(
-                                Capsule().stroke(
-                                    colorScheme == .dark ? Color.white.opacity(0.16) : Color.black.opacity(0.08),
-                                    lineWidth: 1
-                                )
-                            )
-                            .clipShape(Capsule())
-                            .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.92) : .primary)
-                        }
-                        .padding(.horizontal, 14)
-                        .padding(.top, 14)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                        .allowsHitTesting(false)
 
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("#\(hymn.id) • \(hymn.title)")
-                                .font(.headline.weight(.semibold))
-                                .lineSpacing(1)
-                                .foregroundStyle(colorScheme == .dark ? .white.opacity(0.95) : .primary)
-                                .lineLimit(2)
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text(hymn.title)
+                                    .font(.system(size: 25, weight: .bold, design: .serif))
+                                    .foregroundStyle(colorScheme == .dark ? .white.opacity(0.96) : .primary)
+                                    .lineSpacing(1)
+                                    .lineLimit(3)
+                                    .fixedSize(horizontal: false, vertical: true)
 
-                            Text("A moment of quiet worship")
-                                .font(.system(size: 17, weight: .semibold, design: .serif))
-                                .foregroundStyle(colorScheme == .dark ? .white.opacity(0.90) : .primary.opacity(0.90))
-                                .lineSpacing(2)
-                                .lineLimit(2)
-                                .padding(.top, 1)
+                                Text(hotdInvitation(for: hymn))
+                                    .font(.system(size: 16, weight: .medium, design: .serif))
+                                    .foregroundStyle(colorScheme == .dark ? .white.opacity(0.90) : .primary.opacity(0.88))
+                                    .lineSpacing(2)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
 
-                            Group {
-                                if !isHymnOfDayNotificationsOn {
-                                    Button {
-                                        Task {
-                                            await environment.reminderSettingsViewModel.requestPermissionAndEnableHOTD()
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 8) {
+                                    hotdMetaPill(text: hymn.category.title, systemImage: "tag.fill")
+                                    hotdMetaPill(text: hotdMomentLabel(for: hymn), systemImage: "sparkles")
+                                }
+                                .padding(.vertical, 1)
+                            }
 
-                                            let formatter = DateFormatter()
-                                            formatter.timeStyle = .short
-                                            formatter.dateStyle = .none
-                                            let timeString = formatter.string(from: environment.reminderSettingsViewModel.hotdTime)
-
-                                            if environment.reminderSettingsViewModel.hotdEnabled {
-                                                environment.analyticsService.notificationPromptAccepted()
-                                                environment.analyticsService.reminderScheduled(timeBucket: timeString)
-                                                environment.toastCenter.show(
-                                                    .success(
-                                                        "Daily reminder enabled",
-                                                        subtitle: "You’ll be reminded at \(timeString)"
-                                                    ),
-                                                    position: .top
-                                                )
-                                            } else {
-                                                environment.analyticsService.notificationPromptDeclined()
-                                                environment.toastCenter.show(
-                                                    .error(
-                                                        "Notifications not enabled",
-                                                        subtitle: "Please allow notifications in your app settings to receive daily reminders."
-                                                    ),
-                                                    position: .bottom
-                                                )
-                                            }
-                                        }
-                                    } label: {
-                                        HStack(spacing: 8) {
-                                            Image(systemName: "paperplane.fill")
-                                                .font(.system(size: 14, weight: .semibold))
-                                            Text("Send Me This Daily")
-                                                .font(.subheadline.weight(.semibold))
-                                        }
-                                        .frame(maxWidth: .infinity)
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 12)
-                                        .background(.thinMaterial)
-                                        .overlay(
-                                            Capsule().stroke(
-                                                colorScheme == .dark ? Color.white.opacity(0.18) : Color.primary.opacity(0.10),
-                                                lineWidth: 1
-                                            )
-                                        )
-                                        .clipShape(Capsule())
-                                        .foregroundStyle(colorScheme == .dark ? Color.white : Color.primary)
-                                        .shadow(color: Color.black.opacity(0.18), radius: 10, y: 6)
-                                    }
-                                    .buttonStyle(.plain)
-                                } else {
+                            HStack(spacing: 10) {
+                                Button {
+                                    environment.analyticsService.log(
+                                        .tabSwitched,
+                                        parameters: [
+                                            .source: "home",
+                                            .destination: "worship_flow_from_hotd_begin_button"
+                                        ]
+                                    )
+                                    showWorshipFlow = true
+                                } label: {
                                     HStack(spacing: 8) {
-                                        Image(systemName: "bell.badge.waveform")
-                                            .font(.system(size: 14, weight: .semibold))
-                                        Text("Daily reminder is on")
+                                        Image(systemName: "play.fill")
+                                            .font(.system(size: 12, weight: .bold))
+                                        Text("Begin")
                                             .font(.subheadline.weight(.semibold))
                                     }
                                     .frame(maxWidth: .infinity)
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 12)
-                                    .background(.thinMaterial)
+                                    .background(
+                                        colorScheme == .dark
+                                            ? Color.white.opacity(0.16)
+                                            : Color.white.opacity(0.74)
+                                    )
                                     .overlay(
                                         Capsule().stroke(
-                                            colorScheme == .dark ? Color.white.opacity(0.16) : Color.primary.opacity(0.10),
+                                            colorScheme == .dark ? Color.white.opacity(0.14) : Color.black.opacity(0.06),
                                             lineWidth: 1
                                         )
                                     )
                                     .clipShape(Capsule())
-                                    .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.92) : Color.primary)
-                                    .shadow(color: Color.black.opacity(0.10), radius: 8, y: 5)
-                                    .accessibilityElement(children: .combine)
-                                    .accessibilityLabel("Daily hymn reminder is enabled")
+                                    .foregroundStyle(colorScheme == .dark ? Color.white : Color.black.opacity(0.84))
                                 }
+                                .buttonStyle(.plain)
+
+                                hotdReminderButton
                             }
-                            .padding(.top, 14)
                         }
-                        .frame(maxWidth: 315, alignment: .leading)
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 14)
-                        .padding(.bottom, 14)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+                        .padding(22)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     }
-                    .frame(maxWidth: .infinity, minHeight: 208)
+                    .frame(maxWidth: .infinity, minHeight: 252)
                     .contentShape(Rectangle())
                     .onTapGesture {
                         environment.analyticsService.log(
@@ -485,6 +524,140 @@ struct HomeView: View {
                 }
             }
         }
+    }
+
+    private var hotdReminderButton: some View {
+        Group {
+            if !isHymnOfDayNotificationsOn {
+                Button {
+                    Task {
+                        await environment.reminderSettingsViewModel.requestPermissionAndEnableHOTD()
+
+                        let formatter = DateFormatter()
+                        formatter.timeStyle = .short
+                        formatter.dateStyle = .none
+                        let timeString = formatter.string(from: environment.reminderSettingsViewModel.hotdTime)
+
+                        if environment.reminderSettingsViewModel.hotdEnabled {
+                            environment.analyticsService.notificationPromptAccepted()
+                            environment.analyticsService.reminderScheduled(timeBucket: timeString)
+                            environment.toastCenter.show(
+                                .success(
+                                    "Daily reminder enabled",
+                                    subtitle: "You’ll be reminded at \(timeString)"
+                                ),
+                                position: .top
+                            )
+                        } else {
+                            environment.analyticsService.notificationPromptDeclined()
+                            environment.toastCenter.show(
+                                .error(
+                                    "Notifications not enabled",
+                                    subtitle: "Please allow notifications in your app settings to receive daily reminders."
+                                ),
+                                position: .bottom
+                            )
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "bell.badge")
+                            .font(.system(size: 12, weight: .semibold))
+                        Text("Remind Me")
+                            .font(.subheadline.weight(.semibold))
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(.thinMaterial)
+                    .overlay(
+                        Capsule().stroke(
+                            colorScheme == .dark ? Color.white.opacity(0.18) : Color.primary.opacity(0.10),
+                            lineWidth: 1
+                        )
+                    )
+                    .clipShape(Capsule())
+                    .foregroundStyle(colorScheme == .dark ? Color.white : Color.primary)
+                }
+                .buttonStyle(.plain)
+            } else {
+                HStack(spacing: 8) {
+                    Image(systemName: "bell.badge.waveform")
+                        .font(.system(size: 12, weight: .semibold))
+                    Text("Reminder On")
+                        .font(.subheadline.weight(.semibold))
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(.thinMaterial)
+                .overlay(
+                    Capsule().stroke(
+                        colorScheme == .dark ? Color.white.opacity(0.16) : Color.primary.opacity(0.10),
+                        lineWidth: 1
+                    )
+                )
+                .clipShape(Capsule())
+                .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.92) : Color.primary)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Daily hymn reminder is enabled")
+            }
+        }
+    }
+
+    private func hotdInvitation(for hymn: HymnIndex) -> String {
+        let title = hymn.category.title.lowercased()
+        if title.contains("comfort") || title.contains("hope") {
+            return "For steadiness, courage, and quiet trust today."
+        } else if title.contains("prayer") || title.contains("meditation") {
+            return "For stillness, listening, and a more prayerful pace."
+        } else if title.contains("morning") {
+            return "For a brighter beginning and a gentler first offering."
+        } else if title.contains("evening") {
+            return "For gratitude, reflection, and rest at day’s end."
+        } else if title.contains("sabbath") {
+            return "For holy rest and a heart gathered back to worship."
+        } else if title.contains("praise") || title.contains("adoration") {
+            return "For reverence, joy, and a heart lifted in worship."
+        } else {
+            return "For worship, reflection, and a hymn worthy of returning to."
+        }
+    }
+
+    private func hotdMomentLabel(for hymn: HymnIndex) -> String {
+        let title = hymn.category.title.lowercased()
+        if title.contains("morning") {
+            return "Morning"
+        } else if title.contains("evening") {
+            return "Evening"
+        } else if title.contains("sabbath") {
+            return "Sabbath"
+        } else if title.contains("prayer") {
+            return "Prayer"
+        } else if title.contains("comfort") || title.contains("hope") {
+            return "Comfort"
+        } else {
+            return "Worship"
+        }
+    }
+
+    private func hotdMetaPill(text: String, systemImage: String) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: systemImage)
+                .font(.caption.weight(.semibold))
+            Text(text)
+                .font(.caption.weight(.semibold))
+                .lineLimit(1)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7)
+        .background(.thinMaterial)
+        .overlay(
+            Capsule().stroke(
+                colorScheme == .dark ? Color.white.opacity(0.14) : Color.black.opacity(0.06),
+                lineWidth: 1
+            )
+        )
+        .clipShape(Capsule())
+        .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.88) : .primary)
     }
 
     private struct DailyHymnCardBackground: View {
@@ -615,8 +788,14 @@ struct HomeView: View {
         VStack(alignment: .leading, spacing: 18) {
             if !viewModel.recentlyViewed.isEmpty {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Continue")
+                    sectionEyebrow("Return to These")
+
+                    Text("Continue Your Reflection")
                         .font(.title3.weight(.semibold))
+
+                    Text("Pick up where a hymn last met you.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 14) {
@@ -640,13 +819,16 @@ struct HomeView: View {
 
             VStack(alignment: .leading, spacing: 12) {
                 if isEarlyUser {
-                    Text("New Here?")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
+                    sectionEyebrow("New Here?")
                 }
 
-                Text("Start Here")
+                Text("For This Moment")
                     .font(.title3.weight(.semibold))
+
+                Text("A few gentle ways to begin worship, reflection, and discovery.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+
                 VStack(spacing: 12) {
                     Button {
                         environment.analyticsService.log(
@@ -659,8 +841,8 @@ struct HomeView: View {
                         onRoute(.mostLoved)
                     } label: {
                         startHereCard(
-                            title: "Most Loved Hymns",
-                            subtitle: "Beloved by the community",
+                            title: "Beloved Hymns",
+                            subtitle: "Return to songs cherished across the community",
                             systemImage: "heart.fill"
                         )
                     }
@@ -678,7 +860,7 @@ struct HomeView: View {
                     } label: {
                         startHereCard(
                             title: "Editor’s Picks",
-                            subtitle: "A gentle place to begin",
+                            subtitle: "A curated doorway into worship and reflection",
                             systemImage: "star.fill"
                         )
                     }
@@ -698,8 +880,8 @@ struct HomeView: View {
                             }
                         } label: {
                             startHereCard(
-                                title: "Featured Reflection Hymn",
-                                subtitle: "Today’s hymn for quiet worship",
+                                title: "Today’s Reflection Hymn",
+                                subtitle: "Stay close to the hymn shaping today’s devotion",
                                 systemImage: "sparkles"
                             )
                         }
@@ -713,8 +895,14 @@ struct HomeView: View {
     private var ThemesSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Text("Themes")
-                    .font(.title3.weight(.semibold))
+                VStack(alignment: .leading, spacing: 4) {
+                    sectionEyebrow("Paths")
+                    Text("For This Need")
+                        .font(.title3.weight(.semibold))
+                    Text("Move toward comfort, prayer, hope, and worship through curated themes.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
 
                 Spacer()
                 Button("See All") {
@@ -789,6 +977,24 @@ struct HomeView: View {
                 .padding(.horizontal, 4)
             }
             .scrollContentBackground(.hidden)
+        }
+    }
+
+    private func sectionEyebrow(_ text: String) -> some View {
+        Text(text)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .textCase(.uppercase)
+            .tracking(0.7)
+    }
+
+    private func categoryChipTitle(for category: HymnCategory) -> String {
+        switch category {
+        case .meditation_and_prayer: return "Prayer"
+        case .hope_and_comfort: return "Comfort"
+        case .morning_worship: return "Morning"
+        case .sabbath: return "Sabbath"
+        default: return category.title
         }
     }
 
@@ -1097,4 +1303,3 @@ struct HomeView: View {
         }
     }
 }
-
