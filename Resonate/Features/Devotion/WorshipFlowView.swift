@@ -207,6 +207,7 @@ struct WorshipFlowView: View {
             index += 1
         } else {
             // completed
+            Haptics.medium()
             analytics.log(
                 .worshipFlowCompleted,
                 parameters: [.hymnID: viewModel.index?.id ?? viewModel.hymnID])
@@ -292,8 +293,6 @@ struct WorshipFlowView: View {
                 viewModel: viewModel,
                 onNext: {
                     environment.hymnOfTheDayEngagementService.markOpened(hymnID: viewModel.hymnID)
-                        Haptics.light()
-                    
                     next()
                 },
                 onOpenStory: {
@@ -303,5 +302,3 @@ struct WorshipFlowView: View {
         }
     }
 }
-
-
