@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SettingsSectionCard<Content: View>: View {
+    @Environment(\.colorScheme) private var colorScheme
 
     let title: String
     let icon: String
@@ -24,21 +25,26 @@ struct SettingsSectionCard<Content: View>: View {
             HStack(spacing: 12) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(Color.accentColor.opacity(0.12))
+                        .fill(PremiumTheme.subtleFill(for: colorScheme))
                         .frame(width: 38, height: 38)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
+                        )
 
                     Image(systemName: icon)
-                        .foregroundStyle(Color.accentColor)
+                        .foregroundStyle(PremiumTheme.accent(for: colorScheme))
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(.headline)
+                        .font(PremiumTheme.scaledSystem(size: 24, weight: .semibold, design: .serif))
+                        .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
 
                     if let subtitle {
                         Text(subtitle)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(PremiumTheme.captionFont())
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                     }
                 }
             }
@@ -46,14 +52,6 @@ struct SettingsSectionCard<Content: View>: View {
             content
         }
         .padding(18)
-        .background(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(Color(.systemBackground))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(Color.primary.opacity(0.08), lineWidth: 1)
-        )
-        .shadow(color: Color.black.opacity(0.04), radius: 12, x: 0, y: 6)
+        .premiumPanel(colorScheme: colorScheme, cornerRadius: 24)
     }
 }

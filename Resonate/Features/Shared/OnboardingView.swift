@@ -139,7 +139,7 @@ struct OnboardingView: View {
                         .padding(10)
                 } else {
                     Image(systemName: "book.closed.fill")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(PremiumTheme.scaledSystem(size: 18, weight: .semibold))
                         .symbolRenderingMode(.hierarchical)
                 }
             }
@@ -156,11 +156,11 @@ struct OnboardingView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Resonate")
-                    .font(.josefin(size: 24, weight: .semibold))
+                    .font(PremiumTheme.scaledSystem(size: 24, weight: .semibold, design: .serif))
                     .foregroundStyle(primaryText)
 
                 Text("Daily worship, beautifully held")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(PremiumTheme.scaledSystem(size: 12, weight: .medium))
                     .foregroundStyle(secondaryText)
             }
 
@@ -176,7 +176,7 @@ struct OnboardingView: View {
                 Spacer()
 
                 Image(systemName: "sparkles")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold))
                     .foregroundStyle(accentTint)
                     .frame(width: 40, height: 40)
                     .background(
@@ -187,13 +187,13 @@ struct OnboardingView: View {
 
             VStack(spacing: 12) {
                 Text("A quieter, richer way to begin each day.")
-                    .font(.system(size: 38, weight: .bold, design: .serif))
+                    .font(PremiumTheme.scaledSystem(size: 38, weight: .bold, design: .serif))
                     .foregroundStyle(primaryText)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
 
                 Text("Open a hymn, follow its story, and return to a rhythm of worship that feels intentional instead of rushed.")
-                    .font(.system(size: 17, weight: .medium))
+                    .font(PremiumTheme.scaledSystem(size: 17, weight: .medium))
                     .foregroundStyle(secondaryText)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
@@ -218,22 +218,22 @@ struct OnboardingView: View {
         VStack(spacing: 12) {
             HStack(spacing: 8) {
                 Image(systemName: "quote.opening")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(PremiumTheme.scaledSystem(size: 12, weight: .bold))
                     .foregroundStyle(accentTint)
 
                 Text("Today's atmosphere")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(PremiumTheme.scaledSystem(size: 13, weight: .semibold))
                     .foregroundStyle(secondaryText)
             }
 
             Text("“Every hymn carries a memory, a prayer, and a place to begin again.”")
-                .font(.system(size: 24, weight: .semibold, design: .serif))
+                .font(PremiumTheme.scaledSystem(size: 24, weight: .semibold, design: .serif))
                 .foregroundStyle(primaryText)
                 .multilineTextAlignment(.center)
                 .lineSpacing(6)
 
             Text("Built for quiet mornings, small pauses, and the moments that deserve more than noise.")
-                .font(.system(size: 14, weight: .medium))
+                .font(PremiumTheme.scaledSystem(size: 14, weight: .medium))
                 .foregroundStyle(secondaryText)
                 .multilineTextAlignment(.center)
                 .lineSpacing(3)
@@ -277,12 +277,12 @@ struct OnboardingView: View {
         } label: {
             HStack {
                 Text("Begin Worship")
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(PremiumTheme.scaledSystem(size: 17, weight: .semibold))
 
                 Spacer()
 
                 Image(systemName: "arrow.right")
-                    .font(.system(size: 15, weight: .bold))
+                    .font(PremiumTheme.scaledSystem(size: 15, weight: .bold))
             }
             .foregroundStyle(.white)
             .padding(.horizontal, 22)
@@ -317,24 +317,24 @@ struct OnboardingView: View {
                         .frame(width: 38, height: 38)
 
                     Image(systemName: "bell.badge")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold))
                         .foregroundStyle(accentTint)
                 }
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Set a daily hymn reminder")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold))
                         .foregroundStyle(primaryText)
 
                     Text("Choose a time and return with intention.")
-                        .font(.system(size: 13, weight: .medium))
+                        .font(PremiumTheme.scaledSystem(size: 13, weight: .medium))
                         .foregroundStyle(secondaryText)
                 }
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(PremiumTheme.scaledSystem(size: 14, weight: .semibold))
                     .foregroundStyle(secondaryText)
             }
             .padding(.horizontal, 18)
@@ -356,7 +356,7 @@ struct OnboardingView: View {
             onDismiss()
         } label: {
             Text("Not now")
-                .font(.system(size: 13, weight: .semibold))
+                .font(PremiumTheme.scaledSystem(size: 13, weight: .semibold))
                 .foregroundStyle(secondaryText)
                 .padding(.top, 4)
         }
@@ -365,10 +365,10 @@ struct OnboardingView: View {
     private func featureChip(icon: String, text: String) -> some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
-                .font(.system(size: 12, weight: .bold))
+                .font(PremiumTheme.scaledSystem(size: 12, weight: .bold))
 
             Text(text)
-                .font(.system(size: 12, weight: .semibold))
+                .font(PremiumTheme.scaledSystem(size: 12, weight: .semibold))
                 .lineLimit(1)
         }
         .foregroundStyle(primaryText.opacity(0.92))
@@ -387,7 +387,7 @@ struct OnboardingView: View {
 
     private func label(text: String) -> some View {
         Text(text)
-            .font(.system(size: 11, weight: .bold))
+            .font(PremiumTheme.scaledSystem(size: 11, weight: .bold))
             .tracking(1.6)
             .foregroundStyle(accentTint)
             .padding(.horizontal, 12)

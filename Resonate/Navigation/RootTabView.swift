@@ -2,8 +2,8 @@ import SwiftUI
 
 struct RootTabView: View {
     @EnvironmentObject private var environment: AppEnvironment
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var settings: AppSettingsService
-    @ObservedObject private var audioService: AccompanimentPlaybackService
     
     @State private var showOnboarding = false
     
@@ -13,43 +13,33 @@ struct RootTabView: View {
         _settings = ObservedObject(
             wrappedValue: environment.settingsService
         )
-        
-        _audioService = ObservedObject(
-            wrappedValue: environment.accompanimentPlaybackService
-        )
     }
     
     var body: some View {
-        ZStack(alignment: .bottom) {
+        ZStack {
+            PremiumScreenBackground()
+
             TabView(selection: $selectedTab) {
                 HomeStack(environment: environment, selectedTab: $selectedTab)
                     .tag(0)
-                    .tabItem { Label("Home", systemImage: "music.note.house.fill") }
+                    .tabItem { Label("Home", systemImage: "house.fill") }
                 
                 FavouritesStack(environment: environment)
                     .tag(1)
-                    .tabItem { Label("Favourites", systemImage: "heart") }
+                    .tabItem { Label("Library", systemImage: "books.vertical.fill") }
                 
                 CategoriesStack(environment: environment)
                     .tag(2)
-                    .tabItem { Label("Categories", systemImage: "square.grid.2x2") }
+                    .tabItem { Label("Categories", systemImage: "square.stack.fill") }
                 
                 SettingsStack(environment: environment)
                     .tag(3)
-                    .tabItem { Label("Settings", systemImage: "gear") }
+                    .tabItem { Label("Settings", systemImage: "gearshape.fill") }
             }
             .preferredColorScheme(settings.theme.colorScheme)
-            .padding(.top, audioService.currentHymnID != nil ? 72 : 0)
-            .overlay(alignment: .top) {
-                if audioService.currentHymnID != nil {
-                    MiniPlayerView(environment: environment)
-                        .environmentObject(environment)
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                }
-            }
-            .animation(.spring(response: 0.4, dampingFraction: 0.9), value: audioService.currentHymnID)
+            .toolbarBackground(PremiumTheme.tabBarFill(for: settings.theme.colorScheme ?? colorScheme), for: .tabBar)
+            .toolbarBackground(.visible, for: .tabBar)
+            .toolbarColorScheme(settings.theme.colorScheme, for: .tabBar)
             .onChange(of: selectedTab) { oldValue, newValue in
                 let tabName: String
                 switch newValue {

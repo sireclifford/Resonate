@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct WorshipFlowContainer: View {
     let hymnID: Int
@@ -58,6 +59,23 @@ struct WorshipFlowView: View {
     @State private var isClosing: Bool = false
     @State private var showStory: Bool = false
     @State private var hasStartedAudio = false
+
+    private var currentSlideTitle: String {
+        switch slides[index] {
+        case .intro:
+            return "Prepare"
+        case .verse(let verseIndex):
+            return "Verse \(verseIndex + 1)"
+        case .chorus:
+            return "Chorus"
+        case .highlight:
+            return "Hold This Line"
+        case .reflection:
+            return "Reflection"
+        case .complete:
+            return "Completion"
+        }
+    }
     
     private var canControlAudio: Bool {
         audioService.currentHymnID == viewModel.hymnID && (
@@ -69,14 +87,8 @@ struct WorshipFlowView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: [.black, .black.opacity(0.92), .gray.opacity(0.2)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            DevotionBackdrop()
             
-            // Content
             TabView(selection: $index) {
                 ForEach(slides.indices, id: \.self) { i in
                     slideView(for: slides[i])
@@ -113,45 +125,74 @@ struct WorshipFlowView: View {
                 logSlideView()
             }
             
-            // Top chrome (progress + close)
             VStack(spacing: 10) {
-                StoryProgressBar(total: slides.count, current: index)
-                
                 HStack {
                     Button {
                         closeFlow()
                     } label: {
                         Image(systemName: "xmark")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .padding(10)
-                            .background(.white.opacity(0.12))
+                            .font(DevotionTheme.actionFont())
+                            .foregroundStyle(DevotionTheme.primaryText)
+                            .frame(width: 40, height: 40)
+                            .background(DevotionTheme.chromeFill)
+                            .overlay(
+                                Circle()
+                                    .stroke(DevotionTheme.chromeBorder, lineWidth: 1)
+                            )
                             .clipShape(Circle())
                     }
                     
                     Spacer()
+
+                    VStack(spacing: 4) {
+                        Text(currentSlideTitle)
+                            .font(DevotionTheme.eyebrowFont())
+                            .textCase(.uppercase)
+                            .tracking(1.2)
+                            .foregroundStyle(DevotionTheme.secondaryText)
+
+                        Text(viewModel.title)
+                            .font(DevotionTheme.chromeTitleFont())
+                            .foregroundStyle(DevotionTheme.primaryText)
+                            .lineLimit(1)
+                    }
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 10)
+                    .background(DevotionTheme.chromeFill)
+                    .overlay(
+                        Capsule()
+                            .stroke(DevotionTheme.chromeBorder, lineWidth: 1)
+                    )
+                    .clipShape(Capsule())
                     
+                    Spacer()
+
                     Button {
                         toggleMute()
                     } label: {
                         Image(systemName: isMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .padding(10)
-                            .background(.white.opacity(0.12))
+                            .font(DevotionTheme.actionFont())
+                            .foregroundStyle(DevotionTheme.primaryText)
+                            .frame(width: 40, height: 40)
+                            .background(DevotionTheme.chromeFill)
+                            .overlay(
+                                Circle()
+                                    .stroke(DevotionTheme.chromeBorder, lineWidth: 1)
+                            )
                             .clipShape(Circle())
                             .opacity(canControlAudio ? 1.0 : 0.45)
                     }
                     .disabled(!canControlAudio)
                 }
                 .padding(.horizontal, 16)
+
+                StoryProgressBar(total: slides.count, current: index)
                 
                 Spacer()
             }
             .padding(.top, 10)
             .zIndex(2)
             
-            // Narrow edge tap zones so center content remains fully interactive.
             HStack {
                 Color.clear
                     .frame(width: 72)
@@ -300,5 +341,140 @@ struct WorshipFlowView: View {
                 }
             )
         }
+    }
+}
+
+enum DevotionTheme {
+    static let primaryText = Color.white
+    static let secondaryText = Color.white.opacity(0.72)
+    static let mutedText = Color.white.opacity(0.58)
+    static let accent = Color(red: 0.86, green: 0.70, blue: 0.45)
+    static let panelTop = Color(red: 0.16, green: 0.14, blue: 0.15).opacity(0.94)
+    static let panelBottom = Color(red: 0.10, green: 0.09, blue: 0.10).opacity(0.96)
+    static let panelBorder = Color.white.opacity(0.10)
+    static let chromeFill = Color.white.opacity(0.08)
+    static let chromeBorder = Color.white.opacity(0.12)
+
+    private static func scaledFont(
+        size: CGFloat,
+        weight: UIFont.Weight = .regular,
+        design: UIFontDescriptor.SystemDesign = .default,
+        relativeTo textStyle: UIFont.TextStyle
+    ) -> Font {
+        let baseDescriptor = UIFont.systemFont(ofSize: size, weight: weight).fontDescriptor
+        let descriptor = baseDescriptor.withDesign(design) ?? baseDescriptor
+        let baseFont = UIFont(descriptor: descriptor, size: size)
+        let scaledFont = UIFontMetrics(forTextStyle: textStyle).scaledFont(for: baseFont)
+        return Font(scaledFont)
+    }
+
+    static func eyebrowFont() -> Font {
+        scaledFont(size: 12, weight: .bold, relativeTo: .caption2)
+    }
+
+    static func badgeFont() -> Font {
+        scaledFont(size: 13, weight: .semibold, relativeTo: .caption1)
+    }
+
+    static func chromeTitleFont() -> Font {
+        scaledFont(size: 16, weight: .semibold, design: .serif, relativeTo: .headline)
+    }
+
+    static func panelTitleFont() -> Font {
+        scaledFont(size: 30, weight: .semibold, design: .serif, relativeTo: .title1)
+    }
+
+    static func heroTitleFont() -> Font {
+        scaledFont(size: 42, weight: .bold, design: .serif, relativeTo: .largeTitle)
+    }
+
+    static func highlightFont() -> Font {
+        scaledFont(size: 44, weight: .bold, design: .serif, relativeTo: .largeTitle)
+    }
+
+    static func verseFont() -> Font {
+        scaledFont(size: 29, weight: .semibold, design: .serif, relativeTo: .title1)
+    }
+
+    static func chorusFont() -> Font {
+        scaledFont(size: 31, weight: .bold, design: .serif, relativeTo: .title1)
+    }
+
+    static func bodyFont() -> Font {
+        scaledFont(size: 18, weight: .medium, relativeTo: .body)
+    }
+
+    static func secondarySerifFont() -> Font {
+        scaledFont(size: 16, weight: .semibold, design: .serif, relativeTo: .headline)
+    }
+
+    static func prayerFont() -> Font {
+        scaledFont(size: 20, weight: .regular, design: .serif, relativeTo: .title3)
+    }
+
+    static func actionFont() -> Font {
+        scaledFont(size: 16, weight: .bold, relativeTo: .headline)
+    }
+}
+
+struct DevotionBackdrop: View {
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                colors: [
+                    Color(red: 0.06, green: 0.05, blue: 0.06),
+                    Color(red: 0.11, green: 0.09, blue: 0.10),
+                    Color(red: 0.08, green: 0.07, blue: 0.08)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+
+            RadialGradient(
+                colors: [DevotionTheme.accent.opacity(0.20), .clear],
+                center: .topTrailing,
+                startRadius: 20,
+                endRadius: 260
+            )
+            .ignoresSafeArea()
+
+            RadialGradient(
+                colors: [Color.white.opacity(0.08), .clear],
+                center: .bottomLeading,
+                startRadius: 20,
+                endRadius: 320
+            )
+            .ignoresSafeArea()
+        }
+    }
+}
+
+struct DevotionPanelModifier: ViewModifier {
+    let cornerRadius: CGFloat
+
+    func body(content: Content) -> some View {
+        content
+            .background(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [DevotionTheme.panelTop, DevotionTheme.panelBottom],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .stroke(DevotionTheme.panelBorder, lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.28), radius: 24, y: 14)
+    }
+}
+
+extension View {
+    func devotionPanel(cornerRadius: CGFloat = 30) -> some View {
+        modifier(DevotionPanelModifier(cornerRadius: cornerRadius))
     }
 }

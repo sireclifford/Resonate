@@ -146,7 +146,7 @@ struct HomeView: View {
                 .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.25 : 0.10), radius: 6, y: 3)
 
             Image(systemName: greetingIconName)
-                .font(.system(size: 18, weight: .semibold))
+                .font(PremiumTheme.scaledSystem(size: 18, weight: .semibold))
                 .foregroundStyle(greetingGradient)
                 .symbolRenderingMode(.palette)
                 .scaleEffect(greetingIconScale)
@@ -179,32 +179,37 @@ struct HomeView: View {
     }
     
     var body: some View {
-        ScrollView {
-            #if DEBUG
-            Button {
-//                let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
-//                viewModel.refreshHymnOfTheDay(on: tomorrow)
-                
-                let calendar = Calendar.current
-                let today = Date()
+        ZStack {
+            PremiumScreenBackground()
 
-                for offset in 0...5 {
-                    if let date = calendar.date(byAdding: .day, value: offset, to: today) {
-                        viewModel.refreshHymnOfTheDay(on: date)
-                        print("DAY +\(offset):", viewModel.hymnOfTheDay?.title ?? "nil")
+            ScrollView {
+                #if DEBUG
+                Button {
+    //                let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
+    //                viewModel.refreshHymnOfTheDay(on: tomorrow)
+
+                    let calendar = Calendar.current
+                    let today = Date()
+
+                    for offset in 0...5 {
+                        if let date = calendar.date(byAdding: .day, value: offset, to: today) {
+                            viewModel.refreshHymnOfTheDay(on: date)
+                            print("DAY +\(offset):", viewModel.hymnOfTheDay?.title ?? "nil")
+                        }
                     }
+                } label: {
+                    Text("Refresh hymn of the day")
                 }
-            } label: {
-                Text("Refresh hymn of the day")
+                .buttonStyle(.plain)
+
+                #endif
+
+
+                content
             }
-            .buttonStyle(.plain)
-            
-            #endif
-            
-            
-            content
+            .scrollIndicators(.hidden)
         }
-        .scrollIndicators(.hidden)
+        .miniPlayerInset(using: environment)
         .sheet(isPresented: $isSearchPresented) {
             NavigationStack {
                 SearchResultsView(
@@ -253,10 +258,13 @@ struct HomeView: View {
         VStack(alignment: .leading, spacing: 32) {
             DevotionalWelcomeHero
             DailyHymnHero
-            ContinueAndStartHereSection
+            ContinueSection
+            StartHereSection
             ThemesSection
         }
-        .padding()
+        .padding(.horizontal, 20)
+        .padding(.top, 10)
+        .padding(.bottom, 28)
         .animation(.easeInOut(duration: 0.6), value: viewModel.hymnOfTheDay?.id)
     }
 
@@ -268,33 +276,33 @@ struct HomeView: View {
                         GreetingIcon()
                         Text(greeting)
                             .id(greetingTick)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.secondary)
+                            .font(PremiumTheme.captionFont())
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                     }
 
                     Text("Begin Here")
-                        .font(.system(size: 34, weight: .bold, design: .serif))
-                        .foregroundStyle(.primary)
+                        .font(PremiumTheme.titleFont(size: 34))
+                        .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
 
                     Text(devotionalIntro)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(PremiumTheme.bodyFont())
+                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
                 Spacer(minLength: 12)
 
                 Image(systemName: isHymnOfDayNotificationsOn ? "bell.badge.fill" : "bell.slash.fill")
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(PremiumTheme.scaledSystem(size: 17, weight: .semibold))
                     .foregroundStyle(colorScheme == .dark ? Color.white : Color.primary.opacity(0.78))
                     .frame(width: 42, height: 42)
                     .background(
                         Circle()
-                            .fill(colorScheme == .dark ? Color.white.opacity(0.10) : Color.primary.opacity(0.05))
+                            .fill(colorScheme == .dark ? Color.white.opacity(0.10) : PremiumTheme.subtleFill(for: colorScheme))
                     )
                     .overlay(
                         Circle().stroke(
-                            colorScheme == .dark ? Color.white.opacity(0.20) : Color.primary.opacity(0.08),
+                            colorScheme == .dark ? Color.white.opacity(0.20) : PremiumTheme.border(for: colorScheme),
                             lineWidth: 1
                         )
                     )
@@ -315,16 +323,16 @@ struct HomeView: View {
                                     Text(categoryChipTitle(for: category))
                                         .font(.subheadline.weight(.medium))
                                 }
-                                .foregroundStyle(colorScheme == .dark ? .white : .primary)
+                                .foregroundStyle(colorScheme == .dark ? .white : PremiumTheme.primaryText(for: colorScheme))
                                 .padding(.horizontal, 14)
                                 .padding(.vertical, 10)
                                 .background(
                                     Capsule()
-                                        .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.60))
+                                        .fill(colorScheme == .dark ? Color.white.opacity(0.08) : PremiumTheme.subtleFill(for: colorScheme))
                                 )
                                 .overlay(
                                     Capsule()
-                                        .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.05), lineWidth: 1)
+                                        .stroke(colorScheme == .dark ? Color.white.opacity(0.10) : PremiumTheme.border(for: colorScheme), lineWidth: 1)
                                 )
                             }
                             .buttonStyle(.plain)
@@ -340,12 +348,12 @@ struct HomeView: View {
                     LinearGradient(
                         colors: colorScheme == .dark
                             ? [
-                                Color(red: 0.18, green: 0.18, blue: 0.20),
-                                Color(red: 0.12, green: 0.12, blue: 0.14)
+                                Color.white.opacity(0.09),
+                                Color.white.opacity(0.04)
                             ]
                             : [
-                                Color(red: 0.84, green: 0.72, blue: 0.48),
-                                Color(red: 0.67, green: 0.54, blue: 0.30)
+                                Color(red: 0.99, green: 0.97, blue: 0.93),
+                                Color(red: 0.94, green: 0.88, blue: 0.79)
                             ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -354,9 +362,9 @@ struct HomeView: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 30, style: .continuous)
-                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.06), lineWidth: 1)
+                .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
         )
-        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.24 : 0.06), radius: 18, y: 10)
+        .shadow(color: PremiumTheme.shadow(for: colorScheme), radius: 18, y: 10)
     }
 
     private var SearchSection: some View {
@@ -403,14 +411,14 @@ struct HomeView: View {
                             HStack(alignment: .top, spacing: 12) {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text("Hymn for Today")
-                                        .font(.caption.weight(.semibold))
+                                        .font(PremiumTheme.eyebrowFont())
                                         .textCase(.uppercase)
                                         .tracking(1.2)
-                                        .foregroundStyle(colorScheme == .dark ? .white.opacity(0.82) : .secondary)
+                                        .foregroundStyle(colorScheme == .dark ? .white.opacity(0.82) : PremiumTheme.secondaryText(for: colorScheme))
 
                                     Text("#\(hymn.id)")
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(colorScheme == .dark ? .white.opacity(0.72) : .secondary)
+                                        .font(PremiumTheme.captionFont())
+                                        .foregroundStyle(colorScheme == .dark ? .white.opacity(0.72) : PremiumTheme.secondaryText(for: colorScheme))
                                 }
 
                                 Spacer(minLength: 12)
@@ -420,15 +428,15 @@ struct HomeView: View {
 
                             VStack(alignment: .leading, spacing: 10) {
                                 Text(hymn.title)
-                                    .font(.system(size: 25, weight: .bold, design: .serif))
-                                    .foregroundStyle(colorScheme == .dark ? .white.opacity(0.96) : .primary)
-                                    .lineSpacing(1)
+                                    .font(PremiumTheme.titleFont(size: 25))
+                                    .foregroundStyle(colorScheme == .dark ? .white.opacity(0.96) : PremiumTheme.primaryText(for: colorScheme))
+                                    .lineSpacing(2)
                                     .lineLimit(3)
                                     .fixedSize(horizontal: false, vertical: true)
 
                                 Text(hotdInvitation(for: hymn))
-                                    .font(.system(size: 16, weight: .medium, design: .serif))
-                                    .foregroundStyle(colorScheme == .dark ? .white.opacity(0.90) : .primary.opacity(0.88))
+                                    .font(PremiumTheme.bodyFont())
+                                    .foregroundStyle(colorScheme == .dark ? .white.opacity(0.88) : PremiumTheme.primaryText(for: colorScheme).opacity(0.84))
                                     .lineSpacing(2)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
@@ -454,7 +462,7 @@ struct HomeView: View {
                                 } label: {
                                     HStack(spacing: 8) {
                                         Image(systemName: "play.fill")
-                                            .font(.system(size: 12, weight: .bold))
+                                            .font(PremiumTheme.scaledSystem(size: 12, weight: .bold))
                                         Text("Begin")
                                             .font(.subheadline.weight(.semibold))
                                     }
@@ -562,7 +570,7 @@ struct HomeView: View {
                 } label: {
                     HStack(spacing: 8) {
                         Image(systemName: "bell.badge")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(PremiumTheme.scaledSystem(size: 12, weight: .semibold))
                         Text("Remind Me")
                             .font(.subheadline.weight(.semibold))
                     }
@@ -582,7 +590,7 @@ struct HomeView: View {
             } else {
                 HStack(spacing: 8) {
                     Image(systemName: "bell.badge.waveform")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(PremiumTheme.scaledSystem(size: 12, weight: .semibold))
                     Text("Reminder On")
                         .font(.subheadline.weight(.semibold))
                 }
@@ -668,8 +676,8 @@ struct HomeView: View {
         private var baseFillGradient: some ShapeStyle {
             LinearGradient(
                 colors: [
-                    palette.0.opacity(colorScheme == .dark ? 0.90 : 0.55),
-                    palette.1.opacity(colorScheme == .dark ? 0.75 : 0.35)
+                    palette.0.opacity(colorScheme == .dark ? 0.90 : 0.38),
+                    palette.1.opacity(colorScheme == .dark ? 0.75 : 0.24)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -679,7 +687,7 @@ struct HomeView: View {
         private var topHighlightFill: some ShapeStyle {
             RadialGradient(
                 colors: [
-                    Color.white.opacity(colorScheme == .dark ? 0.10 : 0.16),
+                    Color.white.opacity(colorScheme == .dark ? 0.10 : 0.12),
                     Color.clear
                 ],
                 center: .topLeading,
@@ -691,12 +699,23 @@ struct HomeView: View {
         private var bottomVignetteFill: some ShapeStyle {
             RadialGradient(
                 colors: [
-                    Color.black.opacity(colorScheme == .dark ? 0.55 : 0.20),
+                    Color.black.opacity(colorScheme == .dark ? 0.55 : 0.10),
                     Color.clear
                 ],
                 center: .bottom,
                 startRadius: 40,
                 endRadius: 320
+            )
+        }
+
+        private var warmLightWash: some ShapeStyle {
+            LinearGradient(
+                colors: [
+                    Color(red: 0.93, green: 0.89, blue: 0.82).opacity(0.92),
+                    Color(red: 0.84, green: 0.79, blue: 0.72).opacity(0.88)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
             )
         }
 
@@ -731,6 +750,19 @@ struct HomeView: View {
                 .fill(topHighlightFill)
                 .blendMode(.overlay)
                 .allowsHitTesting(false)
+
+            let lightWash: AnyView = {
+                if colorScheme == .light {
+                    return AnyView(
+                        cardShape
+                            .fill(warmLightWash)
+                            .blendMode(.softLight)
+                            .allowsHitTesting(false)
+                    )
+                } else {
+                    return AnyView(EmptyView())
+                }
+            }()
 
             let bottomVignette = cardShape
                 .fill(bottomVignetteFill)
@@ -776,6 +808,7 @@ struct HomeView: View {
 
             return base
                 .overlay(topHighlight)
+                .overlay(lightWash)
                 .overlay(bottomVignette)
                 .overlay(darkGlass)
                 .overlay(primaryStroke)
@@ -784,18 +817,19 @@ struct HomeView: View {
         }
     }
 
-    private var ContinueAndStartHereSection: some View {
-        VStack(alignment: .leading, spacing: 18) {
+    private var ContinueSection: some View {
+        Group {
             if !viewModel.recentlyViewed.isEmpty {
                 VStack(alignment: .leading, spacing: 12) {
                     sectionEyebrow("Return to These")
 
                     Text("Continue Your Reflection")
-                        .font(.title3.weight(.semibold))
+                        .font(PremiumTheme.sectionTitleFont())
+                        .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
 
                     Text("Pick up where a hymn last met you.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(PremiumTheme.bodyFont())
+                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 14) {
@@ -816,7 +850,11 @@ struct HomeView: View {
                     }
                 }
             }
+        }
+    }
 
+    private var StartHereSection: some View {
+        VStack(alignment: .leading, spacing: 18) {
             VStack(alignment: .leading, spacing: 12) {
                 if isEarlyUser {
                     sectionEyebrow("New Here?")
@@ -841,8 +879,8 @@ struct HomeView: View {
                         onRoute(.mostLoved)
                     } label: {
                         startHereCard(
-                            title: "Beloved Hymns",
-                            subtitle: "Return to songs cherished across the community",
+                            title: "Beloved",
+                            subtitle: "Return to favorites",
                             systemImage: "heart.fill"
                         )
                     }
@@ -859,8 +897,8 @@ struct HomeView: View {
                         onRoute(.editorsPicks)
                     } label: {
                         startHereCard(
-                            title: "Editor’s Picks",
-                            subtitle: "A curated doorway into worship and reflection",
+                            title: "Editor’s",
+                            subtitle: "Curated to begin",
                             systemImage: "star.fill"
                         )
                     }
@@ -880,8 +918,8 @@ struct HomeView: View {
                             }
                         } label: {
                             startHereCard(
-                                title: "Today’s Reflection Hymn",
-                                subtitle: "Stay close to the hymn shaping today’s devotion",
+                                title: "Today’s Hymn",
+                                subtitle: "Stay close today",
                                 systemImage: "sparkles"
                             )
                         }
@@ -890,6 +928,8 @@ struct HomeView: View {
                 }
             }
         }
+        .padding(22)
+        .premiumPanel(colorScheme: colorScheme, cornerRadius: 30)
     }
 
     private var ThemesSection: some View {
@@ -898,10 +938,11 @@ struct HomeView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     sectionEyebrow("Paths")
                     Text("For This Need")
-                        .font(.title3.weight(.semibold))
+                        .font(PremiumTheme.sectionTitleFont())
+                        .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                     Text("Move toward comfort, prayer, hope, and worship through curated themes.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(PremiumTheme.scaledSystem(size: 16, weight: .medium))
+                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                 }
 
                 Spacer()
@@ -915,47 +956,80 @@ struct HomeView: View {
                     )
                     onSeeAll()
                 }
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(PremiumTheme.captionFont())
+                .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
             }
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
                     ForEach(environment.categoryViewModel.categories.prefix(6)) { category in
                         NavigationLink(value: category) {
-                            VStack {
+                            VStack(alignment: .leading, spacing: 14) {
+                                HStack(alignment: .top) {
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        Text("\(environment.categoryViewModel.hymns(for: category).count) hymns")
+                                            .font(PremiumTheme.captionFont())
+                                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+
+                                        Text(pathDescriptor(for: category))
+                                            .font(PremiumTheme.scaledSystem(size: 11, weight: .bold))
+                                            .textCase(.uppercase)
+                                            .tracking(1.0)
+                                            .foregroundStyle(pathAccent(for: category))
+                                    }
+
+                                    Spacer(minLength: 8)
+
+                                    Image(systemName: symbol(for: category))
+                                        .font(PremiumTheme.scaledSystem(size: 18, weight: .semibold))
+                                        .foregroundStyle(pathAccent(for: category))
+                                        .frame(width: 36, height: 36)
+                                        .background(
+                                            Circle()
+                                                .fill(pathAccent(for: category).opacity(colorScheme == .dark ? 0.18 : 0.12))
+                                        )
+                                }
+
                                 Spacer()
-                                HStack {
+
+                                VStack(alignment: .leading, spacing: 8) {
                                     Text(category.title)
-                                        .font(.headline.weight(.semibold))
-                                        .foregroundStyle(.white)
+                                        .font(PremiumTheme.scaledSystem(size: 20, weight: .semibold, design: .serif))
+                                        .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                                         .multilineTextAlignment(.leading)
                                         .lineLimit(2)
 
-                                    Spacer()
+                                    Text(pathSubtitle(for: category))
+                                        .font(PremiumTheme.scaledSystem(size: 14, weight: .medium))
+                                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                                        .lineLimit(2)
                                 }
                             }
-                            .padding(24)
-                            .frame(width: 190, height: 150, alignment: .topLeading)
-                            .background(
-                                RoundedRectangle(cornerRadius: 24)
-                                    .fill(
-                                        LinearGradient(
-                                            colors: gradientColors(for: category),
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        )
-                                    )
-                            )
+                            .padding(20)
+                            .frame(width: 196, height: 168, alignment: .topLeading)
+                            .background {
+                                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                                    .fill(PremiumTheme.panelFill(for: colorScheme))
+                                    .overlay(alignment: .topTrailing) {
+                                        Circle()
+                                            .fill(pathAccent(for: category).opacity(colorScheme == .dark ? 0.14 : 0.10))
+                                            .frame(width: 130, height: 130)
+                                            .blur(radius: 10)
+                                            .offset(x: 36, y: -34)
+                                    }
+                                    .overlay(alignment: .bottomTrailing) {
+                                        Image(systemName: symbol(for: category))
+                                            .font(PremiumTheme.scaledSystem(size: 82, weight: .regular))
+                                            .foregroundStyle(pathAccent(for: category).opacity(colorScheme == .dark ? 0.10 : 0.08))
+                                            .offset(x: 16, y: 8)
+                                    }
+                            }
                             .overlay(
-                                ZStack {
-                                    Image(systemName: symbol(for: category))
-                                        .font(.system(size: 90, weight: .regular))
-                                        .foregroundStyle(Color.white.opacity(colorScheme == .dark ? 0.06 : 0.12))
-                                }
+                                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                                    .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
                             )
                             .shadow(
-                                color: Color.black.opacity(0.12),
+                                color: PremiumTheme.shadow(for: colorScheme).opacity(0.72),
                                 radius: 14,
                                 y: 8
                             )
@@ -982,10 +1056,10 @@ struct HomeView: View {
 
     private func sectionEyebrow(_ text: String) -> some View {
         Text(text)
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(.secondary)
+            .font(PremiumTheme.eyebrowFont())
+            .foregroundStyle(PremiumTheme.accent(for: colorScheme))
             .textCase(.uppercase)
-            .tracking(0.7)
+            .tracking(1.3)
     }
 
     private func categoryChipTitle(for category: HymnCategory) -> String {
@@ -998,12 +1072,61 @@ struct HomeView: View {
         }
     }
 
+    private func pathDescriptor(for category: HymnCategory) -> String {
+        switch category {
+        case .meditation_and_prayer: return "Stillness"
+        case .hope_and_comfort: return "Comfort"
+        case .morning_worship: return "Morning"
+        case .sabbath: return "Sacred Rest"
+        case .adoration_and_praise, .opening_of_worship, .close_of_worship, .glory_and_praise:
+            return "Worship"
+        default:
+            return "Curated Path"
+        }
+    }
+
+    private func pathSubtitle(for category: HymnCategory) -> String {
+        switch category {
+        case .meditation_and_prayer:
+            return "Move gently into prayer and reflection."
+        case .hope_and_comfort:
+            return "Songs for steadiness, peace, and reassurance."
+        case .morning_worship:
+            return "Begin the day with clarity and praise."
+        case .sabbath:
+            return "Enter holy rest with hymns shaped for Sabbath."
+        case .adoration_and_praise, .opening_of_worship, .close_of_worship, .glory_and_praise:
+            return "Gather the heart toward praise and reverence."
+        default:
+            return "Explore a thoughtful route through worship."
+        }
+    }
+
+    private func pathAccent(for category: HymnCategory) -> Color {
+        let base = abs(category.id.hashValue)
+        if colorScheme == .dark {
+            switch base % 4 {
+            case 0: return Color(red: 0.74, green: 0.66, blue: 0.45)
+            case 1: return Color(red: 0.56, green: 0.69, blue: 0.60)
+            case 2: return Color(red: 0.67, green: 0.63, blue: 0.78)
+            default: return Color(red: 0.60, green: 0.68, blue: 0.80)
+            }
+        }
+
+        switch base % 4 {
+        case 0: return Color(red: 0.69, green: 0.53, blue: 0.31)
+        case 1: return Color(red: 0.41, green: 0.56, blue: 0.45)
+        case 2: return Color(red: 0.57, green: 0.48, blue: 0.67)
+        default: return Color(red: 0.49, green: 0.58, blue: 0.72)
+        }
+    }
+
     // Light Mode: premium solid card. Dark Mode: glass card.
     private func startHereCard(title: String, subtitle: String, systemImage: String) -> some View {
         Group {
             if colorScheme == .dark {
                 // Glass card style (dark mode)
-                HStack(spacing: 14) {
+                HStack(alignment: .top, spacing: 14) {
                     ZStack {
                         Circle()
                             .fill(.thinMaterial)
@@ -1023,31 +1146,30 @@ struct HomeView: View {
                             )
 
                         Image(systemName: systemImage)
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(PremiumTheme.scaledSystem(size: 17, weight: .semibold))
                             .symbolRenderingMode(.hierarchical)
-                            .foregroundStyle(Color.accentColor)
+                            .foregroundStyle(PremiumTheme.accent(for: colorScheme))
                     }
                     .frame(width: 42, height: 42)
                     .shadow(color: Color.black.opacity(0.10), radius: 10, y: 6)
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text(title)
-                            .font(.headline.weight(.semibold))
-                            .foregroundStyle(.primary)
+                            .font(PremiumTheme.scaledSystem(size: 18, weight: .semibold, design: .serif))
+                            .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                             .lineLimit(1)
 
                         Text(subtitle)
-                            .font(.subheadline)
-                            .opacity(0.75)
-                            .foregroundStyle(.secondary)
+                            .font(PremiumTheme.scaledSystem(size: 14, weight: .medium))
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                             .lineLimit(1)
                     }
 
                     Spacer(minLength: 8)
 
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.secondary)
+                        .font(PremiumTheme.scaledSystem(size: 13, weight: .semibold))
+                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                         .padding(10)
                         .background(
                             Circle()
@@ -1093,14 +1215,14 @@ struct HomeView: View {
                 )
             } else {
                 // Premium solid card style (light mode)
-                HStack(spacing: 14) {
+                HStack(alignment: .top, spacing: 14) {
                     ZStack {
                         Circle()
                             .fill(
                                 LinearGradient(
                                     colors: [
-                                        Color.accentColor.opacity(0.95),
-                                        Color.accentColor.opacity(0.55)
+                                        PremiumTheme.accent(for: colorScheme).opacity(0.95),
+                                        PremiumTheme.accent(for: colorScheme).opacity(0.60)
                                     ],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
@@ -1108,7 +1230,7 @@ struct HomeView: View {
                             )
 
                         Image(systemName: systemImage)
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(PremiumTheme.scaledSystem(size: 17, weight: .semibold))
                             .foregroundStyle(.white)
                     }
                     .frame(width: 42, height: 42)
@@ -1116,41 +1238,55 @@ struct HomeView: View {
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text(title)
-                            .font(.headline.weight(.semibold))
-                            .foregroundStyle(.primary)
+                            .font(PremiumTheme.scaledSystem(size: 18, weight: .semibold, design: .serif))
+                            .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                             .lineLimit(1)
 
                         Text(subtitle)
-                            .font(.subheadline)
-                            .opacity(0.75)
-                            .foregroundStyle(.secondary)
+                            .font(PremiumTheme.scaledSystem(size: 14, weight: .medium))
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                             .lineLimit(1)
                     }
 
                     Spacer(minLength: 8)
 
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.secondary)
+                        .font(PremiumTheme.scaledSystem(size: 13, weight: .semibold))
+                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                         .padding(10)
                         .background(
                             Circle()
-                                .fill(Color.primary.opacity(0.05))
+                                .fill(PremiumTheme.subtleFill(for: colorScheme))
+                        )
+                        .overlay(
+                            Circle()
+                                .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
                         )
                 }
                 .padding(.vertical, 14)
                 .padding(.horizontal, 14)
                 .background(
                     RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(.secondarySystemBackground))
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color(red: 0.99, green: 0.97, blue: 0.94),
+                                    Color(red: 0.95, green: 0.90, blue: 0.82)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.primary.opacity(0.08))
+                        .stroke(PremiumTheme.border(for: colorScheme))
                 )
-                .shadow(color: Color.black.opacity(0.06), radius: 10, y: 6)
+                .shadow(color: PremiumTheme.shadow(for: colorScheme), radius: 12, y: 7)
             }
         }
+        .padding(22)
+        .premiumPanel(colorScheme: colorScheme, cornerRadius: 30)
     }
 
     private func prefetchHomeAudioAvailability() {
@@ -1263,24 +1399,6 @@ struct HomeView: View {
             return (Color(red: 0.55, green: 0.38, blue: 0.70), Color(red: 0.28, green: 0.18, blue: 0.42)) // purple
         default:
             return (Color(red: 0.28, green: 0.30, blue: 0.34), Color(red: 0.14, green: 0.15, blue: 0.18)) // graphite
-        }
-    }
-
-    private func gradientColors(for category: HymnCategory) -> [Color] {
-        let base = abs(category.id.hashValue)
-        switch base % 4 {
-        case 0:
-            return [Color(red: 0.32, green: 0.36, blue: 0.62),
-                    Color(red: 0.20, green: 0.24, blue: 0.45)]
-        case 1:
-            return [Color(red: 0.20, green: 0.48, blue: 0.35),
-                    Color(red: 0.12, green: 0.32, blue: 0.24)]
-        case 2:
-            return [Color(red: 0.55, green: 0.42, blue: 0.22),
-                    Color(red: 0.35, green: 0.26, blue: 0.12)]
-        default:
-            return [Color(red: 0.40, green: 0.30, blue: 0.50),
-                    Color(red: 0.24, green: 0.18, blue: 0.32)]
         }
     }
 

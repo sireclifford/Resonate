@@ -16,7 +16,7 @@ struct ReaderBottomBar: View {
         HStack {
             Button(action: onPrevious) {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 18, weight: .medium))
+                    .font(PremiumTheme.scaledSystem(size: 18, weight: .medium))
                     .frame(width: 40, height: 40)
                     .background(controlBackground)
                     .clipShape(Circle())
@@ -33,7 +33,7 @@ struct ReaderBottomBar: View {
             case .downloaded:
                 Button(action: onPlayToggle) {
                     Image(systemName: audioPlaybackService.isPlaying ? "pause.fill" : "play.fill")
-                        .font(.system(size: 28, weight: .semibold))
+                        .font(PremiumTheme.scaledSystem(size: 28, weight: .semibold))
                         .frame(width: 58, height: 58)
                         .background(controlBackground)
                         .clipShape(Circle())
@@ -45,15 +45,15 @@ struct ReaderBottomBar: View {
 
             case .remoteOnly, .unavailable, .failed(_):
                 Image(systemName: "speaker.slash")
-                    .font(.system(size: 22, weight: .medium))
-                    .foregroundColor(.secondary)
+                    .font(PremiumTheme.scaledSystem(size: 22, weight: .medium))
+                    .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
             }
 
             Spacer()
 
             Button(action: onNext) {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 18, weight: .medium))
+                    .font(PremiumTheme.scaledSystem(size: 18, weight: .medium))
                     .frame(width: 40, height: 40)
                     .background(controlBackground)
                     .clipShape(Circle())
@@ -64,11 +64,16 @@ struct ReaderBottomBar: View {
         .padding(.horizontal, 28)
         .padding(.vertical, 16)
         .background(
-            colorScheme == .dark ? Color.black.opacity(0.22) : Color.white.opacity(0.90)
+            PremiumTheme.panelFill(for: colorScheme).opacity(colorScheme == .dark ? 0.88 : 0.94)
         )
+        .overlay(alignment: .top) {
+            Rectangle()
+                .fill(PremiumTheme.border(for: colorScheme))
+                .frame(height: 1)
+        }
     }
 
     private var controlBackground: some ShapeStyle {
-        colorScheme == .dark ? AnyShapeStyle(Color.white.opacity(0.08)) : AnyShapeStyle(Color(.secondarySystemBackground))
+        AnyShapeStyle(PremiumTheme.subtleFill(for: colorScheme))
     }
 }

@@ -1,54 +1,54 @@
 import SwiftUI
 
 struct LegalDocumentView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let title: String
     let lastUpdated: String
     let sections: [LegalSection]
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(title)
-                        .font(.title2.weight(.semibold))
+        ZStack {
+            PremiumScreenBackground()
 
-                    Text("Last updated \(lastUpdated)")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-
-                    Text(introText)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                ForEach(sections) { section in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
                     VStack(alignment: .leading, spacing: 10) {
-                        Text(section.title)
-                            .font(.headline)
+                        Text(title)
+                            .font(PremiumTheme.titleFont(size: 30))
+                            .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
 
-                        Text(section.body)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                        Text("Last updated \(lastUpdated)")
+                            .font(PremiumTheme.captionFont())
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+
+                        Text(introText)
+                            .font(PremiumTheme.bodyFont())
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                             .fixedSize(horizontal: false, vertical: true)
                     }
-                    .padding(18)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
-                    )
+                    .padding(22)
+                    .premiumPanel(colorScheme: colorScheme, cornerRadius: 24)
+
+                    ForEach(sections) { section in
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text(section.title)
+                                .font(PremiumTheme.scaledSystem(size: 24, weight: .semibold, design: .serif))
+                                .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
+
+                            Text(section.body)
+                                .font(PremiumTheme.bodyFont())
+                                .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .padding(20)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .premiumPanel(colorScheme: colorScheme, cornerRadius: 20)
+                    }
                 }
+                .padding()
             }
-            .padding()
         }
-        .background(
-            LinearGradient(
-                colors: [Color(.systemBackground), Color(.secondarySystemBackground)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-        )
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
     }

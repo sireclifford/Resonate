@@ -8,17 +8,17 @@ struct CategoryCardView: View {
         ZStack {
             // Soft background icon
             Image(systemName: "sparkles")
-                .font(.system(size: 60, weight: .regular))
+                .font(PremiumTheme.scaledSystem(size: 60, weight: .regular))
                 .foregroundColor(Color("BrandAccent").opacity(0.06))
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
                 .padding(12)
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(category.title)
-                    .font(.josefin(size: 17, weight: .semibold))
+                    .font(PremiumTheme.scaledSystem(size: 18, weight: .semibold, design: .serif))
 
                 Text("\(count) Hymns")
-                    .font(.josefin(size: 12))
+                    .font(PremiumTheme.captionFont())
                     .foregroundColor(.secondary.opacity(0.75))
             }
             .padding(20)

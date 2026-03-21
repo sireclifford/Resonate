@@ -19,15 +19,15 @@ struct ReaderTopBar: View {
         HStack(spacing: 16) {
             HStack(spacing: 8) {
                 Text("Hymn \(index.id)")
-                    .font(.josefin(size: 14, weight: .semibold))
-                    .foregroundStyle(.primary)
+                    .font(PremiumTheme.scaledSystem(size: 14, weight: .semibold, design: .serif))
+                    .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
 
                 Text("•")
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme).opacity(0.55))
 
                 Text("\(verseCount) verses")
-                    .font(.josefin(size: 14))
-                    .foregroundStyle(.secondary)
+                    .font(PremiumTheme.scaledSystem(size: 14, weight: .medium))
+                    .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
             }
 
             Spacer()
@@ -40,7 +40,7 @@ struct ReaderTopBar: View {
 //                }
 //            } label: {
 //                Text("\(selectedLanguage.displayName) ▼")
-//                    .font(.josefin(size: 14))
+//                    .font(PremiumTheme.scaledSystem(size: 14, weight: .medium))
 //            }
 
             Menu {
@@ -60,35 +60,35 @@ struct ReaderTopBar: View {
             } label: {
                 HStack(spacing: 6) {
                     Text("Aa")
-                        .font(.system(size: 15, weight: .semibold, design: .serif))
+                        .font(PremiumTheme.scaledSystem(size: 15, weight: .semibold, design: .serif))
 
                     Text(fontSize.label.replacingOccurrences(of: "px", with: " pt"))
-                        .font(.josefin(size: 13))
-                        .foregroundStyle(.secondary)
+                        .font(PremiumTheme.captionFont())
+                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
                 .background(
                     Capsule()
-                        .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color(.secondarySystemBackground))
+                        .fill(PremiumTheme.subtleFill(for: colorScheme))
                 )
                 .overlay(
                     Capsule()
-                        .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.05), lineWidth: 1)
+                        .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
                 )
             }
 
             Button(action: onFavouriteToggle) {
                 Image(systemName: isFavourite ? "heart.fill" : "heart")
-                    .foregroundStyle(isFavourite ? .red : .primary)
+                    .foregroundStyle(isFavourite ? .red : PremiumTheme.primaryText(for: colorScheme))
                     .frame(width: 34, height: 34)
                     .background(
                         Circle()
-                            .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color(.secondarySystemBackground))
+                            .fill(PremiumTheme.subtleFill(for: colorScheme))
                     )
                     .overlay(
                         Circle()
-                            .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.05), lineWidth: 1)
+                            .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
                     )
             }
             .buttonStyle(.plain)
@@ -96,7 +96,12 @@ struct ReaderTopBar: View {
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
         .background(
-            colorScheme == .dark ? Color.black.opacity(0.16) : Color.white.opacity(0.82)
+            PremiumTheme.panelFill(for: colorScheme).opacity(colorScheme == .dark ? 0.84 : 0.92)
         )
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(PremiumTheme.border(for: colorScheme))
+                .frame(height: 1)
+        }
     }
 }

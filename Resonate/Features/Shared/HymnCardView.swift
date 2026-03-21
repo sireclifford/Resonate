@@ -1,80 +1,61 @@
 import SwiftUI
 
 struct HymnCardView: View {
-
     let index: HymnIndex
     let isFavourite: Bool
     let onFavouriteToggle: () -> Void
     @EnvironmentObject var environment: AppEnvironment
+    @Environment(\.colorScheme) private var colorScheme
     @State private var showAudioBadge = false
 
     var body: some View {
         let audioState = environment.accompanimentPlaybackService.fileState(for: index.id)
-        VStack(alignment: .leading, spacing: 8) {
-            ZStack {
-                HymnCardBackground(seed: index.id)
-                    .frame(height: 180)
+        ZStack {
+            HymnCardBackground(seed: index.id)
 
-                if let audioBadge = audioBadge(for: audioState) {
-                    VStack {
-                        HStack {
-                            HStack(spacing: 6) {
-                                Image(systemName: audioBadge.systemImage)
-                                    .font(.caption.weight(.semibold))
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(alignment: .top) {
+                    audioBadgeView(for: audioState)
 
-                                Text(audioBadge.title)
-                                    .font(.caption2.weight(.semibold))
-                            }
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(.ultraThinMaterial)
-                            .clipShape(Capsule())
-                            .scaleEffect(showAudioBadge ? 1 : 0.85)
-                            .opacity(showAudioBadge ? 1 : 0)
-                            .animation(.easeOut(duration: 0.3), value: showAudioBadge)
+                    Spacer(minLength: 10)
 
-                            Spacer()
-                        }
-                        Spacer()
-                    }
-                    .padding(8)
-                    .onAppear {
-                        showAudioBadge = true
-                    }
+                    favouriteButton
                 }
+                .frame(height: 38, alignment: .top)
 
-                VStack {
-                    HStack {
-                        Spacer()
-                        Button(action: onFavouriteToggle) {
-                            Image(systemName: isFavourite ? "heart.fill" : "heart")
-                                .foregroundColor(isFavourite ? .red : .white)
-                                .padding(8)
-                        }
+                Spacer(minLength: 12)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 8) {
+                        Text("Hymn \(index.id)")
+                            .font(PremiumTheme.captionFont())
+                            .foregroundStyle(PremiumTheme.accent(for: colorScheme))
+
+                        Text("•")
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme).opacity(0.5))
+
+                        Text("\(index.verseCount) verses")
+                            .font(PremiumTheme.metadataFont())
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                     }
-                    Spacer()
+
+                    Text(index.title)
+                        .font(PremiumTheme.cardTitleFont())
+                        .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text(index.category.title)
+                        .font(PremiumTheme.metadataFont())
+                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                        .lineLimit(1)
                 }
-                .padding(8)
             }
-
-            Text("Hymn \(index.id) • \(index.verseCount) Verses")
-                .font(.josefin(size: 13))
-                .frame(height: 18, alignment: .topLeading)
-
-            Text(index.title)
-                .font(.josefin(size: 15, weight: .medium))
-                .lineLimit(2)
-                .multilineTextAlignment(.leading)
-                .frame(height: 22, alignment: .topLeading)
-
-            Text(index.category.title)
-                .font(.josefin(size: 11))
-                .lineLimit(1)
-                .frame(height: 14, alignment: .topLeading)
+            .padding(14)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 260, alignment: .top)
+        .frame(height: 244, alignment: .top)
     }
 
     private struct AudioBadge {
@@ -95,5 +76,56 @@ struct HymnCardView: View {
         case .failed:
             return nil
         }
+    }
+
+    @ViewBuilder
+    private func audioBadgeView(for state: AccompanimentPlaybackService.FileState) -> some View {
+        if let audioBadge = audioBadge(for: state) {
+            HStack(spacing: 6) {
+                Image(systemName: audioBadge.systemImage)
+                    .font(PremiumTheme.badgeFont())
+
+                Text(audioBadge.title)
+                    .font(PremiumTheme.badgeFont())
+            }
+            .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(
+                Capsule()
+                    .fill(PremiumTheme.searchFieldFill(for: colorScheme))
+            )
+            .overlay(
+                Capsule()
+                    .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
+            )
+            .clipShape(Capsule())
+            .scaleEffect(showAudioBadge ? 1 : 0.85)
+            .opacity(showAudioBadge ? 1 : 0)
+            .animation(.easeOut(duration: 0.3), value: showAudioBadge)
+            .onAppear {
+                showAudioBadge = true
+            }
+        } else {
+            Color.clear
+                .frame(width: 92, height: 30)
+        }
+    }
+
+    private var favouriteButton: some View {
+        Button(action: onFavouriteToggle) {
+            Image(systemName: isFavourite ? "heart.fill" : "heart")
+                .foregroundStyle(isFavourite ? .red : PremiumTheme.primaryText(for: colorScheme))
+                .frame(width: 34, height: 34)
+                .background(
+                    Circle()
+                        .fill(PremiumTheme.searchFieldFill(for: colorScheme))
+                )
+                .overlay(
+                    Circle()
+                        .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
     }
 }

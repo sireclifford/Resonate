@@ -8,7 +8,7 @@ struct ToastView: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: iconName)
-                .font(.system(size: 16, weight: .semibold))
+                .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold))
                 .foregroundStyle(iconColor)
                 .padding(.top, toast.subtitle == nil ? 1 : 2)
 

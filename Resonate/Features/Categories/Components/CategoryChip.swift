@@ -8,10 +8,10 @@ struct CategoryChip: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
-                .font(.josefin(size: 14, weight: .medium))
+                .font(PremiumTheme.scaledSystem(size: 14, weight: .semibold, design: .serif))
 
             Text("\(count) hymns")
-                .font(.josefin(size: 11))
+                .font(PremiumTheme.captionFont())
                 .foregroundColor(.secondary)
         }
         .padding(.horizontal, 12)

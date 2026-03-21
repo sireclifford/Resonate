@@ -1,91 +1,110 @@
 import SwiftUI
 
 struct MiniPlayerView: View {
-    
     @EnvironmentObject private var environment: AppEnvironment
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var audio: AccompanimentPlaybackService
-    
+
     init(environment: AppEnvironment) {
         _audio = ObservedObject(wrappedValue: environment.accompanimentPlaybackService)
     }
-    
+
     var body: some View {
         if let id = audio.currentHymnID,
            let hymn = environment.hymnService.index.first(where: { $0.id == id }) {
-            
-            HStack(spacing: 14) {
-                
-                // Album style thumbnail
-                ZStack {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(.ultraThinMaterial)
-                        .frame(width: 48, height: 48)
-                    
+            VStack(spacing: 8) {
+                HStack(spacing: 12) {
                     Text("\(hymn.id)")
-                        .font(.headline)
-                }
-                
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(hymn.title)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(PremiumTheme.scaledSystem(size: 15, weight: .bold, design: .rounded))
+                        .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                         .lineLimit(1)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(
+                            Capsule()
+                                .fill(PremiumTheme.searchFieldFill(for: colorScheme))
+                        )
+                        .overlay(
+                            Capsule()
+                                .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
+                        )
 
-                    Text(hymn.category.title)
-                        .font(.system(size: 12))
-                        .foregroundStyle(.secondary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(hymn.title)
+                            .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold, design: .serif))
+                            .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
+                            .lineLimit(1)
 
-                    ProgressView(value: audio.progress)
-                        .progressViewStyle(.linear)
-                        .tint(.primary.opacity(0.85))
-                        .frame(maxWidth: .infinity)
-                        .scaleEffect(x: 1, y: 0.6, anchor: .center)
-                }
-                
-                Spacer()
-                
-                Button {
+                        Text(hymn.category.title)
+                            .font(PremiumTheme.metadataFont())
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                            .lineLimit(1)
+                    }
+
+                    Spacer(minLength: 8)
+
+                    Button {
                         Haptics.light()
-                    
-                    audio.togglePlayback(for: id)
-                    if let id = environment.accompanimentPlaybackService.currentHymnID {
-                        environment.analyticsService.miniPlayerToggled(id: id)
-                    }
-                } label: {
-                    Group {
-                        if audio.isLoading {
-                            ProgressView()
-                                .scaleEffect(0.7)
-                        } else {
-                            Image(systemName: audio.isPlaying ? "pause.fill" : "play.fill")
-                                .font(.system(size: 18, weight: .bold))
+                        audio.togglePlayback(for: id)
+                        if let id = environment.accompanimentPlaybackService.currentHymnID {
+                            environment.analyticsService.miniPlayerToggled(id: id)
                         }
+                    } label: {
+                        Group {
+                            if audio.isLoading {
+                                ProgressView()
+                                    .scaleEffect(0.72)
+                            } else {
+                                Image(systemName: audio.isPlaying ? "pause.fill" : "play.fill")
+                                    .font(PremiumTheme.scaledIconFont(size: 17, weight: .bold, relativeTo: .headline))
+                            }
+                        }
+                        .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
+                        .frame(width: 38, height: 38)
+                        .background(
+                            Circle()
+                                .fill(PremiumTheme.searchFieldFill(for: colorScheme))
+                        )
+                        .overlay(
+                            Circle()
+                                .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
+                        )
                     }
-                    .frame(width: 40, height: 40)
+                    .buttonStyle(.plain)
+
+                    Button {
+                        withAnimation(.spring(response: 0.32, dampingFraction: 0.88)) {
+                            audio.stop()
+                        }
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(PremiumTheme.scaledIconFont(size: 13, weight: .semibold, relativeTo: .caption1))
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                            .frame(width: 30, height: 30)
+                    }
+                    .buttonStyle(.plain)
                 }
-                
-                Button {
-                    audio.stop()
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 14))
-                        .frame(width: 30, height: 30)
-                }
-                .foregroundStyle(.secondary)
+
+                ProgressView(value: audio.progress)
+                    .progressViewStyle(.linear)
+                    .tint(PremiumTheme.accent(for: colorScheme))
+                    .frame(maxWidth: .infinity)
+                    .scaleEffect(x: 1, y: 0.55, anchor: .center)
             }
-            .padding(.horizontal)
-            .padding(.vertical, 10)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
             .background(
-                RoundedRectangle(cornerRadius: 22)
-                    .fill(.ultraThinMaterial)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 22)
-                            .stroke(Color.white.opacity(0.25), lineWidth: 0.5)
-                    )
-                    .opacity(0.9)
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .fill(PremiumTheme.tabBarFill(for: colorScheme).opacity(colorScheme == .dark ? 0.92 : 0.96))
             )
-            .shadow(color: .black.opacity(0.15), radius: 20, y: 8)
-            //            .padding(.horizontal)
+            .overlay(
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
+            )
+            .shadow(color: PremiumTheme.shadow(for: colorScheme).opacity(0.32), radius: 20, y: 10)
+            .padding(.horizontal, 16)
             .padding(.bottom, 6)
+            .transition(.move(edge: .top).combined(with: .opacity))
             .onTapGesture {
                 guard environment.activeHymnDetailID != id else { return }
                 environment.analyticsService.miniPlayerTapped(id: id)

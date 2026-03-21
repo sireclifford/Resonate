@@ -72,33 +72,43 @@ struct CategoriesView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            Picker("", selection: $segment) {
-                ForEach(BrowseSegment.allCases) { seg in
-                    Text(seg.rawValue).tag(seg)
+        ZStack {
+            PremiumScreenBackground()
+
+            VStack(spacing: 0) {
+                Picker("", selection: $segment) {
+                    ForEach(BrowseSegment.allCases) { seg in
+                        Text(seg.rawValue).tag(seg)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
+                .padding(.bottom, 10)
+                .background(PremiumTheme.panelFill(for: colorScheme).opacity(0.92))
+                .overlay(alignment: .bottom) {
+                    Rectangle()
+                        .fill(PremiumTheme.border(for: colorScheme))
+                        .frame(height: 1)
+                }
+                .onChange(of: segment) { _, newValue in
+                    environment.analyticsService.log(
+                        .tabSwitched,
+                        parameters: [
+                            .destination: newValue == .themes ? "browse_themes" : "browse_all",
+                            .source: "categories"
+                        ]
+                    )
+                }
+
+                if segment == .themes {
+                    themesBody
+                } else {
+                    allHymnsBody
                 }
             }
-            .pickerStyle(.segmented)
-            .padding(.horizontal, 16)
-            .padding(.top, 16)
-            .onChange(of: segment) { _, newValue in
-                environment.analyticsService.log(
-                    .tabSwitched,
-                    parameters: [
-                        .destination: newValue == .themes ? "browse_themes" : "browse_all",
-                        .source: "categories"
-                    ]
-                )
-            }
-
-            Divider().opacity(0.45)
-
-            if segment == .themes {
-                themesBody
-            } else {
-                allHymnsBody
-            }
         }
+        .miniPlayerInset(using: environment)
     }
 
     private var themesBody: some View {
@@ -165,38 +175,17 @@ struct CategoriesView: View {
     private var themesHero: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Find a Path for This Moment")
-                .font(.system(size: 31, weight: .bold, design: .serif))
-                .foregroundStyle(.primary)
+                .font(PremiumTheme.titleFont(size: 31))
+                .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
 
             Text("Move through worship, comfort, prayer, hope, and sacred seasons with curated hymn pathways.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(PremiumTheme.bodyFont())
+                .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: colorScheme == .dark
-                            ? [
-                                Color(red: 0.18, green: 0.18, blue: 0.20),
-                                Color(red: 0.13, green: 0.13, blue: 0.15)
-                            ]
-                            : [
-                                Color(red: 0.95, green: 0.93, blue: 0.87),
-                                Color(red: 0.90, green: 0.87, blue: 0.80)
-                            ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.06), lineWidth: 1)
-        )
+        .premiumPanel(colorScheme: colorScheme, cornerRadius: 28)
         .padding(.horizontal, 16)
     }
 
@@ -206,7 +195,7 @@ struct CategoriesView: View {
 
             HStack(spacing: 10) {
                 Image(systemName: "magnifyingglass")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                 TextField(selectedCategory == nil ? "Search hymns" : "Search in \(selectedCategory!.title)", text: $searchText)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
@@ -226,14 +215,19 @@ struct CategoriesView: View {
                         )
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                     }
                 }
             }
-            .padding(12)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
             .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(Color(.secondarySystemBackground))
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(PremiumTheme.searchFieldFill(for: colorScheme))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
             )
             .padding(.horizontal, 16)
             .padding(.top, 8)
@@ -266,7 +260,8 @@ struct CategoriesView: View {
 
             HStack {
                 Text("\(selectedCategory?.title ?? "All Hymns") (\(filteredHymns.count))")
-                    .font(.headline)
+                    .font(PremiumTheme.sectionTitleFont())
+                    .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                 Spacer()
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {
@@ -281,7 +276,8 @@ struct CategoriesView: View {
                     )
                 } label: {
                     Image(systemName: isGrid ? "list.bullet" : "square.grid.2x2")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold))
+                        .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                 }
                 .buttonStyle(.plain)
             }
@@ -308,27 +304,35 @@ struct CategoriesView: View {
                     }
                     .scrollIndicators(.hidden)
                 } else {
-                    List {
-                        ForEach(filteredHymns) { hymn in
-                            NavigationLink {
-                                HymnDetailView(
-                                    index: hymn,
-                                    environment: environment,
-                                    source: "categories"
-                                )
-                                .onAppear {
-                                    logHymnOpen(hymn)
+                    ScrollView(showsIndicators: false) {
+                        LazyVStack(alignment: .leading, spacing: 0) {
+                            ForEach(Array(filteredHymns.enumerated()), id: \.element.id) { index, hymn in
+                                NavigationLink {
+                                    HymnDetailView(
+                                        index: hymn,
+                                        environment: environment,
+                                        source: "categories"
+                                    )
+                                    .onAppear {
+                                        logHymnOpen(hymn)
+                                    }
+                                } label: {
+                                    HymnRowView(hymn: hymn)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .contentShape(Rectangle())
                                 }
-                            } label: {
-                                HymnRowView(hymn: hymn)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .contentShape(Rectangle())
+                                .buttonStyle(.plain)
+
+                                if index < filteredHymns.count - 1 {
+                                    Divider()
+                                        .overlay(PremiumTheme.border(for: colorScheme))
+                                        .padding(.leading, 64)
+                                }
                             }
-                            .buttonStyle(.plain)
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                         }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 24)
                     }
-                    .listStyle(.plain)
                 }
             }
         }
@@ -339,10 +343,11 @@ struct CategoriesView: View {
     private func sectionHeader(title: String, subtitle: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
-                .font(.title3.weight(.semibold))
+                .font(PremiumTheme.sectionTitleFont())
+                .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
             Text(subtitle)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(PremiumTheme.bodyFont())
+                .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
         }
         .padding(.horizontal, 16)
     }
@@ -353,7 +358,7 @@ struct CategoriesView: View {
 
         return ZStack(alignment: .bottomLeading) {
             RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
+                .fill(PremiumTheme.panelFill(for: colorScheme))
                 .overlay(
                     LinearGradient(
                         colors: [Color.white.opacity(0.0), Color.white.opacity(0.05)],
@@ -363,30 +368,30 @@ struct CategoriesView: View {
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .stroke(Color.primary.opacity(0.06), lineWidth: 1)
+                        .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
                 )
-                .shadow(color: Color.black.opacity(0.06), radius: 12, y: 8)
+                .shadow(color: PremiumTheme.shadow(for: colorScheme).opacity(0.36), radius: 12, y: 8)
 
             Image(systemName: symbol)
-                .font(.system(size: 72, weight: .regular))
-                .foregroundStyle(Color.primary.opacity(0.10))
+                .font(PremiumTheme.scaledSystem(size: 72, weight: .regular))
+                .foregroundStyle(PremiumTheme.accent(for: colorScheme).opacity(colorScheme == .dark ? 0.12 : 0.16))
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                 .padding(14)
 
             VStack(alignment: .leading, spacing: 8) {
                 Text(category.title)
-                    .font(.headline.weight(.semibold))
-                    .foregroundStyle(.primary)
+                    .font(PremiumTheme.scaledSystem(size: 22, weight: .semibold, design: .serif))
+                    .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                     .lineLimit(2)
 
                 Text(descriptor)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(PremiumTheme.bodyFont())
+                    .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                     .lineLimit(2)
 
                 Text("\(viewModel.hymns(for: category).count) hymns")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.secondary)
+                    .font(PremiumTheme.captionFont())
+                    .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
             }
             .padding(18)
         }
@@ -398,7 +403,7 @@ struct CategoriesView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: symbol(for: category))
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(PremiumTheme.scaledSystem(size: 20, weight: .semibold))
                     .foregroundStyle(.primary)
                 Spacer()
                 Image(systemName: "arrow.up.right")
@@ -421,14 +426,7 @@ struct CategoriesView: View {
         }
         .padding(18)
         .frame(width: 220, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(Color.primary.opacity(0.06), lineWidth: 1)
-        )
+        .premiumPanel(colorScheme: colorScheme, cornerRadius: 24)
     }
 
     private func devotionalDescriptor(for category: HymnCategory) -> String {
@@ -598,20 +596,22 @@ private struct ChipView: View {
     let title: String
     let selected: Bool
     let action: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.subheadline.weight(.semibold))
+                .font(PremiumTheme.scaledSystem(size: 14, weight: .semibold))
+                .foregroundStyle(selected ? Color.white : PremiumTheme.primaryText(for: colorScheme))
                 .padding(.vertical, 8)
                 .padding(.horizontal, 12)
                 .background(
                     Capsule()
-                        .fill(selected ? Color.accentColor.opacity(0.15) : Color(.secondarySystemBackground))
+                        .fill(selected ? PremiumTheme.accent(for: colorScheme) : PremiumTheme.subtleFill(for: colorScheme))
                 )
                 .overlay(
                     Capsule()
-                        .stroke(selected ? Color.accentColor.opacity(0.5) : Color.primary.opacity(0.08), lineWidth: 1)
+                        .stroke(selected ? .clear : PremiumTheme.border(for: colorScheme), lineWidth: 1)
                 )
         }
         .buttonStyle(.plain)
@@ -625,77 +625,123 @@ private struct HymnRowView: View {
     var body: some View {
         HStack(spacing: 12) {
             ZStack {
-                if colorScheme == .dark {
-                    Circle()
-                        .fill(.thinMaterial)
-                    Circle()
-                        .stroke(Color.white.opacity(0.18), lineWidth: 1)
-                    Text("\(hymn.id)")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(Color.white.opacity(0.92))
-                } else {
-                    Circle()
-                        .fill(Color(.secondarySystemBackground))
-                    Circle()
-                        .stroke(Color.primary.opacity(0.12), lineWidth: 1)
-                    Text("\(hymn.id)")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.primary)
-                }
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(PremiumTheme.subtleFill(for: colorScheme))
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
+                Text("\(hymn.id)")
+                    .font(PremiumTheme.scaledSystem(size: 17, weight: .bold, design: .rounded))
+                    .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
+                    .lineLimit(1)
+                    .padding(.horizontal, 10)
             }
-            .frame(width: 34, height: 34)
+            .frame(minWidth: 44, minHeight: 44)
+            .fixedSize(horizontal: true, vertical: false)
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(hymn.title)
-                    .font(.body.weight(.medium))
-                    .lineLimit(1)
-                Text(hymn.category.title)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                    .font(PremiumTheme.scaledSystem(size: 18, weight: .semibold, design: .serif))
+                    .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
+                    .lineLimit(2)
+
+                HStack(spacing: 10) {
+                    Image(systemName: "tag.fill")
+                        .font(PremiumTheme.scaledSystem(size: 11, weight: .semibold))
+                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                    Text(hymn.category.title)
+                        .font(PremiumTheme.captionFont())
+                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                        .lineLimit(1)
+
+                    Text("•")
+                        .font(.caption)
+                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme).opacity(0.6))
+
+                    Image(systemName: "text.justify.left")
+                        .font(PremiumTheme.scaledSystem(size: 11, weight: .semibold))
+                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                    Text("\(hymn.verseCount) verses")
+                        .font(PremiumTheme.captionFont())
+                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                }
             }
 
             Spacer(minLength: 0)
+
+            Image(systemName: "chevron.right")
+                .font(PremiumTheme.scaledSystem(size: 12, weight: .semibold))
+                .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
         }
-        .padding(.vertical, 6)
+        .padding(.vertical, 12)
     }
 }
 
 private struct HymnTileView: View {
     let hymn: HymnIndex
+    @Environment(\.colorScheme) private var colorScheme
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.accentColor.opacity(0.15))
-                .frame(height: 80)
-                .overlay(
-                    Image(systemName: "music.note.list")
-                        .font(.system(size: 28, weight: .semibold))
-                        .foregroundStyle(Color.accentColor.opacity(0.8))
-                )
+        ZStack(alignment: .topTrailing) {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(PremiumTheme.subtleFill(for: colorScheme))
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(hymn.title)
-                    .font(.subheadline.weight(.semibold))
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
+            Image(systemName: "music.note.list")
+                .font(PremiumTheme.scaledSystem(size: 42, weight: .semibold))
+                .foregroundStyle(PremiumTheme.accent(for: colorScheme).opacity(colorScheme == .dark ? 0.16 : 0.13))
+                .padding(.top, 18)
+                .padding(.trailing, 16)
 
-                Text(hymn.category.title)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(alignment: .top) {
+                    Text("\(hymn.id)")
+                        .font(PremiumTheme.scaledSystem(size: 16, weight: .bold, design: .rounded))
+                        .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
+                        .lineLimit(1)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 8)
+                        .background(
+                            Capsule()
+                                .fill(PremiumTheme.searchFieldFill(for: colorScheme))
+                        )
+                        .overlay(
+                            Capsule()
+                                .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
+                        )
+
+                    Spacer(minLength: 8)
+                }
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(hymn.title)
+                        .font(PremiumTheme.scaledSystem(size: 18, weight: .semibold, design: .serif))
+                        .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+
+                    HStack(spacing: 8) {
+                        Text(hymn.category.title)
+                            .font(PremiumTheme.captionFont())
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                            .lineLimit(1)
+
+                        Text("•")
+                            .font(.caption)
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme).opacity(0.55))
+
+                        Text("\(hymn.verseCount) verses")
+                            .font(PremiumTheme.captionFont())
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                            .lineLimit(1)
+                    }
+                }
+
+                Spacer(minLength: 0)
             }
-            .frame(height: 44, alignment: .top)
+            .padding(16)
         }
-        .padding(12)
-        .frame(height: 168, alignment: .top)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.secondarySystemBackground))
-        )
+        .frame(height: 182, alignment: .top)
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.primary.opacity(0.06), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
         )
     }
 }

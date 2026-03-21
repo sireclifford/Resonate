@@ -5,51 +5,34 @@ struct HighlightSlide: View {
     let highlight: String
 
     var body: some View {
-        ZStack {
-            LinearGradient(
-                colors: [.black, .black.opacity(0.92), .gray.opacity(0.2)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+        VStack(spacing: 22) {
+            Spacer(minLength: 120)
 
             VStack(spacing: 22) {
-                Spacer(minLength: 60)
-
                 Text("Hold onto this line")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.7))
+                    .font(DevotionTheme.eyebrowFont())
+                    .textCase(.uppercase)
+                    .tracking(1.2)
+                    .foregroundStyle(DevotionTheme.accent)
 
                 Text(highlight)
-                    .font(.system(size: 46, weight: .bold, design: .serif))
-                    .foregroundStyle(.white)
+                    .font(DevotionTheme.highlightFont())
+                    .foregroundStyle(DevotionTheme.primaryText)
                     .multilineTextAlignment(.center)
                     .lineSpacing(8)
-                    .padding(.horizontal, 24)
 
                 Text("— \(hymn.title)")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.75))
-                    .padding(.top, 4)
-
-                Spacer()
-
-//                Button {
-//                    // share highlight
-//                } label: {
-//                    Text("Share this line")
-//                        .font(.system(size: 16, weight: .bold))
-//                        .foregroundStyle(.black)
-//                        .padding(.horizontal, 20)
-//                        .padding(.vertical, 12)
-//                        .background(.white)
-//                        .clipShape(Capsule())
-//                }
-//
-//                Spacer(minLength: 40)
+                    .font(DevotionTheme.secondarySerifFont())
+                    .foregroundStyle(DevotionTheme.secondaryText)
             }
-            .padding(.horizontal, 22)
-            .padding(.bottom, 40)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 34)
+            .frame(maxWidth: .infinity)
+            .devotionPanel(cornerRadius: 32)
+
+            Spacer()
         }
+        .padding(.horizontal, 20)
+        .padding(.bottom, 40)
     }
 }

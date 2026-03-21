@@ -3,15 +3,11 @@ import SwiftUI
 struct MusicalDetailsSection: View {
     
     let music: HymnMusic
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            
-            Text("Musical Structure")
-                .font(.custom("CormorantGaramond-SemiBold", size: 20))
-            
-            VStack(alignment: .leading, spacing: 8) {
-                
+        StorySectionContainer(title: "Musical Structure") {
+            VStack(alignment: .leading, spacing: 10) {
                 if let tune = music.tuneName { infoRow("Tune", tune) }
                 infoRow("Composer", music.composer ?? "Unknown")
                 if let year = music.yearComposed { infoRow("Year", "\(year)") }
@@ -36,14 +32,16 @@ struct MusicalDetailsSection: View {
     }
     
     private func infoRow(_ title: String, _ value: String) -> some View {
-        HStack(alignment: .top) {
+        HStack(alignment: .top, spacing: 14) {
             Text(title)
-                .font(.custom("Avenir", size: 14))
-                .foregroundColor(.secondary)
-                .frame(width: 130, alignment: .leading)
+                .font(PremiumTheme.captionFont())
+                .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                .frame(width: 120, alignment: .leading)
             
             Text(value)
-                .font(.custom("Avenir", size: 14))
+                .font(PremiumTheme.scaledSystem(size: 15, weight: .medium))
+                .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 }

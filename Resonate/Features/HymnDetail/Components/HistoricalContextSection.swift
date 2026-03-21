@@ -7,10 +7,10 @@ struct HistoricalContextSection: View {
         VStack(alignment: .leading, spacing: 16) {
             
             Text("Historical Context")
-                .font(.custom("CormorantGaramond-SemiBold", size: 20))
+                .font(PremiumTheme.scaledSystem(size: 20, weight: .semibold, design: .serif))
             
             Text(text)
-                .font(.custom("Avenir", size: 16))
+                .font(PremiumTheme.scaledSystem(size: 16, weight: .medium))
                 .lineSpacing(6)
         }
     }

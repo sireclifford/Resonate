@@ -13,111 +13,87 @@ struct CategoryDetailView: View {
     ]
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 22) {
-                hero
+        ZStack {
+            PremiumScreenBackground()
 
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Hymns in This Path")
-                        .font(.title3.weight(.semibold))
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 22) {
+                    hero
 
-                    Text("\(hymns.count) hymns gathered for \(category.title.lowercased()).")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.horizontal, 20)
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Hymns in This Path")
+                            .font(PremiumTheme.sectionTitleFont())
+                            .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
 
-                LazyVGrid(columns: columns, spacing: 16) {
-                    ForEach(hymns) { hymn in
-                        NavigationLink(value: hymn) {
-                            HymnCardView(
-                                index: hymn,
-                                isFavourite: favouritesService.isFavourite(id: hymn.id),
-                                onFavouriteToggle: {
-                                    favouritesService.toggle(id: hymn.id)
-                                }
-                            )
-                        }
-                        .buttonStyle(.plain)
+                        Text("\(hymns.count) hymns gathered for \(category.title.lowercased()).")
+                            .font(PremiumTheme.bodyFont())
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                     }
+                    .padding(.horizontal, 20)
+
+                    LazyVGrid(columns: columns, spacing: 16) {
+                        ForEach(hymns) { hymn in
+                            NavigationLink(value: hymn) {
+                                HymnCardView(
+                                    index: hymn,
+                                    isFavourite: favouritesService.isFavourite(id: hymn.id),
+                                    onFavouriteToggle: {
+                                        favouritesService.toggle(id: hymn.id)
+                                    }
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 28)
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 28)
+                .padding(.top, 12)
             }
-            .padding(.top, 12)
         }
-        .background(
-            LinearGradient(
-                colors: [
-                    Color(.systemBackground),
-                    Color(.systemBackground),
-                    Color(.secondarySystemBackground)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-        )
         .navigationTitle(category.title)
         .toolbar(.hidden, for: .tabBar)
         .navigationBarTitleDisplayMode(.inline)
+        .miniPlayerInset(using: environment)
     }
 
     private var hero: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Image(systemName: symbol(for: category))
-                    .font(.system(size: 24, weight: .semibold))
-                    .foregroundStyle(.primary)
+                    .font(PremiumTheme.scaledSystem(size: 24, weight: .semibold))
+                    .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
 
                 Spacer()
 
                 Text("\(hymns.count) hymns")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    .font(PremiumTheme.captionFont())
+                    .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(
                         Capsule()
-                            .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.5))
+                            .fill(PremiumTheme.subtleFill(for: colorScheme))
+                    )
+                    .overlay(
+                        Capsule()
+                            .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
                     )
                     .clipShape(Capsule())
             }
 
             Text(category.title)
-                .font(.system(size: 30, weight: .bold, design: .serif))
-                .foregroundStyle(.primary)
+                .font(PremiumTheme.titleFont(size: 30))
+                .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
 
             Text(devotionalDescriptor(for: category))
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(PremiumTheme.bodyFont())
+                .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: colorScheme == .dark
-                            ? [
-                                Color(red: 0.19, green: 0.18, blue: 0.20),
-                                Color(red: 0.12, green: 0.12, blue: 0.14)
-                            ]
-                            : [
-                                Color(red: 0.95, green: 0.93, blue: 0.87),
-                                Color(red: 0.90, green: 0.87, blue: 0.80)
-                            ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.12 : 0.06), lineWidth: 1)
-        )
-        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.24 : 0.06), radius: 18, y: 10)
+        .premiumPanel(colorScheme: colorScheme, cornerRadius: 28)
         .padding(.horizontal, 20)
     }
 

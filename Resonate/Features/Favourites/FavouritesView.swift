@@ -44,51 +44,44 @@ struct FavouritesView: View {
     }
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 22) {
-                hero
+        ZStack {
+            PremiumScreenBackground()
 
-                if viewModel.hymns.isEmpty {
-                    emptyState
-                } else {
-                    lensPicker
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 22) {
+                    hero
 
-                    if let featuredHymn {
-                        sectionTitle("Featured Return")
-                        featuredCard(hymn: featuredHymn)
-                    }
+                    if viewModel.hymns.isEmpty {
+                        emptyState
+                    } else {
+                        lensPicker
 
-                    if !remainingHymns.isEmpty {
-                        sectionTitle(selectedLens == .all ? "Saved Hymns" : "\(selectedLens.title) Collection")
-
-                        LazyVStack(spacing: 14) {
-                            ForEach(remainingHymns) { hymn in
-                                savedHymnCard(hymn: hymn)
-                            }
+                        if let featuredHymn {
+                            sectionTitle("Featured Return")
+                            featuredCard(hymn: featuredHymn)
                         }
-                    } else if filteredHymns.isEmpty {
-                        filteredEmptyState
+
+                        if !remainingHymns.isEmpty {
+                            sectionTitle(selectedLens == .all ? "Saved Hymns" : "\(selectedLens.title) Collection")
+
+                            LazyVStack(spacing: 14) {
+                                ForEach(remainingHymns) { hymn in
+                                    savedHymnCard(hymn: hymn)
+                                }
+                            }
+                        } else if filteredHymns.isEmpty {
+                            filteredEmptyState
+                        }
                     }
                 }
+                .padding(.horizontal, 20)
+                .padding(.top, 12)
+                .padding(.bottom, 120)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 12)
-            .padding(.bottom, 120)
         }
-        .background(
-            LinearGradient(
-                colors: [
-                    Color(.systemBackground),
-                    Color(.systemBackground),
-                    Color(.secondarySystemBackground)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-        )
-        .navigationTitle("Favourites")
+        .navigationTitle("Library")
         .navigationBarTitleDisplayMode(.inline)
+        .miniPlayerInset(using: environment)
         .overlay(alignment: .bottom) {
             if showUndoToast, let removed = recentlyRemoved {
                 undoToast(for: removed)
@@ -101,11 +94,12 @@ struct FavouritesView: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Your Devotional Library")
-                        .font(.system(size: 31, weight: .bold, design: .serif))
+                        .font(PremiumTheme.titleFont(size: 31))
+                        .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
 
                     Text("Hymns you return to for comfort, worship, reflection, and quiet strength.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(PremiumTheme.bodyFont())
+                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
@@ -116,8 +110,8 @@ struct FavouritesView: View {
                         .fill(
                             LinearGradient(
                                 colors: [
-                                    Color(red: 0.78, green: 0.61, blue: 0.34).opacity(colorScheme == .dark ? 0.28 : 0.24),
-                                    Color(red: 0.46, green: 0.31, blue: 0.18).opacity(colorScheme == .dark ? 0.18 : 0.12)
+                                    PremiumTheme.accent(for: colorScheme).opacity(colorScheme == .dark ? 0.30 : 0.24),
+                                    PremiumTheme.accent(for: colorScheme).opacity(colorScheme == .dark ? 0.16 : 0.10)
                                 ],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
@@ -126,8 +120,8 @@ struct FavouritesView: View {
                         .frame(width: 58, height: 58)
 
                     Image(systemName: "heart.text.square")
-                        .font(.system(size: 24, weight: .semibold))
-                        .foregroundStyle(.primary)
+                        .font(PremiumTheme.scaledIconFont(size: 24, weight: .semibold, relativeTo: .title2))
+                        .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                 }
             }
 
@@ -146,29 +140,7 @@ struct FavouritesView: View {
         }
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: colorScheme == .dark
-                            ? [
-                                Color(red: 0.19, green: 0.18, blue: 0.20),
-                                Color(red: 0.12, green: 0.12, blue: 0.14)
-                            ]
-                            : [
-                                Color(red: 0.99, green: 0.97, blue: 0.92),
-                                Color(red: 0.95, green: 0.92, blue: 0.86)
-                            ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.12 : 0.06), lineWidth: 1)
-        )
-        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.26 : 0.06), radius: 18, y: 10)
+        .premiumPanel(colorScheme: colorScheme, cornerRadius: 28)
     }
 
     private var lensPicker: some View {
@@ -186,16 +158,16 @@ struct FavouritesView: View {
                             Text(lens.title)
                                 .font(.subheadline.weight(.medium))
                         }
-                        .foregroundStyle(selectedLens == lens ? Color.white : Color.primary)
+                        .foregroundStyle(selectedLens == lens ? Color.white : PremiumTheme.primaryText(for: colorScheme))
                         .padding(.horizontal, 14)
                         .padding(.vertical, 10)
                         .background(
                             Capsule()
-                                .fill(selectedLens == lens ? Color.accentColor : Color(.secondarySystemBackground))
+                                .fill(selectedLens == lens ? PremiumTheme.accent(for: colorScheme) : PremiumTheme.subtleFill(for: colorScheme))
                         )
                         .overlay(
                             Capsule()
-                                .stroke(Color.primary.opacity(selectedLens == lens ? 0 : 0.06), lineWidth: 1)
+                                .stroke(selectedLens == lens ? .clear : PremiumTheme.border(for: colorScheme), lineWidth: 1)
                         )
                     }
                     .buttonStyle(.plain)
@@ -223,8 +195,8 @@ struct FavouritesView: View {
                     )
 
                 RoundedRectangle(cornerRadius: 28, style: .continuous)
-                    .fill(.ultraThinMaterial)
-                    .opacity(colorScheme == .dark ? 0.18 : 0.14)
+                    .fill(PremiumTheme.subtleFill(for: colorScheme))
+                    .opacity(colorScheme == .dark ? 0.18 : 0.24)
 
                 Circle()
                     .fill(Color.white.opacity(colorScheme == .dark ? 0.06 : 0.16))
@@ -235,13 +207,13 @@ struct FavouritesView: View {
                     HStack(alignment: .top) {
                         VStack(alignment: .leading, spacing: 6) {
                             Text(devotionalDescriptor(for: hymn))
-                                .font(.caption.weight(.semibold))
+                                .font(PremiumTheme.eyebrowFont())
                                 .textCase(.uppercase)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(colorScheme == .dark ? .white.opacity(0.78) : PremiumTheme.secondaryText(for: colorScheme))
 
                             Text(hymn.title)
-                                .font(.system(size: 26, weight: .bold, design: .serif))
-                                .foregroundStyle(.primary)
+                                .font(PremiumTheme.featureTitleFont())
+                                .foregroundStyle(colorScheme == .dark ? .white : PremiumTheme.primaryText(for: colorScheme))
                                 .multilineTextAlignment(.leading)
                         }
 
@@ -251,8 +223,8 @@ struct FavouritesView: View {
                     }
 
                     Text(reflectionPrompt(for: hymn))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(PremiumTheme.bodyFont())
+                        .foregroundStyle(colorScheme == .dark ? .white.opacity(0.86) : PremiumTheme.primaryText(for: colorScheme).opacity(0.80))
                         .fixedSize(horizontal: false, vertical: true)
 
                     ViewThatFits(in: .vertical) {
@@ -284,7 +256,11 @@ struct FavouritesView: View {
                 }
                 .padding(22)
             }
-            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.26 : 0.08), radius: 20, y: 12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .stroke(colorScheme == .dark ? Color.white.opacity(0.10) : Color.black.opacity(0.06), lineWidth: 1)
+            )
+            .shadow(color: PremiumTheme.shadow(for: colorScheme).opacity(0.44), radius: 20, y: 12)
         }
         .buttonStyle(.plain)
     }
@@ -297,37 +273,52 @@ struct FavouritesView: View {
                 source: "favourites_list"
             )
         } label: {
-            HStack(alignment: .top, spacing: 14) {
+            HStack(alignment: .top, spacing: 12) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .fill(Color.accentColor.opacity(0.10))
-                        .frame(width: 56, height: 56)
+                        .fill(PremiumTheme.subtleFill(for: colorScheme))
+                        .frame(width: 52, height: 52)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
+                        )
 
                     VStack(spacing: 1) {
                         Text("Hymn")
                             .font(.caption2.weight(.semibold))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                         Text("\(hymn.id)")
-                            .font(.system(size: 18, weight: .bold, design: .rounded))
-                            .foregroundStyle(.primary)
+                            .font(PremiumTheme.roundedNumberFont(size: 16, relativeTo: .headline))
+                            .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                     }
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text(hymn.title)
-                        .font(.system(size: 19, weight: .semibold, design: .rounded))
-                        .foregroundStyle(.primary)
+                        .font(PremiumTheme.cardTitleFont())
+                        .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                         .multilineTextAlignment(.leading)
 
-                    Text(reflectionPrompt(for: hymn))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
+                    HStack(spacing: 10) {
+                        Image(systemName: "tag.fill")
+                            .font(PremiumTheme.badgeFont())
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                        Text(hymn.category.title)
+                            .font(PremiumTheme.captionFont())
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
 
-                    HStack(spacing: 8) {
-                        ForEach(Array(devotionalLenses(for: hymn).prefix(2)), id: \.self) { lens in
-                            miniPill(text: lens.title)
-                        }
+                        Text("•")
+                            .font(.caption)
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme).opacity(0.6))
+
+                        Image(systemName: "text.justify.left")
+                            .font(PremiumTheme.badgeFont())
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                        Text("\(hymn.verseCount) verses")
+                            .font(PremiumTheme.captionFont())
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                     }
                 }
 
@@ -338,19 +329,11 @@ struct FavouritesView: View {
 
                     Image(systemName: "chevron.right")
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                 }
             }
-            .padding(18)
-            .background(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(Color(.systemBackground))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .stroke(Color.primary.opacity(0.06), lineWidth: 1)
-            )
-            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.18 : 0.04), radius: 12, y: 6)
+            .padding(16)
+            .premiumPanel(colorScheme: colorScheme, cornerRadius: 24)
         }
         .buttonStyle(.plain)
     }
@@ -361,15 +344,16 @@ struct FavouritesView: View {
 
             VStack(alignment: .leading, spacing: 14) {
                 Image(systemName: "heart")
-                    .font(.system(size: 34, weight: .light))
-                    .foregroundStyle(.secondary)
+                    .font(PremiumTheme.scaledSystem(size: 34, weight: .light))
+                    .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
 
                 Text("Build your devotional library")
-                    .font(.title3.weight(.semibold))
+                    .font(PremiumTheme.sectionTitleFont())
+                    .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
 
                 Text("Save hymns that steady your heart, shape your worship, and stay with you through the week.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(PremiumTheme.bodyFont())
+                    .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                     .fixedSize(horizontal: false, vertical: true)
 
                 VStack(alignment: .leading, spacing: 8) {
@@ -379,58 +363,54 @@ struct FavouritesView: View {
                 }
             }
             .padding(22)
-            .background(
-                RoundedRectangle(cornerRadius: 26, style: .continuous)
-                    .fill(Color(.secondarySystemBackground))
-            )
+            .premiumPanel(colorScheme: colorScheme, cornerRadius: 26)
         }
     }
 
     private var filteredEmptyState: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("No saved hymns in \(selectedLens.title.lowercased()) yet.")
-                .font(.headline)
+                .font(PremiumTheme.cardTitleFont())
+                .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
             Text("Try another devotional lens or save a hymn that fits this season.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(PremiumTheme.bodyFont())
+                .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
-        )
+        .premiumPanel(colorScheme: colorScheme, cornerRadius: 22)
     }
 
     private func heroMetric(title: String, value: String, icon: String) -> some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.caption.weight(.bold))
-                .foregroundStyle(colorScheme == .dark ? .white : .primary)
+                .foregroundStyle(colorScheme == .dark ? .white : PremiumTheme.primaryText(for: colorScheme))
 
             Text(title)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
 
             Text(value)
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(colorScheme == .dark ? .white : .primary)
+                .foregroundStyle(colorScheme == .dark ? .white : PremiumTheme.primaryText(for: colorScheme))
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .background(
             Capsule()
-                .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.52))
+                .fill(PremiumTheme.subtleFill(for: colorScheme))
         )
         .overlay(
             Capsule()
-                .stroke(Color.primary.opacity(colorScheme == .dark ? 0.10 : 0.05), lineWidth: 1)
+                .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
         )
     }
 
     private func sectionTitle(_ title: String) -> some View {
         Text(title)
-            .font(.title3.weight(.semibold))
+            .font(PremiumTheme.sectionTitleFont())
+            .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 
@@ -439,11 +419,15 @@ struct FavouritesView: View {
             Image(systemName: icon)
             Text(text)
         }
-        .font(.caption.weight(.medium))
-        .foregroundStyle(.secondary)
+        .font(PremiumTheme.captionFont())
+        .foregroundStyle(colorScheme == .dark ? .white.opacity(0.78) : PremiumTheme.secondaryText(for: colorScheme))
         .padding(.horizontal, 12)
         .padding(.vertical, 7)
-        .background(Color.white.opacity(colorScheme == .dark ? 0.08 : 0.46))
+        .background(PremiumTheme.searchFieldFill(for: colorScheme))
+        .overlay(
+            Capsule()
+                .stroke(colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.05), lineWidth: 1)
+        )
         .clipShape(Capsule())
         .fixedSize(horizontal: true, vertical: false)
     }
@@ -454,32 +438,46 @@ struct FavouritesView: View {
             Text(title)
         }
         .font(.subheadline.weight(.semibold))
-        .foregroundStyle(.primary)
+        .foregroundStyle(colorScheme == .dark ? .white : PremiumTheme.primaryText(for: colorScheme))
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
-        .background(Color.white.opacity(colorScheme == .dark ? 0.08 : 0.42))
+        .background(PremiumTheme.searchFieldFill(for: colorScheme))
+        .overlay(
+            Capsule()
+                .stroke(colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.05), lineWidth: 1)
+        )
         .clipShape(Capsule())
-    }
-
-    private func miniPill(text: String) -> some View {
-        Text(text)
-            .font(.caption.weight(.medium))
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .background(Color(.secondarySystemBackground))
-            .clipShape(Capsule())
     }
 
     private func emptySuggestion(title: String, subtitle: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
-                .font(.subheadline.weight(.semibold))
+                .font(PremiumTheme.secondarySerifFont())
+                .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
             Text(subtitle)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(PremiumTheme.captionFont())
+                .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
         }
         .padding(.vertical, 6)
+    }
+
+    private func reflectionPrompt(for hymn: HymnIndex) -> String {
+        switch devotionalLenses(for: hymn).first ?? .all {
+        case .worship:
+            return "Return to this hymn when you want to re-center your worship."
+        case .comfort:
+            return "Keep this nearby for anxious or weary moments."
+        case .hope:
+            return "A hymn to revisit when you need perspective and promise."
+        case .prayer:
+            return "Well suited for slower reflection and personal prayer."
+        case .morning:
+            return "A fitting companion for the first quiet moments of the day."
+        case .evening:
+            return "Best revisited when the day is winding down."
+        case .all:
+            return "A steady hymn to return to."
+        }
     }
 
     private func removeButton(for hymn: HymnIndex, compact: Bool) -> some View {
@@ -487,10 +485,14 @@ struct FavouritesView: View {
             remove(hymn)
         } label: {
             Image(systemName: "heart.fill")
-                .font(.system(size: compact ? 14 : 15, weight: .semibold))
+                .font(PremiumTheme.scaledIconFont(size: compact ? 14 : 15, weight: .semibold, relativeTo: .headline))
                 .foregroundStyle(Color.red)
                 .frame(width: compact ? 34 : 38, height: compact ? 34 : 38)
-                .background(Color.white.opacity(colorScheme == .dark ? 0.08 : 0.64))
+                .background(PremiumTheme.searchFieldFill(for: colorScheme))
+                .overlay(
+                    Circle()
+                        .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
+                )
                 .clipShape(Circle())
         }
         .buttonStyle(.plain)
@@ -536,25 +538,6 @@ struct FavouritesView: View {
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
         recentlyRemoved = hymn
         showUndoToast = true
-    }
-
-    private func reflectionPrompt(for hymn: HymnIndex) -> String {
-        switch devotionalLenses(for: hymn).first ?? .all {
-        case .worship:
-            return "Return to this hymn when you want to re-center your worship."
-        case .comfort:
-            return "Keep this nearby for anxious or weary moments."
-        case .hope:
-            return "A hymn to revisit when you need perspective and promise."
-        case .prayer:
-            return "Well suited for slower reflection and personal prayer."
-        case .morning:
-            return "A fitting companion for the first quiet moments of the day."
-        case .evening:
-            return "Best revisited when the day is winding down."
-        case .all:
-            return "A hymn worth keeping close in your devotional rhythm."
-        }
     }
 
     private func devotionalDescriptor(for hymn: HymnIndex) -> String {

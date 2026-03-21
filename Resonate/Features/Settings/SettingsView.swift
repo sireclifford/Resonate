@@ -3,7 +3,8 @@ import StoreKit
 import UIKit
 
 struct SettingsView: View {
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     let environment: AppEnvironment
     @State private var showSupportMail = false
     @State private var showBugReport = false
@@ -14,36 +15,38 @@ struct SettingsView: View {
     @State private var showClearSuccess = false
     @State private var showClearDownloadedAudioConfirmation = false
     @ObservedObject private var settings: AppSettingsService
+    @ObservedObject private var accompanimentCacheService: AccompanimentCacheService
     
     init(environment: AppEnvironment) {
         self.environment = environment
         _settings = ObservedObject(
             wrappedValue: environment.settingsService
         )
+        _accompanimentCacheService = ObservedObject(
+            wrappedValue: environment.accompanimentCacheService
+        )
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                appearanceSection
-                readerSection
-                audioSection
-                notificationsSection
-                librarySection
-                aboutSection
+        ZStack {
+            PremiumScreenBackground()
+
+            ScrollView {
+                VStack(spacing: 16) {
+                    appearanceSection
+                    readerSection
+                    audioSection
+                    notificationsSection
+                    librarySection
+                    aboutSection
+                }
+                .padding(.horizontal)
+                .padding(.top, 8)
+                .padding(.bottom, 32)
             }
-            .padding(.horizontal)
-            .padding(.top, 8)
-            .padding(.bottom, 32)
         }
-        .background(
-            LinearGradient(
-                colors: [Color(.systemBackground), Color(.secondarySystemBackground)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-        )
         .navigationTitle("Settings")
+        .miniPlayerInset(using: environment)
         .alert("Cleared", isPresented: $showClearSuccess) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -76,7 +79,7 @@ struct SettingsView: View {
         .sheet(isPresented: $showClearDownloadedAudioConfirmation) {
             VStack(spacing: 0) {
                 Capsule()
-                    .fill(Color.secondary.opacity(0.22))
+                    .fill(PremiumTheme.border(for: colorScheme))
                     .frame(width: 42, height: 5)
                     .padding(.top, 10)
                     .padding(.bottom, 18)
@@ -88,18 +91,19 @@ struct SettingsView: View {
                             .frame(width: 60, height: 60)
 
                         Image(systemName: "trash.fill")
-                            .font(.system(size: 24, weight: .semibold))
+                            .font(PremiumTheme.scaledSystem(size: 24, weight: .semibold))
                             .foregroundStyle(.red)
                     }
 
                     VStack(spacing: 8) {
                         Text("Clear Downloaded Audio?")
-                            .font(.title3.weight(.semibold))
+                            .font(PremiumTheme.sectionTitleFont())
+                            .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                             .multilineTextAlignment(.center)
 
                         Text("This will remove all downloaded accompaniments from your device. You can download them again anytime.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(PremiumTheme.bodyFont())
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                             .multilineTextAlignment(.center)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -116,12 +120,34 @@ struct SettingsView: View {
                             .frame(height: 50)
                     }
                     .buttonStyle(.plain)
-                    .background(Color(.secondarySystemBackground))
+                    .background(PremiumTheme.subtleFill(for: colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
+                    )
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
 
                     Button {
-                        environment.accompanimentCacheService.clearAll()
+                        let result = environment.accompanimentCacheService.clearAll()
                         showClearDownloadedAudioConfirmation = false
+
+                        if result.deletedFileCount > 0 {
+                            environment.toastCenter.show(
+                                .success(
+                                    "Downloaded audio cleared",
+                                    subtitle: "Removed \(result.deletedFileCount) file\(result.deletedFileCount == 1 ? "" : "s") and freed \(formattedStorageSize(result.reclaimedBytes))."
+                                ),
+                                position: .top
+                            )
+                        } else {
+                            environment.toastCenter.show(
+                                .info(
+                                    "No downloaded audio found",
+                                    subtitle: "There were no offline accompaniments to remove."
+                                ),
+                                position: .top
+                            )
+                        }
                     } label: {
                         Text("Clear")
                             .font(.headline)
@@ -365,11 +391,12 @@ struct SettingsView: View {
                 if environment.reminderSettingsViewModel.hotdEnabled {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Reminder Time")
-                            .font(.subheadline.weight(.semibold))
+                            .font(PremiumTheme.scaledSystem(size: 18, weight: .semibold, design: .serif))
+                            .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
 
                         Text("Choose when Resonate should surface the hymn of the day.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(PremiumTheme.captionFont())
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
 
                         DatePicker(
                             "Reminder Time",
@@ -389,7 +416,11 @@ struct SettingsView: View {
                     .padding(16)
                     .background(
                         RoundedRectangle(cornerRadius: 18, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
+                            .fill(PremiumTheme.subtleFill(for: colorScheme))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                            .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
                     )
                 }
                 #if DEBUG
@@ -450,7 +481,7 @@ struct SettingsView: View {
             VStack(spacing: 12) {
                 settingsHighlight(
                     title: "Downloaded Audio",
-                    detail: formattedStorageSize(environment.accompanimentCacheService.totalStorageSize()),
+                    detail: formattedStorageSize(accompanimentCacheService.totalStorageBytes),
                     icon: "internaldrive"
                 )
 
@@ -565,7 +596,7 @@ struct SettingsView: View {
                 Circle()
                     .fill(
                         LinearGradient(
-                            colors: [Color.accentColor.opacity(0.18), Color.orange.opacity(0.12)],
+                            colors: [PremiumTheme.accent(for: colorScheme).opacity(0.18), Color.orange.opacity(0.12)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -573,21 +604,22 @@ struct SettingsView: View {
                     .frame(width: 74, height: 74)
 
                 Image(systemName: "music.quarternote.3")
-                    .font(.system(size: 28, weight: .semibold))
-                    .foregroundStyle(.primary)
+                    .font(PremiumTheme.scaledSystem(size: 28, weight: .semibold))
+                    .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
             }
 
             Text("Resonate")
-                .font(.title3.weight(.semibold))
+                .font(PremiumTheme.sectionTitleFont())
+                .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
 
             Text("A refined hymn companion for worship, reflection, and story.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(PremiumTheme.bodyFont())
+                .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                 .multilineTextAlignment(.center)
 
             Text(Bundle.main.appVersion)
-                .font(.caption.weight(.medium))
-                .foregroundStyle(.secondary)
+                .font(PremiumTheme.captionFont())
+                .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
 
 #if DEBUG
             Text(buildConfigurationLabel)
@@ -601,10 +633,7 @@ struct SettingsView: View {
         .frame(maxWidth: .infinity)
         .padding(.horizontal, 20)
         .padding(.vertical, 22)
-        .background(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
-        )
+        .premiumPanel(colorScheme: colorScheme, cornerRadius: 24)
     }
 
     private func aboutGroup<Content: View>(@ViewBuilder content: () -> Content) -> some View {
@@ -615,11 +644,11 @@ struct SettingsView: View {
         .padding(.vertical, 4)
         .background(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
+                .fill(PremiumTheme.subtleFill(for: colorScheme))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .stroke(Color.primary.opacity(0.06), lineWidth: 1)
+                .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
         )
     }
     private func permissionLabel(_ status: NotificationAuthorizationStatus) -> String {
@@ -647,19 +676,24 @@ struct SettingsView: View {
         HStack(spacing: 14) {
             ZStack {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(Color.accentColor.opacity(0.12))
+                    .fill(PremiumTheme.subtleFill(for: colorScheme))
                     .frame(width: 44, height: 44)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
+                    )
 
                 Image(systemName: icon)
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(PremiumTheme.accent(for: colorScheme))
             }
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
-                    .font(.subheadline.weight(.semibold))
+                    .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold, design: .serif))
+                    .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                 Text(detail)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(PremiumTheme.bodyFont())
+                    .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
             }
 
             Spacer()
@@ -667,7 +701,11 @@ struct SettingsView: View {
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
+                .fill(PremiumTheme.subtleFill(for: colorScheme))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
         )
     }
 
@@ -675,22 +713,23 @@ struct SettingsView: View {
         HStack(alignment: .top, spacing: 12) {
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
-                    .foregroundStyle(.primary)
+                    .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold, design: .serif))
+                    .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                 Text(subtitle)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(PremiumTheme.captionFont())
+                    .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
             }
 
             Spacer()
 
             HStack(spacing: 8) {
                 Text(value)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                     .font(.subheadline)
                     .multilineTextAlignment(.trailing)
                 Image(systemName: "chevron.up.chevron.down")
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme).opacity(0.7))
             }
         }
         .padding(.horizontal, 2)
@@ -702,10 +741,11 @@ struct SettingsView: View {
         HStack(alignment: .top, spacing: 12) {
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
-                    .foregroundStyle(.primary)
+                    .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold, design: .serif))
+                    .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                 Text(subtitle)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(PremiumTheme.captionFont())
+                    .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
             }
 
             Spacer()
@@ -721,22 +761,23 @@ struct SettingsView: View {
         HStack {
             if let icon {
                 Image(systemName: icon)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                     .frame(width: 22)
             }
 
             VStack(alignment: .leading, spacing: subtitle == nil ? 0 : 2) {
                 Text(title)
-                    .foregroundStyle(.primary)
+                    .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold, design: .serif))
+                    .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                 if let subtitle {
                     Text(subtitle)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(PremiumTheme.captionFont())
+                        .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                 }
             }
             Spacer()
             Image(systemName: "chevron.right")
-                .foregroundStyle(.secondary)
+                .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
         }
         .padding(.horizontal, 2)
         .padding(.vertical, 12)

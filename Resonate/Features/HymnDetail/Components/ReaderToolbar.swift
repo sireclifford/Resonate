@@ -16,8 +16,7 @@ struct ReaderToolbar: View {
                 Image(systemName: "textformat.size.larger")
             }
         }
-        .font(.josefin(size: 15))
+        .font(PremiumTheme.scaledSystem(size: 15, weight: .medium))
     }
 }
-
 

@@ -5,7 +5,7 @@ struct RecentlyViewedPlaceholder: View {
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: "clock.arrow.circlepath")
-                .font(.system(size: 28))
+                .font(PremiumTheme.scaledSystem(size: 28))
                 .foregroundColor(.secondary)
 
             Text("No recently viewed hymns")

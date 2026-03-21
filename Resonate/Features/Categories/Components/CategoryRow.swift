@@ -9,17 +9,17 @@ struct CategoryRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.josefin(size: 15, weight: .medium))
+                    .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold, design: .serif))
 
                 Text("\(count) hymns")
-                    .font(.josefin(size: 12))
+                    .font(PremiumTheme.captionFont())
                     .foregroundColor(.secondary)
             }
 
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
+                .font(PremiumTheme.scaledSystem(size: 12, weight: .semibold))
                 .foregroundColor(.secondary)
         }
         .padding()

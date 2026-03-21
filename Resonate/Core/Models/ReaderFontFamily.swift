@@ -4,7 +4,6 @@ import SwiftUI
 enum ReaderFontFamily: String, CaseIterable, Identifiable {
     case system
     case serif
-    case josefin
     
     var id: Self { self }
     
@@ -12,7 +11,6 @@ enum ReaderFontFamily: String, CaseIterable, Identifiable {
         switch self {
         case .system: return "System"
         case .serif: return "Serif"
-        case .josefin: return "Josefin"
         }
     }
     
@@ -20,7 +18,6 @@ enum ReaderFontFamily: String, CaseIterable, Identifiable {
         switch self {
         case .system: return .system(size: size)
         case .serif: return .system(size: size, design: .serif)
-        case .josefin: return .custom("JosefinSans-Regular", size: size)
         }
     }
 }

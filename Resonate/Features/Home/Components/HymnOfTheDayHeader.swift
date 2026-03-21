@@ -10,27 +10,27 @@ struct HymnOfTheDayHeader: View {
             
             // Header Label
             Text("Hymn of the Day")
-                .font(.josefin(size: 14, weight: .semibold))
+                .font(PremiumTheme.eyebrowFont())
                 .foregroundStyle(Color("BrandAccent"))
                 .textCase(.uppercase)
             
             // Hymn Number
             Text("Hymn \(index.id)")
-                .font(.josefin(size: 20, weight: .semibold))
+                .font(PremiumTheme.scaledSystem(size: 20, weight: .semibold, design: .serif))
             
             // Hymn Title
             Text(index.title)
-                .font(.josefin(size: 16))
+                .font(PremiumTheme.bodyFont())
                 .foregroundStyle(.secondary)
                 .lineLimit(2)
             
             // Call To Action
             HStack(spacing: 6) {
                 Text("Open Now")
-                    .font(.josefin(size: 14, weight: .medium))
+                    .font(PremiumTheme.scaledSystem(size: 14, weight: .semibold))
                 
                 Image(systemName: "arrow.right")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(PremiumTheme.scaledSystem(size: 12, weight: .semibold))
             }
             .foregroundStyle(Color("BrandAccent"))
             .padding(.top, 4)

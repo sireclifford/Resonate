@@ -6,110 +6,77 @@ struct CompletionSlide: View {
     let onOpenStory: () -> Void
 
     var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
+        VStack(spacing: 20) {
+            Spacer(minLength: 120)
 
             VStack(spacing: 18) {
-                Spacer()
-
                 Image(systemName: "checkmark.seal.fill")
-                    .font(.system(size: 72, weight: .bold))
-                    .foregroundStyle(.white)
+                    .font(PremiumTheme.scaledIconFont(size: 68, weight: .bold, relativeTo: .largeTitle))
+                    .foregroundStyle(DevotionTheme.accent)
 
                 Text("Worship Complete")
-                    .font(.system(size: 28, weight: .bold))
-                    .foregroundStyle(.white)
+                    .font(DevotionTheme.panelTitleFont())
+                    .foregroundStyle(DevotionTheme.primaryText)
 
                 Text("You spent a moment with\n“\(viewModel.title)” today.")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.8))
+                    .font(DevotionTheme.bodyFont())
+                    .foregroundStyle(DevotionTheme.secondaryText)
                     .multilineTextAlignment(.center)
-
-                Spacer()
-
-                /*
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Up Next")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(.white)
-
-                    // Placeholder: your next content card
-                    HStack(spacing: 12) {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(.white.opacity(0.12))
-                            .frame(width: 54, height: 54)
-                            .overlay(Image(systemName: "play.fill").foregroundStyle(.white))
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Guided Scripture")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(.white.opacity(0.75))
-
-                            Text("A 2–5 min devotion")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundStyle(.white)
-                        }
-
-                        Spacer()
-                    }
-                    .padding(14)
-                    .background(.white.opacity(0.08))
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                }
-                .padding(.horizontal, 18)
-                */
-
-                Button(action: onOpenStory) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Learn More")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(.white)
-
-                        HStack(spacing: 12) {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(.white.opacity(0.12))
-                                .frame(width: 54, height: 54)
-                                .overlay(
-                                    Image(systemName: "book.pages")
-                                        .foregroundStyle(.white)
-                                )
-
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Story Behind the Hymn")
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(.white.opacity(0.75))
-
-                                Text("Discover how \"\(viewModel.title)\" was written")
-                                    .font(.system(size: 16, weight: .bold))
-                                    .foregroundStyle(.white)
-                            }
-
-                            Spacer()
-
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(.white.opacity(0.8))
-                        }
-                        .padding(14)
-                        .background(.white.opacity(0.08))
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                    }
-                    .padding(.horizontal, 18)
-                }
-                .buttonStyle(.plain)
-
-                Button(action: onNext) {
-                    Text("Continue")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(.black)
-                        .padding(.horizontal, 18)
-                        .padding(.vertical, 12)
-                        .background(.white)
-                        .clipShape(Capsule())
-                }
-                .padding(.bottom, 20)
             }
-            .padding(.horizontal, 18)
+            .padding(.horizontal, 26)
+            .padding(.vertical, 34)
+            .frame(maxWidth: .infinity)
+            .devotionPanel(cornerRadius: 32)
+
+            Button(action: onOpenStory) {
+                HStack(spacing: 12) {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(DevotionTheme.chromeFill)
+                        .frame(width: 54, height: 54)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .stroke(DevotionTheme.chromeBorder, lineWidth: 1)
+                        )
+                        .overlay(
+                            Image(systemName: "book.pages")
+                                .foregroundStyle(DevotionTheme.primaryText)
+                        )
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Story Behind the Hymn")
+                            .font(DevotionTheme.secondarySerifFont())
+                            .foregroundStyle(DevotionTheme.primaryText)
+
+                        Text("Discover how \"\(viewModel.title)\" was written")
+                            .font(PremiumTheme.captionFont())
+                            .foregroundStyle(DevotionTheme.secondaryText)
+                            .lineLimit(2)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(DevotionTheme.badgeFont())
+                        .foregroundStyle(DevotionTheme.secondaryText)
+                }
+                .padding(18)
+                .devotionPanel(cornerRadius: 24)
+            }
+            .buttonStyle(.plain)
+
+            Button(action: onNext) {
+                Text("Continue")
+                    .font(DevotionTheme.actionFont())
+                    .foregroundStyle(Color.black)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(DevotionTheme.accent)
+                    .clipShape(Capsule())
+            }
+
+            Spacer(minLength: 20)
         }
+        .padding(.horizontal, 20)
+        .padding(.bottom, 24)
     }
 }

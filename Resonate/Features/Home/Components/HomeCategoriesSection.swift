@@ -12,7 +12,7 @@ struct HomeCategoriesSection: View {
 
             HStack {
                 Text("Topics")
-                    .font(.josefin(size: 18, weight: .semibold))
+                    .font(PremiumTheme.scaledSystem(size: 20, weight: .semibold, design: .serif))
 
                 Spacer()
 
@@ -38,4 +38,3 @@ struct HomeCategoriesSection: View {
         }
     }
 }
-

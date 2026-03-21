@@ -1,10 +1,16 @@
-
-
 import Foundation
+import Combine
 
 /// Manages local storage for hymn accompaniment audio files.
 /// Files are stored in: Application Support / Accompaniments /
-final class AccompanimentCacheService {
+final class AccompanimentCacheService: ObservableObject {
+
+    struct ClearResult {
+        let deletedFileCount: Int
+        let reclaimedBytes: Int64
+    }
+
+    @Published private(set) var totalStorageBytes: Int64 = 0
 
     private let fileManager = FileManager.default
 
@@ -18,6 +24,10 @@ final class AccompanimentCacheService {
 
         return directory
     }()
+
+    init() {
+        refreshStorageSize()
+    }
 
     /// Returns the expected local file URL for a hymn accompaniment
     func localURL(for hymnID: Int) -> URL {
@@ -34,6 +44,7 @@ final class AccompanimentCacheService {
     func save(data: Data, for hymnID: Int) throws -> URL {
         let url = localURL(for: hymnID)
         try data.write(to: url, options: .atomic)
+        refreshStorageSize()
         return url
     }
 
@@ -41,14 +52,22 @@ final class AccompanimentCacheService {
     func delete(for hymnID: Int) {
         let url = localURL(for: hymnID)
         try? fileManager.removeItem(at: url)
+        refreshStorageSize()
     }
 
     /// Delete all downloaded accompaniments
-    func clearAll() {
-        guard let files = try? fileManager.contentsOfDirectory(at: baseDirectory, includingPropertiesForKeys: nil) else { return }
+    @discardableResult
+    func clearAll() -> ClearResult {
+        guard let files = try? fileManager.contentsOfDirectory(at: baseDirectory, includingPropertiesForKeys: nil) else {
+            return ClearResult(deletedFileCount: 0, reclaimedBytes: 0)
+        }
+        let reclaimedBytes = totalStorageSize()
+        let deletedFileCount = files.count
         for file in files {
             try? fileManager.removeItem(at: file)
         }
+        refreshStorageSize()
+        return ClearResult(deletedFileCount: deletedFileCount, reclaimedBytes: reclaimedBytes)
     }
 
     /// Returns the total storage used by accompaniment files
@@ -66,5 +85,16 @@ final class AccompanimentCacheService {
         }
 
         return total
+    }
+
+    private func refreshStorageSize() {
+        let newValue = totalStorageSize()
+        if Thread.isMainThread {
+            totalStorageBytes = newValue
+        } else {
+            DispatchQueue.main.async { [weak self] in
+                self?.totalStorageBytes = newValue
+            }
+        }
     }
 }

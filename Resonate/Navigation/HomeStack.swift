@@ -5,78 +5,89 @@ struct HomeStack: View {
     @Binding var selectedTab: Int
     @State private var path = NavigationPath()
     @State private var selectedWorshipHymnID: Int?
+    @ObservedObject private var audioService: AccompanimentPlaybackService
+
+    init(environment: AppEnvironment, selectedTab: Binding<Int>) {
+        self.environment = environment
+        self._selectedTab = selectedTab
+        _audioService = ObservedObject(wrappedValue: environment.accompanimentPlaybackService)
+    }
     
     var body: some View {
-        NavigationStack(path: $path) {
-            HomeView(
-                environment: environment,
-                onSelectHymn: { hymn in
-                    environment.analyticsService.log(
-                        .tabSwitched,
-                        parameters: [
-                            .source: "home",
-                            .destination: "worship_detail_from_home_selection",
-                            .hymnID: hymn.id
-                        ]
-                    )
-                    path.append(hymn)
-                },
-                onSeeAll: {
-                    selectedTab = 2
-                },
-                onRoute: { route in
-                    path.append(route)
-                }
-            )
-            .navigationDestination(for: HymnIndex.self) { index in
-                HymnDetailView(
-                    index: index,
+        ZStack {
+            PremiumScreenBackground()
+
+            NavigationStack(path: $path) {
+                HomeView(
                     environment: environment,
-                    source: "home"
-                )
-            }
-            .navigationDestination(for: HymnCategory.self) { category in
-                CategoryDetailView(
-                    category: category,
-                    hymns: environment.categoryViewModel.hymns(for: category),
-                    environment: environment,
-                    favouritesService: environment.favouritesService
-                )
-            }
-            .navigationDestination(for: HomeRoute.self) { route in
-                switch route {
-                case .allCategories:
-                    CategoriesView(environment: environment)
-                    
-                case .mostLoved:
-                    MostLovedHymnsView(environment: environment)
-                    
-                case .editorsPicks:
-                    EditorsPicksView(environment: environment)
-                }
-            }
-            .fullScreenCover(
-                isPresented: Binding(
-                    get: { selectedWorshipHymnID != nil },
-                    set: { isPresented in
-                        if !isPresented {
-                            selectedWorshipHymnID = nil
-                        }
+                    onSelectHymn: { hymn in
+                        environment.analyticsService.log(
+                            .tabSwitched,
+                            parameters: [
+                                .source: "home",
+                                .destination: "worship_detail_from_home_selection",
+                                .hymnID: hymn.id
+                            ]
+                        )
+                        path.append(hymn)
+                    },
+                    onSeeAll: {
+                        selectedTab = 2
+                    },
+                    onRoute: { route in
+                        path.append(route)
                     }
                 )
-            ) {
-                if let hymnID = selectedWorshipHymnID {
-                    WorshipFlowContainer(
-                        hymnID: hymnID,
-                        environment: environment
+                .navigationDestination(for: HymnIndex.self) { index in
+                    HymnDetailView(
+                        index: index,
+                        environment: environment,
+                        source: "home"
                     )
                 }
+                .navigationDestination(for: HymnCategory.self) { category in
+                    CategoryDetailView(
+                        category: category,
+                        hymns: environment.categoryViewModel.hymns(for: category),
+                        environment: environment,
+                        favouritesService: environment.favouritesService
+                    )
+                }
+                .navigationDestination(for: HomeRoute.self) { route in
+                    switch route {
+                    case .allCategories:
+                        CategoriesView(environment: environment)
+                        
+                    case .mostLoved:
+                        MostLovedHymnsView(environment: environment)
+                        
+                    case .editorsPicks:
+                        EditorsPicksView(environment: environment)
+                    }
+                }
+                .fullScreenCover(
+                    isPresented: Binding(
+                        get: { selectedWorshipHymnID != nil },
+                        set: { isPresented in
+                            if !isPresented {
+                                selectedWorshipHymnID = nil
+                            }
+                        }
+                    )
+                ) {
+                    if let hymnID = selectedWorshipHymnID {
+                        WorshipFlowContainer(
+                            hymnID: hymnID,
+                            environment: environment
+                        )
+                    }
+                }
+                
+                .onReceive(environment.navigationService.$requestedHymn) { request in
+                    handleNavigationRequest(request)
+                }
+                .onAppear { handlePendingNavigationRequest() }
             }
-            
-            .onReceive(environment.navigationService.$requestedHymn) { request in
-                handleNavigationRequest(request)
-            }
-            .onAppear { handlePendingNavigationRequest() }
         }
     }
     
