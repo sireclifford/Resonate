@@ -1,260 +1,133 @@
-# Resonate 📖🎵
+# Resonate
 
-## Production-Grade iOS Hymnal App (SwiftUI)
+Resonate is a devotional iOS hymnal app built with SwiftUI. It combines hymn reading, hymn-of-the-day discovery, curated categories, worship flow, story content, reminders, favourites, and accompaniment playback in a calmer, more editorial interface.
 
-**Resonate** is a fully architected iOS application built using
-**SwiftUI, MVVM, and service-based dependency injection**.
+## What Resonate Does
 
-The project demonstrates production-level state management,
-deterministic UI rendering, structured domain modeling, scalable audio
-architecture, smart notifications, deep-link navigation, and analytics
-instrumentation.
+- Browse a structured hymn library by theme or full catalog
+- Open hymns by title, number, or lyric search
+- Follow a daily Hymn of the Day rhythm
+- Save hymns to your personal library
+- Read hymn background stories and supporting context
+- Enter a guided worship flow for reflection and singing
+- Download accompaniment audio for offline playback
+- Schedule daily reminder notifications
 
-------------------------------------------------------------------------
+## Current Product Focus
 
-## 🚀 Engineering Goals
+This version focuses on:
 
-Resonate was designed to demonstrate:
+- A more intentional visual language across the app
+- Faster and cleaner search behavior
+- A refined hymn reading and story experience
+- Better support for Dynamic Type
+- Persistent accompaniment playback with a mini player
+- Improved settings feedback for downloaded audio management
 
--   Clean dependency injection\
--   Modular service architecture\
--   Deterministic UI behavior\
--   Deep-link navigation via state\
--   Smart notification scheduling\
--   Offline-first audio handling\
--   Strongly-typed analytics instrumentation\
--   Scalable feature expansion
--   Sacred first-launch onboarding flow
--   Retention loop instrumentation (Trigger → Open → Read → Reflect → Return)
--   Session lifecycle tracking
--   Context-aware notification suppression
--   Structured event logging framework
+## Feature Overview
 
-------------------------------------------------------------------------
+### Home
 
-# 🧠 Architecture
+- Devotional welcome experience
+- Hymn of the Day hero
+- Start Here guidance
+- Curated category pathways
 
-Resonate uses a modular dependency container:
+### Browse
 
-    AppEnvironment (Dependency Container)
-     ├── HymnService
-     ├── TuneService
-     ├── AudioPlaybackService
-     ├── FavouritesService
-     ├── RecentlyViewedService
-     ├── NotificationService
-     ├── LastAppOpenService
-     ├── AnalyticsService
-     ├── SearchViewModel
-     ├── CategoryViewModel
-     └── HymnStoryService
+- Theme-based exploration
+- All-hymns browsing
+- Grid and list presentation
+- Category detail navigation
 
-### Architectural Principles
+### Search
 
--   Explicit dependency injection\
--   MVVM separation of concerns\
--   Service isolation\
--   Reactive state propagation\
--   Deterministic behavior\
--   Type-safe navigation\
--   Feature scalability
+- Title search
+- Hymn number jump
+- Lyric matching
+- Recent and frequent hymn suggestions
 
-------------------------------------------------------------------------
+### Library
 
-## Retention Architecture
+- Personal saved hymns collection
+- Lens-based filtering
+- Featured return hymn presentation
 
-Resonate is instrumented around a structured spiritual habit loop:
+### Hymn Detail
 
-    Trigger → Open → Read → Reflect → Return
+- Reading controls
+- Favourite toggle
+- Story access
+- Accompaniment playback
+- Download and delete accompaniment actions
 
-This is supported by:
+### Worship Flow
 
--   First-launch onboarding gate
--   Contextual notification permission flow
--   Deterministic Hymn of the Day routing
--   Session lifecycle tracking
--   Engagement depth measurement
--   Structured analytics events with typed parameters
+- Guided devotional sequence
+- Verse and reflection slides
+- Audio-assisted worship entry
 
-Retention is treated as a product system, not a feature.
+### Settings
 
-------------------------------------------------------------------------
+- Theme controls
+- Reader controls
+- Audio preferences
+- Notification preferences
+- Downloaded audio management
 
-# 📚 Structured Hymn Engine
+## Architecture
 
-## Hymn Modeling
+Resonate is built around a service-oriented app environment with SwiftUI views and feature-specific view models.
 
--   JSON-driven hymn data\
--   Structured verses & chorus separation\
--   Metadata normalization\
--   Scripture references (USFM codes)\
--   Historical companion content
+Core architectural patterns:
 
-## Deterministic Hymn of the Day
+- SwiftUI-first UI composition
+- MVVM for feature state
+- Service-based dependency injection through `AppEnvironment`
+- Local JSON-driven hymn content
+- Strongly typed domain models
+- Published state propagation for playback, settings, and reminders
 
-Daily hymn rotation is computed using:
+Primary systems include:
 
-``` swift
-let index = daysSinceEpoch % hymnCount
-```
+- `HymnService`
+- `CategoryViewModel`
+- `SearchViewModel`
+- `FavouritesService`
+- `RecentlyViewedService`
+- `AccompanimentPlaybackService`
+- `AccompanimentCacheService`
+- `ReminderSettingsViewModel`
+- `NavigationService`
+- `AnalyticsService`
 
-Benefits:
+## Tech Stack
 
--   Device consistency\
--   Predictable behavior\
--   No randomization bugs\
--   Stable analytics tracking
+- SwiftUI
+- Combine
+- AVFoundation
+- UserNotifications
+- Firebase Analytics
+- JSON content storage
 
-------------------------------------------------------------------------
+## Product Notes
 
-# 🔎 Intelligent Search
+- Hymn of the Day uses deterministic rotation for consistency
+- Accompaniment playback supports offline caching
+- Notification flows are permission-aware and settings-driven
+- The app is designed for iterative refinement rather than one large monolith release
 
--   Debounced search input\
--   Numeric hymn quick-jump\
--   Title matching\
--   Verse-level lyric search\
--   Category filtering\
--   Efficient index-based filtering
+## Status
 
-Business logic lives inside `SearchViewModel`.
+Active iOS project.
 
-------------------------------------------------------------------------
+Current release line:
 
-# 🎼 Audio System
+- visual refinement pass complete
+- search performance improved
+- dynamic type support broadened
+- settings feedback improved
 
-## AudioPlaybackService
+## Author
 
--   AVAudioPlayer-based playback\
--   Background audio support\
--   Global floating MiniPlayer\
--   Deterministic audio availability detection\
--   Haptic feedback integration\
--   Auto-stop on navigation (configurable)
-
-### State Model
-
-    AudioPlaybackService
-     ├── @Published currentHymnID
-     ├── @Published isPlaying
-     ├── AVAudioPlayer instance
-     └── Analytics hooks
-
-Designed to evolve into:
-
--   Remote streaming\
--   On-demand downloads\
--   Offline caching\
--   Background fetch
-
-------------------------------------------------------------------------
-
-# 🔔 Smart Notification System
-
-## Capabilities
-
--   Contextual permission request during onboarding
--   User-selectable daily reminder time
--   Date-aware same-day suppression (prevents duplicate post-onboarding triggers)
--   Deterministic non-repeating scheduling
--   Deep-link navigation to Hymn Detail
--   State-driven routing via AppEnvironment
--   Robust cancellation with stable notification identifiers
-
-------------------------------------------------------------------------
-
-# 📊 Analytics
-
-Integrated Firebase Analytics using a strongly-typed event layer.
-
-## Instrumented Event Layers
-
-### 1. Lifecycle
--   app_opened
--   session_started
--   session_ended
-
-### 2. Onboarding
--   onboarding_shown
--   onboarding_begin_worship_tapped
--   onboarding_notification_cta_tapped
--   onboarding_dismissed
-
-### 3. Notification
--   notification_scheduled
--   notification_opened
--   reminder_enabled / reminder_disabled
-
-### 4. Home & Entry
--   home_viewed
--   start_here_tapped
--   category_opened
--   tab_switched
-
-### 5. Engagement Depth
--   hymn_opened (with source attribution)
--   hymn_story_expanded
--   hymn_audio_played / paused / completed
--   hymn_favourited / hymn_unfavourited
-
-## Design Principles
-
--   Strongly-typed event definitions
--   Structured parameter injection
--   Source attribution on navigation
--   Session-scoped context
--   No personal user data collected
-
-Analytics are used to measure spiritual engagement patterns and retention health, not behavioral exploitation.
-
-------------------------------------------------------------------------
-
-# 🔐 Privacy & Compliance
-
--   Explicit notification permission request\
--   Privacy policy hosted via GitHub Pages\
--   Terms of use\
--   API attribution (YouVersion)\
--   Firebase keys removed from repository history\
--   No invasive tracking
-
-------------------------------------------------------------------------
-
-# 📱 Tech Stack
-
--   SwiftUI\
--   Combine\
--   AVFoundation\
--   UserNotifications\
--   Firebase Analytics\
--   MVVM\
--   Service-based dependency injection\
--   JSON content modeling
-
-------------------------------------------------------------------------
-
-# 📈 Scalability Roadmap
-
-Prepared for:
-
--   Habit formation dashboards & retention cohort analysis
--   Remote audio streaming\
--   Offline download manager\
--   Cross-device sync\
--   Cloud content updates\
--   Widgets\
--   Apple Watch support\
--   AI-powered hymn discovery
-
-------------------------------------------------------------------------
-
-# 👨🏾‍💻 Author
-
-Clifford Owusu\
-iOS Engineer
-
-------------------------------------------------------------------------
-
-# 📌 Status
-
-Currently distributed via TestFlight.\
-App Store release in preparation.
+Clifford Owusu
