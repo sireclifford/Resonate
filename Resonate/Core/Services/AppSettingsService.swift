@@ -186,7 +186,7 @@ final class AppSettingsService: ObservableObject {
         
         autoDownloadAudio = defaults.object(forKey: Keys.autoDownloadAudio) as? Bool ?? true
         
-        allowCellularDownload = defaults.object(forKey: Keys.allowCellularDownload) as? Bool ?? false
+        allowCellularDownload = defaults.object(forKey: Keys.allowCellularDownload) as? Bool ?? true
         
         stopPlaybackOnExit = defaults.object(forKey: Keys.stopPlaybackOnExit) as? Bool ?? false
         
