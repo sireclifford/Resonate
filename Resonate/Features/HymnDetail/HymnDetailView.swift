@@ -385,14 +385,14 @@ struct HymnDetailView: View {
                 ProgressView()
                     .progressViewStyle(.circular)
                 
-                Text("Downloading accompaniment…")
+                Text("Downloading tune…")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 
                 Spacer()
                 
             case .remoteOnly:
-                Label("Available online", systemImage: "icloud.and.arrow.down")
+                Label("Tune available online", systemImage: "icloud.and.arrow.down")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 
@@ -406,7 +406,7 @@ struct HymnDetailView: View {
                 .font(.subheadline.weight(.semibold))
                 
             case .unavailable:
-                Label("Accompaniment unavailable", systemImage: "speaker.slash")
+                Label("Tune unavailable", systemImage: "speaker.slash")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 
@@ -421,7 +421,7 @@ struct HymnDetailView: View {
                 
             case .failed(let message):
                 VStack(alignment: .leading, spacing: 4) {
-                    Label("Accompaniment unavailable", systemImage: "exclamationmark.triangle.fill")
+                    Label("Tune unavailable", systemImage: "exclamationmark.triangle.fill")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.orange)
                     

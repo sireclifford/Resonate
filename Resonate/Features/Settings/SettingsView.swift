@@ -101,7 +101,7 @@ struct SettingsView: View {
                             .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                             .multilineTextAlignment(.center)
 
-                        Text("This will remove all downloaded accompaniments from your device. You can download them again anytime.")
+                        Text("This will remove all downloaded tunes from your device. You can download them again anytime.")
                             .font(PremiumTheme.bodyFont())
                             .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                             .multilineTextAlignment(.center)
@@ -143,7 +143,7 @@ struct SettingsView: View {
                             environment.toastCenter.show(
                                 .info(
                                     "No downloaded audio found",
-                                    subtitle: "There were no offline accompaniments to remove."
+                                    subtitle: "There were no offline tunes to remove."
                                 ),
                                 position: .top
                             )
@@ -330,7 +330,7 @@ struct SettingsView: View {
         ) {
             VStack(spacing: 12) {
                 settingsToggleRow(
-                    title: "Auto Download Accompaniments",
+                    title: "Auto Download Tunes",
                     subtitle: "Keep tunes ready for offline playback",
                     isOn: $settings.autoDownloadAudio
                 )
@@ -343,7 +343,7 @@ struct SettingsView: View {
 
                 settingsToggleRow(
                     title: "Stop Playback When Leaving Hymn",
-                    subtitle: "End accompaniment when you leave the detail view",
+                    subtitle: "End tunes when you leave the detail view",
                     isOn: $settings.stopPlaybackOnExit
                 )
                 
@@ -501,7 +501,7 @@ struct SettingsView: View {
                 } label: {
                     settingsRow(
                         title: "Clear Downloaded Audio",
-                        subtitle: "Remove all offline accompaniments",
+                        subtitle: "Remove all offline tunes",
                         icon: "trash"
                     )
                 }
