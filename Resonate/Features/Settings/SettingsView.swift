@@ -568,9 +568,7 @@ struct SettingsView: View {
                     .buttonStyle(.plain)
 
                     Button {
-                        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                            AppStore.requestReview(in: scene)
-                        }
+                        UIApplication.shared.open(AppLinks.writeReview)
                     } label: {
                         settingsRow(title: "Rate Resonate", subtitle: "Support the launch with a review", icon: "star")
                     }
