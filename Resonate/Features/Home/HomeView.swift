@@ -44,7 +44,7 @@ struct HomeView: View {
         environment.settingsService.meaningfulSessionCount < 3
     }
     
-    @State private var showWorshipFlow = false
+    @State private var presentedWorshipHymnID: Int?
     @State private var worshipStart: Date?
     @State private var worshipCounted = false
     
@@ -458,7 +458,7 @@ struct HomeView: View {
                                             .destination: "worship_flow_from_hotd_begin_button"
                                         ]
                                     )
-                                    showWorshipFlow = true
+                                    presentedWorshipHymnID = hymn.id
                                 } label: {
                                     HStack(spacing: 8) {
                                         Image(systemName: "play.fill")
@@ -501,13 +501,22 @@ struct HomeView: View {
                                 .destination: "worship_flow_from_hotd_card"
                             ]
                         )
-                        showWorshipFlow = true
+                        presentedWorshipHymnID = hymn.id
                     }
                 }
-                .fullScreenCover(isPresented: $showWorshipFlow) {
-                    if let hymn = viewModel.hymnOfTheDay {
+                .fullScreenCover(
+                    isPresented: Binding(
+                        get: { presentedWorshipHymnID != nil },
+                        set: { isPresented in
+                            if !isPresented {
+                                presentedWorshipHymnID = nil
+                            }
+                        }
+                    )
+                ) {
+                    if let hymnID = presentedWorshipHymnID {
                         WorshipFlowContainer(
-                            hymnID: hymn.id,
+                            hymnID: hymnID,
                             environment: environment
                         )
                         .onAppear {
@@ -518,7 +527,7 @@ struct HomeView: View {
                             if let start = worshipStart {
                                 let dwell = Date().timeIntervalSince(start)
                                 if dwell >= 10, !worshipCounted {
-                                    environment.hymnOfTheDayEngagementService.markOpened(hymnID: hymn.id)
+                                    environment.hymnOfTheDayEngagementService.markOpened(hymnID: hymnID)
                                     worshipCounted = true
                                 }
                             }
@@ -1328,7 +1337,7 @@ struct HomeView: View {
 //        let timeString = formatter.string(from: environment.reminderSettingsViewModel.hotdTime)
 
         DispatchQueue.main.async {
-            showWorshipFlow = true
+            presentedWorshipHymnID = hymn.id
         }
     }
 

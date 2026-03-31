@@ -4,37 +4,45 @@ import UIKit
 struct WorshipFlowContainer: View {
     let hymnID: Int
     let environment: AppEnvironment
-    
+    @StateObject private var viewModel: DevotionViewModel
+
+    init(hymnID: Int, environment: AppEnvironment) {
+        self.hymnID = hymnID
+        self.environment = environment
+        _viewModel = StateObject(
+            wrappedValue: DevotionViewModel(
+                hymnID: hymnID,
+                hymnService: environment.hymnService
+            )
+        )
+    }
+
     private var slides: [WorshipSlide] {
-        let viewModel = DevotionViewModel(hymnID: hymnID, hymnService: environment.hymnService)
-        
         let highlightText: String = viewModel.detail?.highlight
-        ?? viewModel.detail?.chorus?.first
-        ?? viewModel.detail?.verses.first?.first
-        ?? viewModel.title
-        
+            ?? viewModel.detail?.chorus?.first
+            ?? viewModel.detail?.verses.first?.first
+            ?? viewModel.title
+
         var slides: [WorshipSlide] = [.intro]
-        
+
         let hasChorus = !(viewModel.detail?.chorus?.isEmpty ?? true)
-        
+
         for verseIndex in 0..<max(viewModel.verseCount, 1) {
             slides.append(.verse(verseIndex: verseIndex))
-            
+
             if hasChorus {
                 slides.append(.chorus)
             }
         }
-        
+
         slides.append(.highlight(text: highlightText))
         slides.append(.reflection)
         slides.append(.complete)
-        
+
         return slides
     }
-    
+
     var body: some View {
-        let viewModel = DevotionViewModel(hymnID: hymnID, hymnService: environment.hymnService)
-        
         WorshipFlowView(
             viewModel: viewModel,
             slides: slides,
@@ -88,6 +96,7 @@ struct WorshipFlowView: View {
     var body: some View {
         ZStack {
             DevotionBackdrop()
+                .allowsHitTesting(!showStory)
             
             TabView(selection: $index) {
                 ForEach(slides.indices, id: \.self) { i in
@@ -124,6 +133,7 @@ struct WorshipFlowView: View {
             .onChange(of: index) { oldValue, newValue in
                 logSlideView()
             }
+            .allowsHitTesting(!showStory)
             
             VStack(spacing: 10) {
                 HStack {
@@ -192,6 +202,7 @@ struct WorshipFlowView: View {
             }
             .padding(.top, 10)
             .zIndex(2)
+            .allowsHitTesting(!showStory)
             
             HStack {
                 Color.clear
@@ -208,28 +219,23 @@ struct WorshipFlowView: View {
             }
             .ignoresSafeArea()
             .zIndex(0)
+            .allowsHitTesting(!showStory)
+
+            if showStory {
+                storyOverlay
+                    .zIndex(3)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
         // Swipe down to dismiss (optional)
         .gesture(
             DragGesture(minimumDistance: 16)
                 .onEnded { value in
-                    if value.translation.height > 80 {
+                    if !showStory && value.translation.height > 80 {
                         closeFlow()
                     }
                 }
         )
-        .sheet(isPresented: $showStory) {
-            NavigationStack {
-                if let story = environment.hymnStoryService.story(for: viewModel.hymnID) {
-                    HymnStoryView(story: story)
-                        .environmentObject(environment)
-                } else {
-                    StoryUnavailableView()
-                }
-            }
-            .presentationDetents([.medium, .large])
-            .presentationDragIndicator(.visible)
-        }
         .onDisappear {
             if !isClosing {
                 audioService.stop()
@@ -337,9 +343,107 @@ struct WorshipFlowView: View {
                     next()
                 },
                 onOpenStory: {
-                    showStory = true
+                    withAnimation(.easeInOut(duration: 0.28)) {
+                        showStory = true
+                    }
                 }
             )
+        }
+    }
+
+    private var storyOverlay: some View {
+        ZStack(alignment: .bottom) {
+            Color.black.opacity(0.58)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    closeStory()
+                }
+
+            VStack(spacing: 0) {
+                Capsule()
+                    .fill(Color.white.opacity(0.35))
+                    .frame(width: 42, height: 5)
+                    .padding(.top, 12)
+                    .padding(.bottom, 16)
+
+                HStack(spacing: 16) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Story Behind the Hymn")
+                            .font(DevotionTheme.eyebrowFont())
+                            .textCase(.uppercase)
+                            .tracking(1.2)
+                            .foregroundStyle(DevotionTheme.secondaryText)
+
+                        Text(viewModel.title)
+                            .font(DevotionTheme.secondarySerifFont())
+                            .foregroundStyle(DevotionTheme.primaryText)
+                            .lineLimit(2)
+                    }
+
+                    Spacer()
+
+                    Button {
+                        closeStory()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(DevotionTheme.actionFont())
+                            .foregroundStyle(DevotionTheme.primaryText)
+                            .frame(width: 38, height: 38)
+                            .background(DevotionTheme.chromeFill)
+                            .overlay(
+                                Circle()
+                                    .stroke(DevotionTheme.chromeBorder, lineWidth: 1)
+                            )
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 18)
+
+                Rectangle()
+                    .fill(DevotionTheme.chromeBorder)
+                    .frame(height: 1)
+
+                NavigationStack {
+                    Group {
+                        if let story = environment.hymnStoryService.story(for: viewModel.hymnID) {
+                            HymnStoryView(story: story)
+                                .environmentObject(environment)
+                        } else {
+                            StoryUnavailableView()
+                        }
+                    }
+                }
+                .toolbar(.hidden, for: .navigationBar)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(maxHeight: UIScreen.main.bounds.height * 0.82)
+            .background(
+                RoundedRectangle(cornerRadius: 30, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [DevotionTheme.panelTop, DevotionTheme.panelBottom],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 30, style: .continuous)
+                    .stroke(DevotionTheme.chromeBorder, lineWidth: 1)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+            .shadow(color: Color.black.opacity(0.34), radius: 28, y: 18)
+            .padding(.horizontal, 12)
+            .padding(.top, 32)
+            .padding(.bottom, 18)
+        }
+    }
+
+    private func closeStory() {
+        withAnimation(.easeInOut(duration: 0.24)) {
+            showStory = false
         }
     }
 }
