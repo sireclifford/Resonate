@@ -3,6 +3,7 @@ import Foundation
 import Combine
 import MediaPlayer
 import Network
+import UIKit
 
 final class AccompanimentPlaybackService: NSObject, ObservableObject {
 
@@ -80,6 +81,7 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
     private let settings: AppSettingsService
     private let analyticsService: AnalyticsService
     private let hymnTitleProvider: (Int) -> String
+    private let nowPlayingArtwork: MPMediaItemArtwork?
 
     init(
         storageService: AccompanimentStorageService,
@@ -93,6 +95,7 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
         self.settings = settings
         self.analyticsService = analyticsService
         self.hymnTitleProvider = hymnTitleProvider
+        self.nowPlayingArtwork = Self.makeNowPlayingArtwork()
         super.init()
         configureRemoteCommands()
         startNetworkMonitoring()
@@ -441,19 +444,33 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
     private func updateNowPlayingInfo(for hymnID: Int, isPlaying: Bool) {
         let title = hymnTitleProvider(hymnID)
 
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = [
+        var nowPlayingInfo: [String: Any] = [
             MPMediaItemPropertyTitle: title,
             MPMediaItemPropertyArtist: "Resonate",
             MPMediaItemPropertyPlaybackDuration: duration,
             MPNowPlayingInfoPropertyElapsedPlaybackTime: currentTime,
             MPNowPlayingInfoPropertyPlaybackRate: isPlaying ? 1.0 : 0.0
         ]
+
+        if let nowPlayingArtwork {
+            nowPlayingInfo[MPMediaItemPropertyArtwork] = nowPlayingArtwork
+        }
+
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
 
     private func configureAudioSession() throws {
         let session = AVAudioSession.sharedInstance()
         try session.setCategory(.playback)
         try session.setActive(true)
+    }
+
+    private static func makeNowPlayingArtwork() -> MPMediaItemArtwork? {
+        guard let image = UIImage(named: "AppLogo") ?? UIImage(named: "LaunchLogo") else {
+            return nil
+        }
+
+        return MPMediaItemArtwork(boundsSize: image.size) { _ in image }
     }
 }
 
