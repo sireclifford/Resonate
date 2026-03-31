@@ -41,9 +41,5 @@ struct HymnStoryView: View {
                 .padding(.vertical, 20)
             }
         }
-        .navigationTitle("Story")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(PremiumTheme.tabBarFill(for: colorScheme), for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
     }
 }

@@ -14,6 +14,7 @@ struct HymnDetailView: View {
     @State private var viewStart: Date?
     @State private var counted = false
     @State private var storyViewStart: Date?
+    @State private var storyTextAnimating = false
     
     let index: HymnIndex
 
@@ -60,6 +61,8 @@ struct HymnDetailView: View {
                         devotionalHeader
                         accompanimentActionRow
                         lyricsCanvas
+                        behindTheHymnText
+                        hymnInfoFooter
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 20)
@@ -189,18 +192,14 @@ struct HymnDetailView: View {
 
                 Spacer(minLength: 12)
 
-                VStack(spacing: 14) {
-                    ZStack {
-                        Circle()
-                            .fill(PremiumTheme.subtleFill(for: colorScheme))
-                            .frame(width: 64, height: 64)
+                ZStack {
+                    Circle()
+                        .fill(PremiumTheme.subtleFill(for: colorScheme))
+                        .frame(width: 64, height: 64)
 
-                        Image(systemName: detailSymbol)
-                            .font(PremiumTheme.scaledIconFont(size: 24, weight: .semibold, relativeTo: .title2))
-                            .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
-                    }
-
-                    storyButton
+                    Image(systemName: detailSymbol)
+                        .font(PremiumTheme.scaledIconFont(size: 24, weight: .semibold, relativeTo: .title2))
+                        .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                 }
             }
 
@@ -289,23 +288,81 @@ struct HymnDetailView: View {
         }
     }
 
-    private var storyButton: some View {
+    private var behindTheHymnText: some View {
         Button {
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
             showStory = true
         } label: {
-            Image(systemName: "book.pages")
-                .font(PremiumTheme.scaledIconFont(size: 18, weight: .semibold, relativeTo: .headline))
-                .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
-                .frame(width: 44, height: 44)
-                .background(PremiumTheme.subtleFill(for: colorScheme))
-                .clipShape(Circle())
-                .overlay(
-                    Circle()
-                        .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
-                )
+            HStack(spacing: 8) {
+                Text("Behind the Hymn")
+                    .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold, design: .serif))
+
+                Image(systemName: "arrow.right")
+                    .font(PremiumTheme.scaledSystem(size: 12, weight: .bold))
+            }
+            .foregroundStyle(PremiumTheme.accent(for: colorScheme))
+            .tracking(storyTextAnimating ? 0.6 : 0.2)
+            .opacity(storyTextAnimating ? 1.0 : 0.72)
+            .onAppear {
+                guard !storyTextAnimating else { return }
+                withAnimation(.easeInOut(duration: 1.15).repeatForever(autoreverses: true)) {
+                    storyTextAnimating = true
+                }
+            }
         }
         .buttonStyle(.plain)
+        .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder
+    private var hymnInfoFooter: some View {
+        if let story = environment.hymnStoryService.story(for: viewModel.hymn.id) {
+            let rows = hymnInfoRows(from: story)
+
+            if !rows.isEmpty {
+                VStack(spacing: 8) {
+                    ForEach(rows.indices, id: \.self) { index in
+                        let row = rows[index]
+
+                        Text("\(row.label): \(row.value)")
+                            .font(PremiumTheme.scaledSystem(size: 14, weight: .medium, design: .serif))
+                            .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .padding(.top, 8)
+            }
+        }
+    }
+
+    private func hymnInfoRows(from story: HymnStory) -> [(label: String, value: String)] {
+        var rows: [(String, String)] = []
+
+        let authorValue = [story.author, story.authorBirthDeath]
+            .compactMap { value in
+                guard let value, !value.isEmpty else { return nil }
+                return value
+            }
+            .joined(separator: " ")
+        if !authorValue.isEmpty {
+            rows.append(("Author", authorValue))
+        }
+
+        if let yearWritten = story.yearWritten {
+            rows.append(("Written", String(yearWritten)))
+        }
+
+        if let tuneName = story.music?.tuneName, !tuneName.isEmpty {
+            rows.append(("Tune", tuneName))
+        }
+
+        if let copyright = story.copyright, !copyright.isEmpty {
+            rows.append(("Copyright", copyright))
+        }
+
+        return rows
     }
 
     private var devotionalContext: (title: String, body: String)? {
@@ -370,7 +427,7 @@ struct HymnDetailView: View {
         HStack(spacing: 12) {
             switch fileState {
             case .downloaded:
-                Label("Downloaded", systemImage: "arrow.down.circle.fill")
+                Label("Tune Downloaded", systemImage: "arrow.down.circle.fill")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.green)
                 

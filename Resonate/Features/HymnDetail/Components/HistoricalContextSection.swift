@@ -10,7 +10,7 @@ struct HistoricalContextSection: View {
                 .font(PremiumTheme.scaledSystem(size: 20, weight: .semibold, design: .serif))
             
             Text(text)
-                .font(PremiumTheme.scaledSystem(size: 16, weight: .medium))
+                .font(PremiumTheme.scaledSystem(size: 16, weight: .regular))
                 .lineSpacing(6)
         }
     }
