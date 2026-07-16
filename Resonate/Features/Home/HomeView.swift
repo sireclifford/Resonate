@@ -47,6 +47,9 @@ struct HomeView: View {
     @State private var presentedWorshipHymnID: Int?
     @State private var worshipStart: Date?
     @State private var worshipCounted = false
+    #if DEBUG
+    @State private var hotdPreviewDate: Date?
+    #endif
     
     private var greeting: String {
         // Boundaries: Night 21:00–6:00, Morning 6:00–12:00, Afternoon 12:00–18:00, Evening 18:00–21:00
@@ -185,18 +188,10 @@ struct HomeView: View {
             ScrollView {
                 #if DEBUG
                 Button {
-    //                let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
-    //                viewModel.refreshHymnOfTheDay(on: tomorrow)
-
-                    let calendar = Calendar.current
-                    let today = Date()
-
-                    for offset in 0...5 {
-                        if let date = calendar.date(byAdding: .day, value: offset, to: today) {
-                            viewModel.refreshHymnOfTheDay(on: date)
-                            print("DAY +\(offset):", viewModel.hymnOfTheDay?.title ?? "nil")
-                        }
-                    }
+                    let baseDate = hotdPreviewDate ?? Date()
+                    let nextDate = Calendar.current.date(byAdding: .day, value: 1, to: baseDate) ?? baseDate
+                    hotdPreviewDate = nextDate
+                    viewModel.refreshHymnOfTheDay(on: nextDate)
                 } label: {
                     Text("Refresh hymn of the day")
                 }

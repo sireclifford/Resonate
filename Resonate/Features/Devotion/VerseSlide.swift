@@ -3,6 +3,16 @@ import SwiftUI
 struct VerseSlide: View {
     @ObservedObject var viewModel: DevotionViewModel
     let verseIndex: Int
+    @State private var scrollMetrics: VerseScrollMetrics = .init(
+        contentOffsetY: 0,
+        contentHeight: 0,
+        viewportHeight: 0
+    )
+
+    private var shouldShowScrollCue: Bool {
+        scrollMetrics.contentHeight > scrollMetrics.viewportHeight + 24
+            && scrollMetrics.contentOffsetY < 12
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
@@ -36,15 +46,49 @@ struct VerseSlide: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .onScrollGeometryChange(
+                    for: VerseScrollMetrics.self,
+                    of: { geometry in
+                        VerseScrollMetrics(
+                            contentOffsetY: geometry.contentOffset.y,
+                            contentHeight: geometry.contentSize.height,
+                            viewportHeight: geometry.visibleRect.height
+                        )
+                    },
+                    action: { _, newValue in
+                        scrollMetrics = newValue
+                    }
+                )
             }
             .padding(26)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .devotionPanel(cornerRadius: 32)
 
+            if shouldShowScrollCue {
+                HStack(spacing: 6) {
+                    Text("Scroll to continue")
+                        .font(DevotionTheme.badgeFont())
+                    Image(systemName: "arrow.down")
+                        .font(DevotionTheme.badgeFont())
+                }
+                .foregroundStyle(DevotionTheme.secondaryText)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(DevotionTheme.chromeFill)
+                .overlay(
+                    Capsule()
+                        .stroke(DevotionTheme.chromeBorder, lineWidth: 1)
+                )
+                .clipShape(Capsule())
+                .frame(maxWidth: .infinity)
+                .transition(.opacity)
+            }
+
             Spacer(minLength: 32)
         }
         .padding(.horizontal, 20)
         .padding(.bottom, 40)
+        .animation(.easeOut(duration: 0.2), value: shouldShowScrollCue)
     }
 
     private func chip(_ text: String) -> some View {
@@ -56,6 +100,12 @@ struct VerseSlide: View {
             .background(.white.opacity(0.12))
             .clipShape(Capsule())
     }
+}
+
+private struct VerseScrollMetrics: Equatable {
+    let contentOffsetY: CGFloat
+    let contentHeight: CGFloat
+    let viewportHeight: CGFloat
 }
 
 struct ChorusSlide: View {

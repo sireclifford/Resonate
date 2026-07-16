@@ -325,11 +325,18 @@ struct OnboardingView: View {
                     Text("Set a daily hymn reminder")
                         .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold))
                         .foregroundStyle(primaryText)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
 
                     Text("Choose a time and return with intention.")
                         .font(PremiumTheme.scaledSystem(size: 13, weight: .medium))
                         .foregroundStyle(secondaryText)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
 
                 Spacer()
 
