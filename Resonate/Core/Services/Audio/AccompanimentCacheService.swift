@@ -1,100 +1,131 @@
 import Foundation
 import Combine
 
-/// Manages local storage for hymn accompaniment audio files.
-/// Files are stored in: Application Support / Accompaniments /
 final class AccompanimentCacheService: ObservableObject {
-
-    struct ClearResult {
-        let deletedFileCount: Int
-        let reclaimedBytes: Int64
+    
+    enum CacheError: Error {
+        case deleteFailed(hymnID: Int, error: Error)
     }
-
+    
+    enum ClearResult {
+        case cleared(deletedFileCount: Int, reclaimedBytes: Int64)
+        case nothingToClear
+        case failed(underlying: Error)
+    }
+    
     @Published private(set) var totalStorageBytes: Int64 = 0
-
+    
     private let fileManager = FileManager.default
-
+    
     private lazy var baseDirectory: URL = {
-        let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let directory = appSupport.appendingPathComponent("Accompaniments", isDirectory: true)
-
-        if !fileManager.fileExists(atPath: directory.path) {
-            try? fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
+        guard let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
+            fatalError("Crucial system directory 'Application Support' could not be found.")
         }
-
+        
+        let directory = appSupport.appendingPathComponent("Accompaniments", isDirectory: true)
+        
+        do {
+            try fileManager.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+        } catch {
+            print("⚠️ Failed to create base directory: \(error.localizedDescription)")
+        }
+        
         return directory
     }()
-
+    
     init() {
         refreshStorageSize()
     }
-
-    /// Returns the expected local file URL for a hymn accompaniment
+    
     func localURL(for hymnID: Int) -> URL {
         let filename = String(format: "%03d.mp3", hymnID)
         return baseDirectory.appendingPathComponent(filename)
     }
-
-    /// Returns true if the accompaniment is already downloaded
+    
     func isDownloaded(for hymnID: Int) -> Bool {
         fileManager.fileExists(atPath: localURL(for: hymnID).path)
     }
-
-    /// Save downloaded data to local storage
+    
     func save(data: Data, for hymnID: Int) throws -> URL {
         let url = localURL(for: hymnID)
         try data.write(to: url, options: .atomic)
         refreshStorageSize()
         return url
     }
-
-    /// Delete a downloaded accompaniment
-    func delete(for hymnID: Int) {
+    
+    func delete(for hymnID: Int) throws {
         let url = localURL(for: hymnID)
-        try? fileManager.removeItem(at: url)
+        
+        guard fileManager.fileExists(atPath: url.path) else { return }
+        
+        do {
+            try fileManager.removeItem(at: url)
+        } catch {
+            throw CacheError.deleteFailed(hymnID: hymnID, error: error)
+        }
         refreshStorageSize()
     }
-
-    /// Delete all downloaded accompaniments
-    @discardableResult
+    
     func clearAll() -> ClearResult {
-        guard let files = try? fileManager.contentsOfDirectory(at: baseDirectory, includingPropertiesForKeys: nil) else {
-            return ClearResult(deletedFileCount: 0, reclaimedBytes: 0)
-        }
+        let files: [URL]
         let reclaimedBytes = totalStorageSize()
-        let deletedFileCount = files.count
-        for file in files {
-            try? fileManager.removeItem(at: file)
+        
+        do {
+            files = try fileManager.contentsOfDirectory(at: baseDirectory, includingPropertiesForKeys: nil)
+        } catch {
+            return ClearResult.failed(underlying: error)
         }
-        refreshStorageSize()
-        return ClearResult(deletedFileCount: deletedFileCount, reclaimedBytes: reclaimedBytes)
+        
+        let deletedFileCount = files.count
+        
+        guard deletedFileCount > 0 else { return ClearResult.nothingToClear }
+        
+        do {
+            try fileManager.removeItem(at: baseDirectory)
+            try fileManager.createDirectory(at: baseDirectory, withIntermediateDirectories: true, attributes: nil)
+            refreshStorageSize()
+            return ClearResult.cleared(deletedFileCount: deletedFileCount, reclaimedBytes: reclaimedBytes)
+            
+        } catch {
+            print("⚠️ Failed to completely clear directory: \(error.localizedDescription)")
+            refreshStorageSize()
+            return ClearResult.failed(underlying: error)
+        }
     }
-
-    /// Returns the total storage used by accompaniment files
+    
     func totalStorageSize() -> Int64 {
-        guard let files = try? fileManager.contentsOfDirectory(at: baseDirectory, includingPropertiesForKeys: [.fileSizeKey]) else {
+        let keys: Set<URLResourceKey> = [.fileSizeKey]
+        guard let files = try? fileManager.contentsOfDirectory(at: baseDirectory, includingPropertiesForKeys: Array(keys)) else {
             return 0
         }
-
-        var total: Int64 = 0
-
-        for file in files {
-            if let size = try? file.resourceValues(forKeys: [.fileSizeKey]).fileSize {
-                total += Int64(size)
+        
+        return files.reduce(0) { total, fileURL in
+            guard let values = try? fileURL.resourceValues(forKeys: keys),
+                  let size = values.fileSize else {
+                return total
+            }
+            return total + Int64(size)
+        }
+    }
+    
+    private func refreshStorageSize() {
+        Task(priority: .userInitiated) { [weak self] in
+            guard let self = self else { return }
+            
+            let newValue = self.totalStorageSize()
+            
+            await MainActor.run {
+                self.totalStorageBytes = newValue
             }
         }
-
-        return total
     }
+}
 
-    private func refreshStorageSize() {
-        let newValue = totalStorageSize()
-        if Thread.isMainThread {
-            totalStorageBytes = newValue
-        } else {
-            DispatchQueue.main.async { [weak self] in
-                self?.totalStorageBytes = newValue
-            }
+extension AccompanimentCacheService.CacheError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .deleteFailed:
+            return "Couldn't remove the downloaded audio file. Please try again."
         }
     }
 }
