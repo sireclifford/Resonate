@@ -304,8 +304,14 @@ final class AccompanimentPlaybackService: NSObject, ObservableObject {
         if currentHymnID == hymnID {
             stop()
         }
-
-        cacheService.delete(for: hymnID)
+        
+        do {  try cacheService.delete(for: hymnID) }
+        catch {
+            failedHymnID = hymnID
+            lastFileErrorMessage = error.localizedDescription
+            fileStateVersion &+= 1
+            return
+        }
 
         if failedHymnID == hymnID {
             failedHymnID = nil
