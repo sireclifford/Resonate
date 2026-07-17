@@ -59,16 +59,21 @@ final class UsageService: ObservableObject {
     }
     
     private func save() {
-        if let data = try? JSONEncoder().encode(usage) {
+        do {
+            let data = try JSONEncoder().encode(usage)
             UserDefaults.standard.set(data, forKey: storageKey)
+        } catch {
+            print("⚠️ Encode failed for key \(storageKey): \(error.localizedDescription)")
         }
     }
     
     private func load() {
-        guard let data = UserDefaults.standard.data(forKey: storageKey),
-              let decoded = try? JSONDecoder().decode([Int: HymnUsage].self, from: data)
-        else { return }
-        
-        usage = decoded
+        guard let data = UserDefaults.standard.data(forKey: storageKey) else { return }
+        do {
+            let decoded = try JSONDecoder().decode([Int: HymnUsage].self, from: data)
+            usage = decoded
+        } catch {
+            print("⚠️ Decode failed for key \(storageKey): \(error.localizedDescription)")
+        }
     }
 }
