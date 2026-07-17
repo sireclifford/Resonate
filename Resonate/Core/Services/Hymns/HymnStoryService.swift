@@ -13,7 +13,7 @@ final class HymnStoryService {
               let data = try? Data(contentsOf: url),
               let decoded = try? JSONDecoder().decode([HymnStory].self, from: data)
         else {
-//            print("❌ Failed to load hymn stories")
+            assertionFailure("Failed to load bundled hymn stories — check hymns_merged.json exists and is valid")
             return
         }
         
