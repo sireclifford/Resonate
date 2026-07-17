@@ -4,7 +4,7 @@ import UIKit
 
 struct SettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
-
+    
     let environment: AppEnvironment
     @State private var showSupportMail = false
     @State private var showBugReport = false
@@ -30,7 +30,7 @@ struct SettingsView: View {
     var body: some View {
         ZStack {
             PremiumScreenBackground()
-
+            
             ScrollView {
                 VStack(spacing: 16) {
                     appearanceSection
@@ -83,24 +83,24 @@ struct SettingsView: View {
                     .frame(width: 42, height: 5)
                     .padding(.top, 10)
                     .padding(.bottom, 18)
-
+                
                 VStack(spacing: 14) {
                     ZStack {
                         Circle()
                             .fill(Color.red.opacity(0.12))
                             .frame(width: 60, height: 60)
-
+                        
                         Image(systemName: "trash.fill")
                             .font(PremiumTheme.scaledSystem(size: 24, weight: .semibold))
                             .foregroundStyle(.red)
                     }
-
+                    
                     VStack(spacing: 8) {
                         Text("Clear Downloaded Audio?")
                             .font(PremiumTheme.sectionTitleFont())
                             .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
                             .multilineTextAlignment(.center)
-
+                        
                         Text("This will remove all downloaded tunes from your device. You can download them again anytime.")
                             .font(PremiumTheme.bodyFont())
                             .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
@@ -109,7 +109,7 @@ struct SettingsView: View {
                     }
                 }
                 .padding(.horizontal, 24)
-
+                
                 HStack(spacing: 12) {
                     Button {
                         showClearDownloadedAudioConfirmation = false
@@ -126,24 +126,33 @@ struct SettingsView: View {
                             .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
                     )
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-
+                    
                     Button {
                         let result = environment.accompanimentCacheService.clearAll()
                         showClearDownloadedAudioConfirmation = false
-
-                        if result.deletedFileCount > 0 {
+                        
+                        switch result {
+                        case .cleared(let deletedFileCount, let reclaimedBytes):
                             environment.toastCenter.show(
                                 .success(
                                     "Downloaded audio cleared",
-                                    subtitle: "Removed \(result.deletedFileCount) file\(result.deletedFileCount == 1 ? "" : "s") and freed \(formattedStorageSize(result.reclaimedBytes))."
+                                    subtitle: "Removed \(deletedFileCount) file\(deletedFileCount == 1 ? "" : "s") and freed \(formattedStorageSize(reclaimedBytes))."
                                 ),
                                 position: .top
                             )
-                        } else {
+                        case .nothingToClear:
                             environment.toastCenter.show(
                                 .info(
                                     "No downloaded audio found",
                                     subtitle: "There were no offline tunes to remove."
+                                ),
+                                position: .top
+                            )
+                        case .failed(let underlying):
+                            environment.toastCenter.show(
+                                .error(
+                                    underlying.localizedDescription,
+                                    subtitle: "An error occurred with the delete operation. Please try again."
                                 ),
                                 position: .top
                             )
@@ -199,7 +208,7 @@ struct SettingsView: View {
                     )
                 }
                 .buttonStyle(.plain)
-
+                
                 settingsHighlight(
                     title: "Current Look",
                     detail: settings.theme.label,
@@ -221,7 +230,7 @@ struct SettingsView: View {
                     detail: "\(settings.fontSize.label) • \(settings.fontFamily.label) • \(settings.lineSpacing.label)",
                     icon: "text.book.closed"
                 )
-
+                
                 Menu {
                     ForEach(ReaderFontSize.allCases) { size in
                         Button {
@@ -334,13 +343,13 @@ struct SettingsView: View {
                     subtitle: "Keep tunes ready for offline playback",
                     isOn: $settings.autoDownloadAudio
                 )
-
+                
                 settingsToggleRow(
                     title: "Allow Cellular Downloads",
                     subtitle: "Use mobile data when Wi-Fi is unavailable",
                     isOn: $settings.allowCellularDownload
                 )
-
+                
                 settingsToggleRow(
                     title: "Stop Playback When Leaving Hymn",
                     subtitle: "End tunes when you leave the detail view",
@@ -368,7 +377,7 @@ struct SettingsView: View {
                     detail: environment.reminderSettingsViewModel.hotdEnabled ? "Scheduled" : "Off",
                     icon: "bell.and.waves.left.and.right"
                 )
-
+                
                 settingsToggleRow(
                     title: "Enable Daily Hymn Reminder",
                     subtitle: "Receive a daily prompt to return to the hymn of the day",
@@ -387,17 +396,17 @@ struct SettingsView: View {
                         }
                     )
                 )
-
+                
                 if environment.reminderSettingsViewModel.hotdEnabled {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Reminder Time")
                             .font(PremiumTheme.scaledSystem(size: 18, weight: .semibold, design: .serif))
                             .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
-
+                        
                         Text("Choose when Resonate should surface the hymn of the day.")
                             .font(PremiumTheme.captionFont())
                             .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
-
+                        
                         DatePicker(
                             "Reminder Time",
                             selection: Binding(
@@ -423,20 +432,20 @@ struct SettingsView: View {
                             .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
                     )
                 }
-                #if DEBUG
+#if DEBUG
                 settingsValueRow(
                     title: "Notification Permission",
                     subtitle: "Current iOS authorization state",
                     value: permissionLabel(environment.reminderSettingsViewModel.authorizationStatus)
                 )
-
+                
                 if environment.reminderSettingsViewModel.isSyncing {
                     ProgressView()
                 }
-                #endif
+#endif
             }
             
-            #if DEBUG
+#if DEBUG
             VStack(spacing: 12) {
                 settingsToggleRow(
                     title: "Sabbath Reminder",
@@ -456,7 +465,7 @@ struct SettingsView: View {
                         }
                     )
                 )
-
+                
                 if environment.reminderSettingsViewModel.sabbathEnabled {
                     settingsValueRow(
                         title: "Sabbath Reminder Time",
@@ -465,7 +474,7 @@ struct SettingsView: View {
                     )
                 }
             }
-            #endif
+#endif
         }
         .task {
             await environment.reminderSettingsViewModel.load()
@@ -484,7 +493,7 @@ struct SettingsView: View {
                     detail: formattedStorageSize(accompanimentCacheService.totalStorageBytes),
                     icon: "internaldrive"
                 )
-
+                
                 Button {
                     environment.recentlyViewedService.clear()
                     showClearSuccess = true
@@ -495,7 +504,7 @@ struct SettingsView: View {
                         icon: "clock.arrow.circlepath"
                     )
                 }
-
+                
                 Button(role: .destructive) {
                     showClearDownloadedAudioConfirmation = true
                 } label: {
@@ -510,11 +519,11 @@ struct SettingsView: View {
     }
     
     private var buildConfigurationLabel: String {
-    #if DEBUG
+#if DEBUG
         return "Debug"
-    #else
+#else
         return "Release"
-    #endif
+#endif
     }
     
     private var aboutSection: some View {
@@ -566,7 +575,7 @@ struct SettingsView: View {
                         settingsRow(title: "Share Resonate", subtitle: "Invite others to discover it", icon: "square.and.arrow.up")
                     }
                     .buttonStyle(.plain)
-
+                    
                     Button {
                         UIApplication.shared.open(AppLinks.writeReview)
                     } label: {
@@ -587,7 +596,7 @@ struct SettingsView: View {
             }
         }
     }
-
+    
     private var aboutHero: some View {
         VStack(spacing: 10) {
             ZStack {
@@ -600,25 +609,25 @@ struct SettingsView: View {
                         )
                     )
                     .frame(width: 74, height: 74)
-
+                
                 Image(systemName: "music.quarternote.3")
                     .font(PremiumTheme.scaledSystem(size: 28, weight: .semibold))
                     .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
             }
-
+            
             Text("Resonate")
                 .font(PremiumTheme.sectionTitleFont())
                 .foregroundStyle(PremiumTheme.primaryText(for: colorScheme))
-
+            
             Text("A refined hymn companion for worship, reflection, and story.")
                 .font(PremiumTheme.bodyFont())
                 .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                 .multilineTextAlignment(.center)
-
+            
             Text(Bundle.main.appVersion)
                 .font(PremiumTheme.captionFont())
                 .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
-
+            
 #if DEBUG
             Text(buildConfigurationLabel)
                 .font(.caption2.weight(.semibold))
@@ -633,7 +642,7 @@ struct SettingsView: View {
         .padding(.vertical, 22)
         .premiumPanel(colorScheme: colorScheme, cornerRadius: 24)
     }
-
+    
     private func aboutGroup<Content: View>(@ViewBuilder content: () -> Content) -> some View {
         VStack(spacing: 0) {
             content()
@@ -658,18 +667,18 @@ struct SettingsView: View {
         case .ephemeral: return "Ephemeral"
         }
     }
-
+    
     private func formattedStorageSize(_ bytes: Int64) -> String {
         ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file)
     }
-
+    
     private func timeString(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.timeStyle = .short
         formatter.dateStyle = .none
         return formatter.string(from: date)
     }
-
+    
     private func settingsHighlight(title: String, detail: String, icon: String) -> some View {
         HStack(spacing: 14) {
             ZStack {
@@ -680,11 +689,11 @@ struct SettingsView: View {
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
                             .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
                     )
-
+                
                 Image(systemName: icon)
                     .foregroundStyle(PremiumTheme.accent(for: colorScheme))
             }
-
+            
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
                     .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold, design: .serif))
@@ -693,7 +702,7 @@ struct SettingsView: View {
                     .font(PremiumTheme.bodyFont())
                     .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
             }
-
+            
             Spacer()
         }
         .padding(14)
@@ -706,7 +715,7 @@ struct SettingsView: View {
                 .stroke(PremiumTheme.border(for: colorScheme), lineWidth: 1)
         )
     }
-
+    
     private func settingsValueRow(title: String, subtitle: String, value: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
             VStack(alignment: .leading, spacing: 3) {
@@ -717,9 +726,9 @@ struct SettingsView: View {
                     .font(PremiumTheme.captionFont())
                     .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
             }
-
+            
             Spacer()
-
+            
             HStack(spacing: 8) {
                 Text(value)
                     .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
@@ -734,7 +743,7 @@ struct SettingsView: View {
         .padding(.vertical, 12)
         .contentShape(Rectangle())
     }
-
+    
     private func settingsToggleRow(title: String, subtitle: String, isOn: Binding<Bool>) -> some View {
         HStack(alignment: .top, spacing: 12) {
             VStack(alignment: .leading, spacing: 3) {
@@ -745,16 +754,16 @@ struct SettingsView: View {
                     .font(PremiumTheme.captionFont())
                     .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
             }
-
+            
             Spacer()
-
+            
             Toggle("", isOn: isOn)
                 .labelsHidden()
         }
         .padding(.horizontal, 2)
         .padding(.vertical, 6)
     }
-
+    
     private func settingsRow(title: String, subtitle: String? = nil, icon: String? = nil) -> some View {
         HStack {
             if let icon {
@@ -762,7 +771,7 @@ struct SettingsView: View {
                     .foregroundStyle(PremiumTheme.secondaryText(for: colorScheme))
                     .frame(width: 22)
             }
-
+            
             VStack(alignment: .leading, spacing: subtitle == nil ? 0 : 2) {
                 Text(title)
                     .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold, design: .serif))
@@ -782,4 +791,4 @@ struct SettingsView: View {
     }
 }
 
- 
+
