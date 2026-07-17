@@ -10,6 +10,7 @@
 		E63A1B6A2F4E94FF00AD24ED /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = E63A1B692F4E94FF00AD24ED /* FirebaseAnalytics */; };
 		E63A1B6C2F4E94FF00AD24ED /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = E63A1B6B2F4E94FF00AD24ED /* FirebaseCrashlytics */; };
 		E644D5D02F4A923300ACCDB4 /* YouVersionPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = E644D5CF2F4A923300ACCDB4 /* YouVersionPlatform */; };
+		E66E09CF300A337700B8EC18 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = E66E09CE300A337700B8EC18 /* FirebaseStorage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,9 +31,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		E6DAD1402F568A0200AD5ED7 /* Resonate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Resonate.app; path = "/Users/ghost/Downloads/Resonate-main/build/Debug-iphoneos/Resonate.app"; sourceTree = "<absolute>"; };
-		E6DAD1412F568A0200AD5ED7 /* ResonateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = ResonateTests.xctest; path = "/Users/ghost/Downloads/Resonate-main/build/Debug-iphoneos/Resonate.app/PlugIns/ResonateTests.xctest"; sourceTree = "<absolute>"; };
-		E6DAD1422F568A0200AD5ED7 /* ResonateUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = ResonateUITests.xctest; path = "/Users/ghost/Downloads/Resonate-main/build/Debug-iphoneos/ResonateUITests-Runner.app/PlugIns/ResonateUITests.xctest"; sourceTree = "<absolute>"; };
+		E66E084E300A317200B8EC18 /* Resonate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Resonate.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E66E084F300A317200B8EC18 /* ResonateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ResonateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E66E0850300A317200B8EC18 /* ResonateUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ResonateUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -72,6 +73,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E63A1B6C2F4E94FF00AD24ED /* FirebaseCrashlytics in Frameworks */,
+				E66E09CF300A337700B8EC18 /* FirebaseStorage in Frameworks */,
 				E63A1B6A2F4E94FF00AD24ED /* FirebaseAnalytics in Frameworks */,
 				E644D5D02F4A923300ACCDB4 /* YouVersionPlatform in Frameworks */,
 			);
@@ -100,7 +102,18 @@
 				E6138A2E2F3735520069DC98 /* Resonate */,
 				E6138A3C2F3735540069DC98 /* ResonateTests */,
 				E6138A462F3735540069DC98 /* ResonateUITests */,
+				E66E084E300A317200B8EC18 /* Resonate.app */,
+				E66E084F300A317200B8EC18 /* ResonateTests.xctest */,
+				E66E0850300A317200B8EC18 /* ResonateUITests.xctest */,
+				E66E09CD300A337600B8EC18 /* Frameworks */,
 			);
+			sourceTree = "<group>";
+		};
+		E66E09CD300A337600B8EC18 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -126,9 +139,10 @@
 				E644D5CF2F4A923300ACCDB4 /* YouVersionPlatform */,
 				E63A1B692F4E94FF00AD24ED /* FirebaseAnalytics */,
 				E63A1B6B2F4E94FF00AD24ED /* FirebaseCrashlytics */,
+				E66E09CE300A337700B8EC18 /* FirebaseStorage */,
 			);
 			productName = Resonate;
-			productReference = E6DAD1402F568A0200AD5ED7 /* Resonate.app */;
+			productReference = E66E084E300A317200B8EC18 /* Resonate.app */;
 			productType = "com.apple.product-type.application";
 		};
 		E6138A382F3735540069DC98 /* ResonateTests */ = {
@@ -151,7 +165,7 @@
 			packageProductDependencies = (
 			);
 			productName = ResonateTests;
-			productReference = E6DAD1412F568A0200AD5ED7 /* ResonateTests.xctest */;
+			productReference = E66E084F300A317200B8EC18 /* ResonateTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		E6138A422F3735540069DC98 /* ResonateUITests */ = {
@@ -174,7 +188,7 @@
 			packageProductDependencies = (
 			);
 			productName = ResonateUITests;
-			productReference = E6DAD1422F568A0200AD5ED7 /* ResonateUITests.xctest */;
+			productReference = E66E0850300A317200B8EC18 /* ResonateUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -773,6 +787,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E644D5CE2F4A923300ACCDB4 /* XCRemoteSwiftPackageReference "platform-sdk-swift" */;
 			productName = YouVersionPlatform;
+		};
+		E66E09CE300A337700B8EC18 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E63A1B682F4E94FF00AD24ED /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
