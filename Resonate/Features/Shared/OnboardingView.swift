@@ -4,16 +4,16 @@ import UIKit
 struct OnboardingView: View {
     @EnvironmentObject private var environment: AppEnvironment
     @Environment(\.colorScheme) private var colorScheme
-
+    
     private let analytics: AnalyticsService
     var onBeginWorship: () -> Void
     var onDismiss: () -> Void
-
+    
     @State private var showNotificationExplainer = false
     @State private var showTimePicker = false
     @State private var shouldBeginWorshipAfterTimePicker = false
     @State private var hasAppeared = false
-
+    
     init(
         analytics: AnalyticsService,
         onBeginWorship: @escaping () -> Void = {},
@@ -23,11 +23,11 @@ struct OnboardingView: View {
         self.onBeginWorship = onBeginWorship
         self.onDismiss = onDismiss
     }
-
+    
     var body: some View {
         ZStack {
             backgroundLayer
-
+            
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 26) {
                     topBrandBar
@@ -51,19 +51,25 @@ struct OnboardingView: View {
         .sheet(isPresented: $showNotificationExplainer) {
             NotificationExplainerSheet(
                 onEnable: {
-                    analytics.notificationPromptAccepted()
-                    environment.reminderSettingsViewModel.hotdEnabled = true
-
+                    
                     Task {
-                        _ = try? await environment.authorizationManager.requestAuthorization()
+                        await environment.reminderSettingsViewModel.requestPermissionAndEnableHOTD()
+                        if environment.reminderSettingsViewModel.hotdEnabled {
+                            analytics.notificationPromptAccepted()
+                            shouldBeginWorshipAfterTimePicker = true
+                            showNotificationExplainer = false
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                showTimePicker = true
+                            }
+                        } else {
+                            analytics.notificationPromptDeclined()
+                            shouldBeginWorshipAfterTimePicker = false
+                            showNotificationExplainer = false
+                            onBeginWorship()
+                        }
                     }
-
-                    shouldBeginWorshipAfterTimePicker = true
-                    showNotificationExplainer = false
-
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        showTimePicker = true
-                    }
+                    
                 },
                 onSkip: {
                     analytics.notificationPromptDeclined()
@@ -85,26 +91,26 @@ struct OnboardingView: View {
                 .environmentObject(environment)
         }
     }
-
+    
     private var backgroundLayer: some View {
         ZStack {
             LinearGradient(
                 colors: colorScheme == .dark
-                    ? [
-                        Color(red: 0.08, green: 0.07, blue: 0.09),
-                        Color(red: 0.12, green: 0.10, blue: 0.12),
-                        Color(red: 0.09, green: 0.08, blue: 0.10)
-                    ]
-                    : [
-                        Color(red: 0.98, green: 0.95, blue: 0.90),
-                        Color(red: 0.95, green: 0.90, blue: 0.82),
-                        Color(red: 0.97, green: 0.93, blue: 0.87)
-                    ],
+                ? [
+                    Color(red: 0.08, green: 0.07, blue: 0.09),
+                    Color(red: 0.12, green: 0.10, blue: 0.12),
+                    Color(red: 0.09, green: 0.08, blue: 0.10)
+                ]
+                : [
+                    Color(red: 0.98, green: 0.95, blue: 0.90),
+                    Color(red: 0.95, green: 0.90, blue: 0.82),
+                    Color(red: 0.97, green: 0.93, blue: 0.87)
+                ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
-
+            
             RadialGradient(
                 colors: [
                     accentTint.opacity(colorScheme == .dark ? 0.16 : 0.14),
@@ -115,7 +121,7 @@ struct OnboardingView: View {
                 endRadius: 260
             )
             .ignoresSafeArea()
-
+            
             RadialGradient(
                 colors: [
                     Color.white.opacity(colorScheme == .dark ? 0.05 : 0.18),
@@ -128,7 +134,7 @@ struct OnboardingView: View {
             .ignoresSafeArea()
         }
     }
-
+    
     private var topBrandBar: some View {
         HStack(spacing: 12) {
             Group {
@@ -153,28 +159,28 @@ struct OnboardingView: View {
                             .stroke(Color.white.opacity(colorScheme == .dark ? 0.12 : 0.68), lineWidth: 1)
                     )
             )
-
+            
             VStack(alignment: .leading, spacing: 2) {
                 Text("Resonate")
                     .font(PremiumTheme.scaledSystem(size: 24, weight: .semibold, design: .serif))
                     .foregroundStyle(primaryText)
-
+                
                 Text("Daily worship, beautifully held")
                     .font(PremiumTheme.scaledSystem(size: 12, weight: .medium))
                     .foregroundStyle(secondaryText)
             }
-
+            
             Spacer()
         }
     }
-
+    
     private var heroCard: some View {
         VStack(spacing: 22) {
             HStack {
                 label(text: "CURATED DAILY")
-
+                
                 Spacer()
-
+                
                 Image(systemName: "sparkles")
                     .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold))
                     .foregroundStyle(accentTint)
@@ -184,23 +190,23 @@ struct OnboardingView: View {
                             .fill(Color.white.opacity(colorScheme == .dark ? 0.08 : 0.58))
                     )
             }
-
+            
             VStack(spacing: 12) {
                 Text("A quieter, richer way to begin each day.")
                     .font(PremiumTheme.scaledSystem(size: 38, weight: .bold, design: .serif))
                     .foregroundStyle(primaryText)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
-
+                
                 Text("Open a hymn, follow its story, and return to a rhythm of worship that feels intentional instead of rushed.")
                     .font(PremiumTheme.scaledSystem(size: 17, weight: .medium))
                     .foregroundStyle(secondaryText)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
             }
-
+            
             quotePanel
-
+            
             HStack(spacing: 10) {
                 featureChip(icon: "music.note.house.fill", text: "Daily hymn")
                 featureChip(icon: "book.pages.fill", text: "Stories")
@@ -213,25 +219,25 @@ struct OnboardingView: View {
         .overlay(cardBorder)
         .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.20 : 0.08), radius: 24, y: 14)
     }
-
+    
     private var quotePanel: some View {
         VStack(spacing: 12) {
             HStack(spacing: 8) {
                 Image(systemName: "quote.opening")
                     .font(PremiumTheme.scaledSystem(size: 12, weight: .bold))
                     .foregroundStyle(accentTint)
-
+                
                 Text("Today's atmosphere")
                     .font(PremiumTheme.scaledSystem(size: 13, weight: .semibold))
                     .foregroundStyle(secondaryText)
             }
-
+            
             Text("“Every hymn carries a memory, a prayer, and a place to begin again.”")
                 .font(PremiumTheme.scaledSystem(size: 24, weight: .semibold, design: .serif))
                 .foregroundStyle(primaryText)
                 .multilineTextAlignment(.center)
                 .lineSpacing(6)
-
+            
             Text("Built for quiet mornings, small pauses, and the moments that deserve more than noise.")
                 .font(PremiumTheme.scaledSystem(size: 14, weight: .medium))
                 .foregroundStyle(secondaryText)
@@ -249,7 +255,7 @@ struct OnboardingView: View {
                 )
         )
     }
-
+    
     private var actionPanel: some View {
         VStack(spacing: 16) {
             beginWorshipButton
@@ -268,7 +274,7 @@ struct OnboardingView: View {
         )
         .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.18 : 0.06), radius: 18, y: 10)
     }
-
+    
     private var beginWorshipButton: some View {
         Button {
             analytics.onboardingCompleted()
@@ -278,9 +284,9 @@ struct OnboardingView: View {
             HStack {
                 Text("Begin Worship")
                     .font(PremiumTheme.scaledSystem(size: 17, weight: .semibold))
-
+                
                 Spacer()
-
+                
                 Image(systemName: "arrow.right")
                     .font(PremiumTheme.scaledSystem(size: 15, weight: .bold))
             }
@@ -304,7 +310,7 @@ struct OnboardingView: View {
             .shadow(color: accentTint.opacity(0.24), radius: 16, y: 8)
         }
     }
-
+    
     private var reminderButton: some View {
         Button {
             analytics.onboardingNotificationCTATapped()
@@ -315,12 +321,12 @@ struct OnboardingView: View {
                     Circle()
                         .fill(Color.white.opacity(colorScheme == .dark ? 0.08 : 0.70))
                         .frame(width: 38, height: 38)
-
+                    
                     Image(systemName: "bell.badge")
                         .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold))
                         .foregroundStyle(accentTint)
                 }
-
+                
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Set a daily hymn reminder")
                         .font(PremiumTheme.scaledSystem(size: 16, weight: .semibold))
@@ -328,7 +334,7 @@ struct OnboardingView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
-
+                    
                     Text("Choose a time and return with intention.")
                         .font(PremiumTheme.scaledSystem(size: 13, weight: .medium))
                         .foregroundStyle(secondaryText)
@@ -337,9 +343,9 @@ struct OnboardingView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-
+                
                 Spacer()
-
+                
                 Image(systemName: "chevron.right")
                     .font(PremiumTheme.scaledSystem(size: 14, weight: .semibold))
                     .foregroundStyle(secondaryText)
@@ -356,7 +362,7 @@ struct OnboardingView: View {
             )
         }
     }
-
+    
     private var dismissButton: some View {
         Button {
             analytics.onboardingSkipped()
@@ -368,12 +374,12 @@ struct OnboardingView: View {
                 .padding(.top, 4)
         }
     }
-
+    
     private func featureChip(icon: String, text: String) -> some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
                 .font(PremiumTheme.scaledSystem(size: 12, weight: .bold))
-
+            
             Text(text)
                 .font(PremiumTheme.scaledSystem(size: 12, weight: .semibold))
                 .lineLimit(1)
@@ -391,7 +397,7 @@ struct OnboardingView: View {
                 .stroke(Color.white.opacity(colorScheme == .dark ? 0.08 : 0.55), lineWidth: 1)
         )
     }
-
+    
     private func label(text: String) -> some View {
         Text(text)
             .font(PremiumTheme.scaledSystem(size: 11, weight: .bold))
@@ -404,36 +410,36 @@ struct OnboardingView: View {
                     .fill(accentTint.opacity(colorScheme == .dark ? 0.14 : 0.12))
             )
     }
-
+    
     private var accentTint: Color {
         colorScheme == .dark
-            ? Color(red: 0.90, green: 0.72, blue: 0.44)
-            : Color(red: 0.60, green: 0.38, blue: 0.16)
+        ? Color(red: 0.90, green: 0.72, blue: 0.44)
+        : Color(red: 0.60, green: 0.38, blue: 0.16)
     }
-
+    
     private var primaryText: Color {
         colorScheme == .dark ? .white : Color(red: 0.17, green: 0.12, blue: 0.10)
     }
-
+    
     private var secondaryText: Color {
         colorScheme == .dark
-            ? Color.white.opacity(0.70)
-            : Color(red: 0.28, green: 0.22, blue: 0.18).opacity(0.72)
+        ? Color.white.opacity(0.70)
+        : Color(red: 0.28, green: 0.22, blue: 0.18).opacity(0.72)
     }
-
+    
     private var cardBackground: some View {
         RoundedRectangle(cornerRadius: 34, style: .continuous)
             .fill(
                 LinearGradient(
                     colors: colorScheme == .dark
-                        ? [Color.white.opacity(0.08), Color.white.opacity(0.03)]
-                        : [Color.white.opacity(0.78), Color.white.opacity(0.46)],
+                    ? [Color.white.opacity(0.08), Color.white.opacity(0.03)]
+                    : [Color.white.opacity(0.78), Color.white.opacity(0.46)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
             )
     }
-
+    
     private var cardBorder: some View {
         RoundedRectangle(cornerRadius: 34, style: .continuous)
             .stroke(Color.white.opacity(colorScheme == .dark ? 0.10 : 0.62), lineWidth: 1)
